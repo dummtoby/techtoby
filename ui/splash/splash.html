@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Loading...</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0F0F0F;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+            overflow: hidden;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            position: absolute;
+        }
+
+        /* The transparent blur overlay */
+        .blur-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(2px);
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        #bgVideo {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        .drag-area {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 2;
+            cursor: pointer;
+        }
+
+        .content {
+            z-index: 3;
+            text-align: center;
+            pointer-events: none; /* Let drag events pass through */
+        }
+
+        h2 {
+            font-size: 1rem;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+    </style>
+</head>
+<body>
+    <video id="bgVideo" autoplay muted loop playsinline></video>
+    <div class="blur-overlay"></div>
+    <div class="drag-area" onmousedown="if(window.dragWindow) window.dragWindow('')"></div>
+    <div class="content">
+        <h2>Initializing...</h2>
+    </div>
+
+    <script>
+        const videoSources = [
+            "https://cdn.shawnyxx.dev/fileshare/cinematic-writing-on-a-whiteboard.mp4",
+            "https://cdn.shawnyxx.dev/fileshare/cinematic-bloxburg-build.mp4"
+        ];
+        
+        const videoElement = document.getElementById('bgVideo');
+        const randomVideo = videoSources[Math.floor(Math.random() * videoSources.length)];
+        
+        // Setting source as a child <source> element can sometimes be safer in webviews
+        videoElement.innerHTML = `<source src="${randomVideo}" type="video/mp4" style="width:100%;height:100%;object-fit:cover;">`;
+        videoElement.load();
+        videoElement.play().catch(e => console.log("Auto-play prevented", e));
+
+        // Wait 3 seconds then seamlessly instruct C++ to transition to main app
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                if (window.transitionToMain) {
+                    window.transitionToMain("");
+                }
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
