@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Techtoby Corp - Desktop</title>
-    <link rel="shortcut icon" href="media/100002.png" type="image/png">
+    <title>Techtoby Corp</title>
+    <link rel="shortcut icon" href="media/100005.png" type="image/png">
     <style>
         :root {
             --glass-bg: rgba(255, 255, 255, 0.15);
@@ -45,15 +45,6 @@
             z-index: 1;
             align-content: start;
             position: relative;
-        }
-
-        .widget-iframe {
-            border: none;
-            width: 100%;
-            height: 100%;
-            border-radius: 15px;
-            pointer-events: auto; /* Allow interaction with widgets */
-            background: transparent;
         }
 
         .app-icon {
@@ -420,10 +411,6 @@
             animation: jiggle 0.3s infinite;
         }
 
-        body.customizing .widget-iframe {
-            pointer-events: none !important;
-        }
-
         body.customizing .desktop-item {
             cursor: grab !important;
         }
@@ -484,14 +471,8 @@
 
     <!-- Context Menu -->
     <div id="desktopContextMenu" class="ContextMenu">
-        <button id="addWidgetsBtn">Add Widgets</button>
         <button id="customizeHomeBtn">Customize Home Screen</button>
         <button id="settingsBtn">Settings</button>
-    </div>
-
-    <!-- Widget Context Menu -->
-    <div id="widgetContextMenu" class="ContextMenu">
-        <button id="removeWidgetBtn" style="color: #dc2626;">Remove Widget</button>
     </div>
 
     <!-- Reusable Modal Layout -->
@@ -515,105 +496,6 @@
     </a>
 
     <script>
-        // Load Widgets
-        async function loadWidgets() {
-            try {
-                const response = await fetch('widgets/manifest.json');
-                const availableWidgets = await response.json();
-                
-                // Store globally for add-menu usage
-                window.availableWidgets = availableWidgets;
-                
-                let savedWidgets = JSON.parse(localStorage.getItem('installedWidgets'));
-                
-                if (!savedWidgets) {
-                    savedWidgets = availableWidgets.filter(w => w.preinstalled).map(w => w.id);
-                    localStorage.setItem('installedWidgets', JSON.stringify(savedWidgets));
-                }
-
-                // Filter to only those installed
-                const widgetsToLoad = availableWidgets.filter(w => savedWidgets.includes(w.id));
-                
-                const desktopElement = document.getElementById('desktop');
-                
-                widgetsToLoad.forEach(widget => {
-                    renderWidgetNode(widget, desktopElement);
-                });
-            } catch (error) {
-                console.error("Error loading widgets:", error);
-            }
-        }
-
-        function renderWidgetNode(widget, desktopElement) {
-            const widgetContainer = document.createElement('div');
-            // Check for saved position
-            const savedPos = JSON.parse(localStorage.getItem('itemPositions')) || {};
-            const pos = savedPos[widget.id];
-            
-            if (localStorage.getItem('placeAnywhere') === 'true' && pos) {
-                widgetContainer.style.gridColumn = `${pos.col} / span ${widget.defaultSize.columns}`;
-                widgetContainer.style.gridRow = `${pos.row} / span ${widget.defaultSize.rows}`;
-            } else {
-                widgetContainer.style.gridColumn = `span ${widget.defaultSize.columns}`;
-                widgetContainer.style.gridRow = `span ${widget.defaultSize.rows}`;
-            }
-            
-            // Save original span sizes for later use
-            widgetContainer.dataset.spanCols = widget.defaultSize.columns;
-            widgetContainer.dataset.spanRows = widget.defaultSize.rows;
-
-            widgetContainer.style.position = 'relative';
-            widgetContainer.style.zIndex = '2';
-            widgetContainer.className = 'desktop-item widget-container';
-            widgetContainer.setAttribute('draggable', 'true');
-            widgetContainer.dataset.widgetId = widget.id;
-            
-            const iframe = document.createElement('iframe');
-            iframe.src = widget.path;
-            iframe.className = 'widget-iframe';
-            iframe.title = widget.name;
-            
-            iframe.onload = () => {
-                try {
-                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-                    iframeDoc.addEventListener('contextmenu', (e) => {
-                        e.preventDefault();
-                        
-                        // Forward right-click pos relative to desktop
-                        const rect = iframe.getBoundingClientRect();
-                        const mouseX = rect.left + e.clientX;
-                        const mouseY = rect.top + e.clientY;
-                        
-                        // Show widget context menu directly
-                        selectedWidgetForRemoval = widgetContainer;
-                        document.getElementById('desktopContextMenu').style.display = 'none';
-                        document.getElementById('widgetContextMenu').style.display = 'block';
-                        document.getElementById('widgetContextMenu').style.left = `${mouseX}px`;
-                        document.getElementById('widgetContextMenu').style.top = `${mouseY}px`;
-                    });
-                    
-                    iframeDoc.addEventListener('click', (e) => {
-                        if (e.button === 0) {
-                            document.getElementById('desktopContextMenu').style.display = 'none';
-                            document.getElementById('widgetContextMenu').style.display = 'none';
-                        }
-                    });
-                } catch (err) {
-                    console.warn('Cross-origin frame context menu protection prevented binding.', err);
-                }
-            };
-
-            widgetContainer.appendChild(iframe);
-            
-            // Insert before the first app icon so widgets appear first
-            const firstApp = desktopElement.querySelector('.app-icon');
-            if (firstApp) {
-                desktopElement.insertBefore(widgetContainer, firstApp);
-            } else {
-                desktopElement.appendChild(widgetContainer);
-            }
-        }
-
         // Load Apps dynamically from manifest.json
         async function loadApps() {
             try {
@@ -711,13 +593,10 @@
 
         // Context Menu Logic
         const contextMenu = document.getElementById('desktopContextMenu');
-        const widgetContextMenu = document.getElementById('widgetContextMenu');
-        let selectedWidgetForRemoval = null;
 
         // Initialize desktop components asynchronously
         async function initDesktop() {
             await loadApps();
-            await loadWidgets();
             
             // Reapply saved non-placeAnywhere logical order if exists
             const savedOrder = JSON.parse(localStorage.getItem('desktopItemOrder'));
@@ -727,7 +606,7 @@
                 const lookup = {};
                 
                 document.querySelectorAll('.desktop-item').forEach(item => {
-                    const id = item.dataset.widgetId || item.dataset.appId;
+                    const id = item.dataset.appId;
                     lookup[id] = item;
                 });
                 
@@ -831,24 +710,12 @@
             e.preventDefault();
             const { clientX: mouseX, clientY: mouseY } = e;
             
-            // Check if right clicking on a widget
-            const widget = e.target.closest('div.desktop-item:not(a)');
-            
-            if (widget) {
-                // Show widget context menu
-                selectedWidgetForRemoval = widget;
-                desktopContextMenu.style.display = 'none';
-                widgetContextMenu.style.display = 'block';
-                widgetContextMenu.style.left = `${mouseX}px`;
-                widgetContextMenu.style.top = `${mouseY}px`;
-            } else if (!e.target.closest('.app-icon')) {
+            if (!e.target.closest('.app-icon')) {
                 // Show standard desktop context menu
-                widgetContextMenu.style.display = 'none';
                 contextMenu.style.display = 'block';
                 contextMenu.style.left = `${mouseX}px`;
                 contextMenu.style.top = `${mouseY}px`;
             } else {
-                widgetContextMenu.style.display = 'none';
                 contextMenu.style.display = 'none';
             }
         });
@@ -856,22 +723,6 @@
         document.addEventListener('click', (e) => {
             if (e.button === 0) {
                 contextMenu.style.display = 'none';
-                widgetContextMenu.style.display = 'none';
-            }
-        });
-
-        document.getElementById('removeWidgetBtn').addEventListener('click', () => {
-            if (selectedWidgetForRemoval) {
-                const widgetId = selectedWidgetForRemoval.dataset.widgetId;
-                selectedWidgetForRemoval.remove();
-                selectedWidgetForRemoval = null;
-                
-                // Update local storage
-                if (widgetId) {
-                    let savedWidgets = JSON.parse(localStorage.getItem('installedWidgets')) || [];
-                    savedWidgets = savedWidgets.filter(id => id !== widgetId);
-                    localStorage.setItem('installedWidgets', JSON.stringify(savedWidgets));
-                }
             }
         });
 
@@ -886,7 +737,6 @@
             modalBody.innerHTML = contentHTML;
             modal.classList.add('show');
             contextMenu.style.display = 'none'; // hide context menu when opening a modal
-            widgetContextMenu.style.display = 'none';
         }
 
         closeModalBtn.addEventListener('click', () => {
@@ -910,7 +760,7 @@
                         <span style="font-weight:bold;">Place Anywhere</span>
                     </label>
                     <p style="margin:5px 0 0 28px; font-size:12px; color:rgba(0,0,0,0.7);">
-                        Allows you to place apps and widgets anywhere on the grid without forcing them to neatly stack to the top left.
+                        Allows you to place apps anywhere on the grid without forcing them to neatly stack to the top left.
                     </p>
                 </div>
             `;
@@ -948,58 +798,6 @@
             }, 50);
         });
 
-        document.getElementById('addWidgetsBtn').addEventListener('click', () => {
-            let savedWidgets = JSON.parse(localStorage.getItem('installedWidgets')) || [];
-            let listHTML = '<ul style="list-style:none; padding:0; margin-top:20px; display:flex; flex-direction:column; gap:10px;">';
-            
-            window.availableWidgets.forEach(widget => {
-                const isInstalled = savedWidgets.includes(widget.id);
-                listHTML += `
-                    <li style="padding:15px; background:rgba(255,255,255,0.4); border:1px solid rgba(255,255,255,0.6); border-radius:12px; display:flex; justify-content:space-between; align-items:center; transition:transform 0.2s;">
-                        <div style="text-align:left;">
-                            <h4 style="margin:0 0 5px 0; color:#000; font-size:16px;">${widget.name}</h4>
-                            <p style="margin:0; font-size:12px; color:rgba(0,0,0,0.7);">${widget.description}</p>
-                        </div>
-                        <button class="add-specific-widget-btn" data-widget-id="${widget.id}" style="padding: 8px 16px; border-radius: 8px; border:none; background:${isInstalled ? 'rgba(0,0,0,0.1)' : '#3b82f6'}; color:${isInstalled ? '#000' : '#fff'}; font-weight:bold; cursor:${isInstalled ? 'default' : 'pointer'};" ${isInstalled ? 'disabled' : ''}>
-                            ${isInstalled ? 'Added' : 'Add'}
-                        </button>
-                    </li>
-                `;
-            });
-            listHTML += '</ul>';
-
-            openModal('Add Widgets', `<p style="color:#000;">Customize your home screen with additional widgets.</p>${listHTML}`);
-            
-            // Add listeners to buttons inside modal
-            setTimeout(() => {
-                document.querySelectorAll('.add-specific-widget-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const widgetId = e.target.dataset.widgetId;
-                        const widget = window.availableWidgets.find(w => w.id === widgetId);
-                        
-                        if (widget) {
-                            // Update UI
-                            e.target.innerText = 'Added';
-                            e.target.style.background = 'rgba(0,0,0,0.1)';
-                            e.target.style.color = '#000';
-                            e.target.style.cursor = 'default';
-                            e.target.disabled = true;
-                            
-                            // Render to desktop
-                            renderWidgetNode(widget, document.getElementById('desktop'));
-                            
-                            // Save to local storage
-                            let currentSaved = JSON.parse(localStorage.getItem('installedWidgets')) || [];
-                            if (!currentSaved.includes(widgetId)) {
-                                currentSaved.push(widgetId);
-                                localStorage.setItem('installedWidgets', JSON.stringify(currentSaved));
-                            }
-                        }
-                    });
-                });
-            }, 50);
-        });
-
         document.getElementById('customizeHomeBtn').addEventListener('click', () => {
             document.body.classList.add('customizing');
             contextMenu.style.display = 'none';
@@ -1027,7 +825,7 @@
                 // Save logical DOM order instead of grid positions
                 const order = [];
                 document.querySelectorAll('.desktop-item').forEach(item => {
-                    const id = item.dataset.widgetId || item.dataset.appId;
+                    const id = item.dataset.appId;
                     if (id) order.push(id);
                 });
                 localStorage.setItem('desktopItemOrder', JSON.stringify(order));
@@ -1035,7 +833,7 @@
             }
             const positions = {};
             document.querySelectorAll('.desktop-item').forEach(item => {
-                const id = item.dataset.widgetId || item.dataset.appId;
+                const id = item.dataset.appId;
                 if (!id) return;
                 
                 // Get style strings that we explicitly set

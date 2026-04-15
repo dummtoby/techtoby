@@ -1,0 +1,4685 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloxburg Business Manager</title>
+
+    <link rel="shortcut icon" href="/media/100006.png" type="image/x-icon">
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background: #DCDCDC url('https://cdn.ecxogames.ca/ecxogames/assets/794037.png') no-repeat center center / cover;
+            color: black;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .gridOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            background-image: radial-gradient(circle, rgba(99, 102, 241, 0.15) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+        }
+
+        /* Themed UI controls */
+        .GTextBtn {
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: black;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .GTextBtn:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+        }
+
+        .GTextBtn .material-symbols-outlined {
+            font-size: 18px;
+        }
+
+        .GTextBtn.primary {
+            background: rgba(99, 102, 241, 0.3);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        .GTextBtn.primary:hover {
+            background: rgba(99, 102, 241, 0.45);
+        }
+
+        .GTextBtn.danger {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+
+        .GTextBtn.danger:hover {
+            background: rgba(239, 68, 68, 0.35);
+        }
+
+        /* Layout structure */
+        .MainLayout {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            z-index: 10;
+            position: relative;
+        }
+
+        /* Sidebar */
+        .Sidebar {
+            width: 280px;
+            margin: 20px;
+            height: calc(100vh - 40px);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            position: relative;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .Sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .Sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .Sidebar::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 4px;
+        }
+
+        .SidebarTab {
+            padding: 12px 14px;
+            font-size: 14px;
+            font-weight: 400;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-top-width: 2px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: rgba(0, 0, 0, 0.8);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .SidebarTab:hover {
+            background: rgba(255, 255, 255, 0.55);
+        }
+
+        .SidebarTab.active {
+            background: rgba(255, 255, 255, 0.7);
+            border-color: rgba(255, 255, 255, 0.75);
+            font-weight: 500;
+        }
+
+        .SidebarTab.inactive {
+            opacity: 0.5;
+        }
+
+        /* Content Area */
+        .ContentArea {
+            flex: 1;
+            margin: 20px 20px 20px 0;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .ContentArea::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .ContentArea::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .ContentArea::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 4px;
+        }
+
+        .ContentTitle {
+            font-size: 18px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .ContentDesc {
+            font-size: 13px;
+            color: rgba(0, 0, 0, 0.6);
+            line-height: 1.5;
+        }
+
+        /* Page visibility */
+        .page {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .page.active {
+            display: flex;
+        }
+
+        /* ===== PERMISSION TREE MANAGER ===== */
+        .PermissionGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            flex: 1;
+        }
+
+        .RoleColumn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+
+        .RoleHeader {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .RoleName {
+            font-size: 15px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .RoleLabel {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            color: rgba(0, 0, 0, 0.6);
+            font-weight: 500;
+        }
+
+        .PermCategory {
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.45);
+            margin-top: 10px;
+            margin-bottom: 4px;
+            text-transform: capitalize;
+        }
+
+        .PermCategory:first-of-type {
+            margin-top: 0;
+        }
+
+        .PermRow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 0;
+        }
+
+        .PermName {
+            font-size: 13px;
+            color: rgba(0, 0, 0, 0.75);
+        }
+
+        /* Toggle Switch */
+        .toggle {
+            position: relative;
+            width: 40px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.15);
+            transition: 0.3s;
+            border-radius: 22px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle input:checked + .toggle-slider {
+            background-color: rgba(99, 102, 241, 0.7);
+        }
+
+        .toggle input:checked + .toggle-slider:before {
+            transform: translateX(18px);
+        }
+
+        .PermSubCategory {
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.35);
+            margin-top: 6px;
+            margin-bottom: 2px;
+            font-weight: 500;
+            font-style: italic;
+        }
+
+        /* ===== SALARY MANAGER ===== */
+        .SalarySection {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.7);
+        }
+
+        .form-group input,
+        .form-group select {
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: black;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+            backdrop-filter: blur(4px);
+            transition: all 0.2s ease;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            background: rgba(255, 255, 255, 0.5);
+            border-color: rgba(99, 102, 241, 0.6);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(0, 0, 0, 0.35);
+        }
+
+        .InputRow {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .InputRow .form-group {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .JobTitleList {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .JobTitleItem {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            padding: 12px 16px;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            transition: all 0.2s ease;
+        }
+
+        .JobTitleItem:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .JobTitleItem.editing {
+            border-color: rgba(99, 102, 241, 0.5);
+            background: rgba(255, 255, 255, 0.45);
+        }
+
+        .JobTitleInfo {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .JobTitleName {
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .JobTitleLevel {
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .JobTitleWage {
+            font-size: 16px;
+            font-weight: 600;
+            color: rgba(99, 102, 241, 0.9);
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .JobTitleActions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .RemoveJobBtn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: rgba(239, 68, 68, 0.7);
+            padding: 4px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .RemoveJobBtn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: rgba(239, 68, 68, 0.9);
+        }
+
+        .JobActionBtn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: rgba(0, 0, 0, 0.35);
+            padding: 4px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .JobActionBtn:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: rgba(99, 102, 241, 0.8);
+        }
+
+        .JobCountBadge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 22px;
+            height: 22px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 6px;
+            background: rgba(99, 102, 241, 0.12);
+            color: rgba(99, 102, 241, 0.85);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 0 5px;
+        }
+
+        .JobTotalCost {
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.4);
+            text-align: right;
+        }
+
+        /* Budget Progress Bar */
+        .BudgetBar {
+            position: relative;
+            height: 10px;
+            background: rgba(0, 0, 0, 0.08);
+            border-radius: 5px;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .BudgetBarSegment {
+            height: 100%;
+            transition: width 0.4s ease;
+            position: relative;
+        }
+
+        .BudgetBarSegment:first-child {
+            border-radius: 5px 0 0 5px;
+        }
+
+        .BudgetBarSegment:last-child {
+            border-radius: 0 5px 5px 0;
+        }
+
+        .BudgetBarSegment:first-child:last-child {
+            border-radius: 5px;
+        }
+
+        .BudgetBarSegment + .BudgetBarSegment {
+            border-left: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .BudgetBarFill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.4s ease, background 0.4s ease;
+            background: rgba(99, 102, 241, 0.6);
+        }
+
+        .BudgetBarFill.warning {
+            background: rgba(245, 158, 11, 0.7);
+        }
+
+        .BudgetBarFill.over {
+            background: rgba(239, 68, 68, 0.7);
+        }
+
+        .BudgetBarLabels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.45);
+            margin-top: 4px;
+        }
+
+        .BudgetBarLabels .pct {
+            font-weight: 600;
+        }
+
+        .BudgetDayTicks {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2px;
+            padding: 0 1px;
+        }
+
+        .BudgetDayTick {
+            font-size: 9px;
+            color: rgba(0, 0, 0, 0.35);
+            text-align: center;
+            flex: 1;
+        }
+
+        .HourlyRate {
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.45);
+            font-weight: 400;
+        }
+
+        /* Inline editing */
+        .InlineEditRow {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            padding: 4px 0;
+        }
+
+        .InlineEditRow input,
+        .InlineEditRow select {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: black;
+            padding: 5px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            outline: none;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .InlineEditRow input:focus,
+        .InlineEditRow select:focus {
+            border-color: rgba(99, 102, 241, 0.6);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+        }
+
+        .PayStatusLabel {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .PayStatusLabel.average {
+            background: rgba(99, 102, 241, 0.15);
+            color: rgba(99, 102, 241, 0.9);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .PayStatusLabel.underpaid {
+            background: rgba(239, 68, 68, 0.12);
+            color: rgba(220, 38, 38, 0.9);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .PayStatusLabel.overpaid {
+            background: rgba(34, 197, 94, 0.12);
+            color: rgba(22, 163, 74, 0.9);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .JobTitleRange {
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        .SalaryModeToggle {
+            display: flex;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: 10px;
+            padding: 3px;
+            align-self: flex-start;
+        }
+
+        .SalaryModeToggle button {
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: rgba(0, 0, 0, 0.6);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .SalaryModeToggle button.active {
+            background: rgba(255, 255, 255, 0.6);
+            color: rgba(0, 0, 0, 0.85);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .SectionHeader {
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.8);
+            margin-top: 4px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ResultsSummary {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .SummaryCard {
+            flex: 1;
+            min-width: 140px;
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            padding: 14px 16px;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        .SummaryCard .label {
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.5);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .SummaryCard .value {
+            font-size: 20px;
+            font-weight: 700;
+            color: rgba(0, 0, 0, 0.85);
+            margin-top: 4px;
+        }
+
+        .SummaryCard .sub {
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.4);
+            margin-top: 2px;
+        }
+
+        .EmptyState {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(0, 0, 0, 0.4);
+            font-size: 14px;
+        }
+
+        .EmptyState .material-symbols-outlined {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.4;
+        }
+
+        /* Modal Overlay */
+        .ModalOverlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .ModalOverlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .ModalContent {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 18px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+            padding: 28px;
+            min-width: 420px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .ModalContent::-webkit-scrollbar { width: 6px; }
+        .ModalContent::-webkit-scrollbar-track { background: transparent; }
+        .ModalContent::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 4px; }
+
+        .ModalTitle {
+            font-size: 18px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ModalClose {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: rgba(0, 0, 0, 0.5);
+            padding: 4px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .ModalClose:hover {
+            background: rgba(0, 0, 0, 0.06);
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        /* Label pills */
+        .LabelPill {
+            display: inline-flex;
+            align-items: center;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 500;
+            color: white;
+            white-space: nowrap;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .LabelPills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .AddLabelBtn {
+            background: rgba(0, 0, 0, 0.06);
+            border: 1px dashed rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            padding: 2px 6px;
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .AddLabelBtn:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: rgba(0, 0, 0, 0.6);
+        }
+
+        /* Label editor rows */
+        .LabelEditorRow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+        }
+
+        .LabelEditorRow input[type="color"] {
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 0;
+            background: none;
+        }
+
+        .LabelEditorRow input[type="text"] {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: black;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .LabelEditorRow input[type="text"]:focus {
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+        }
+
+        /* Range editor rows */
+        .RangeEditorRow {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+        }
+
+        .RangeEditorRow .form-group { min-width: 0; }
+        .RangeEditorRow label { font-size: 10px !important; color: rgba(0,0,0,0.45) !important; }
+        .RangeEditorRow input { width: 100%; }
+
+        /* Label assign dropdown */
+        .LabelDropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            min-width: 160px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 10px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+            padding: 6px;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .LabelDropdownItem {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            color: rgba(0, 0, 0, 0.75);
+            transition: background 0.15s;
+        }
+
+        .LabelDropdownItem:hover {
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        .LabelDropdownItem .check {
+            font-size: 16px;
+            width: 18px;
+            color: rgba(99, 102, 241, 0.8);
+        }
+
+        .LabelColorDot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Preset items */
+        .PresetItem {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .PresetItem span {
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .PresetActions {
+            display: flex;
+            gap: 6px;
+        }
+
+        /* Modal Tabs */
+        .ModalTabBar {
+            display: flex;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: 10px;
+            padding: 3px;
+            align-self: flex-start;
+        }
+
+        .ModalTabBtn {
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: rgba(0, 0, 0, 0.6);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .ModalTabBtn.active {
+            background: rgba(255, 255, 255, 0.6);
+            color: rgba(0, 0, 0, 0.85);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Range slider rows (Customize tab) */
+        .RangeSliderRow {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+        }
+
+        .RangeSliderRow .lvl-num {
+            font-weight: 600;
+            font-size: 13px;
+            color: rgba(0, 0, 0, 0.6);
+            min-width: 16px;
+            text-align: center;
+        }
+
+        .RangeSliderRow .slider-block {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .RangeSliderRow input[type="range"] {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .RangeSliderRow input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(99, 102, 241, 0.8);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .RangeSliderRow .range-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.45);
+        }
+
+        .RangeSliderRow .range-mid {
+            font-weight: 600;
+            color: rgba(99, 102, 241, 0.8);
+            font-size: 13px;
+        }
+
+        /* ===== BUSINESS LABELS ===== */
+        .BusinessLabelPill {
+            display: inline-flex;
+            align-items: center;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 500;
+            color: white;
+            white-space: nowrap;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .BusinessLabelFilter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .BusinessLabelFilterBtn {
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .BusinessLabelFilterBtn.active {
+            background: rgba(255, 255, 255, 0.5);
+            border-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .BusinessLabelFilterBtn:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        /* ===== STAFF MANAGER ===== */
+        .StaffGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 14px;
+        }
+
+        .StaffCard {
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 14px;
+            padding: 16px;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-align: center;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .StaffCard:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .StaffAvatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .StaffAvatarPlaceholder {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background: rgba(99, 102, 241, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(99, 102, 241, 0.6);
+        }
+
+        .StaffName {
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .StaffUsername {
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.45);
+        }
+
+        .StaffJob {
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(99, 102, 241, 0.85);
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        .StaffSalary {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.7);
+        }
+
+        .StaffCardActions {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .StaffCard:hover .StaffCardActions {
+            opacity: 1;
+        }
+
+        .StaffCardBtn {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .StaffCardBtn:hover {
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        .StaffCardBtn.danger:hover {
+            background: rgba(239, 68, 68, 0.15);
+        }
+
+        .AddStaffCard {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px dashed rgba(0, 0, 0, 0.15);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 160px;
+            color: rgba(0, 0, 0, 0.35);
+        }
+
+        .AddStaffCard:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: rgba(99, 102, 241, 0.6);
+        }
+
+        /* Avatar preview in modal */
+        .AvatarPreview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            align-self: center;
+        }
+
+        .AvatarPreviewPlaceholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px dashed rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            align-self: center;
+            color: rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+        }
+
+        .AvatarPreviewPlaceholder:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            color: rgba(99, 102, 241, 0.5);
+        }
+
+        /* Top Buttons */
+        .TopButtons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        /* ===== SIDEBAR CATEGORIES ===== */
+        .SidebarCategory {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .SidebarCategoryHeader {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(0, 0, 0, 0.4);
+            padding: 8px 14px 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .SidebarCategoryHeader .material-symbols-outlined {
+            font-size: 14px;
+        }
+
+        .SidebarCategory + .SidebarCategory {
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        /* Job disabled state */
+        .JobTitleItem.disabled {
+            opacity: 0.45;
+        }
+
+        .JobTitleItem.disabled .JobTitleName {
+            text-decoration: line-through;
+        }
+
+        .JobAvailableSlots {
+            font-size: 10px;
+            font-weight: 500;
+            padding: 2px 6px;
+            border-radius: 5px;
+            white-space: nowrap;
+        }
+
+        .JobAvailableSlots.full {
+            background: rgba(34, 197, 94, 0.12);
+            color: rgba(22, 163, 74, 0.85);
+            border: 1px solid rgba(34, 197, 94, 0.25);
+        }
+
+        .JobAvailableSlots.partial {
+            background: rgba(245, 158, 11, 0.12);
+            color: rgba(180, 110, 0, 0.85);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+        }
+
+        .JobAvailableSlots.empty {
+            background: rgba(99, 102, 241, 0.08);
+            color: rgba(99, 102, 241, 0.65);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .StaffSalaryBreakdown {
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        /* ===== CONVERTERS ===== */
+        .ConverterCard {
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 14px;
+            padding: 20px;
+            backdrop-filter: blur(6px);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .ConverterCard .converter-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ConverterRow {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ConverterRow .form-group { flex: 1; min-width: 0; }
+
+        .ConverterRow .swap-icon {
+            color: rgba(99, 102, 241, 0.6);
+            margin-top: 18px;
+        }
+
+        .ConverterRate {
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.45);
+            font-style: italic;
+        }
+
+        /* ===== RECORD VIEWS (Hours/Finance) ===== */
+        .RecordGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 14px;
+        }
+
+        .RecordCard {
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(6px);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+        }
+
+        .RecordCard:hover { background: rgba(255, 255, 255, 0.4); }
+
+        .RecordCardTitle {
+            font-size: 15px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .RecordCardMeta {
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .RecordCardStats {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .RecordCardActions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .RecordCard:hover .RecordCardActions { opacity: 1; }
+
+        .AddRecordCard {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px dashed rgba(0, 0, 0, 0.15);
+            border-radius: 14px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 120px;
+            color: rgba(0, 0, 0, 0.35);
+        }
+
+        .AddRecordCard:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: rgba(99, 102, 241, 0.6);
+        }
+
+        .BackBtn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .BackBtn:hover {
+            background: rgba(0, 0, 0, 0.06);
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        .TimeEntryRow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            padding: 12px 16px;
+            backdrop-filter: blur(4px);
+        }
+
+        .TimeEntryRow .emp-info { flex: 1; min-width: 0; }
+
+        .TimeEntryRow .emp-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .TimeEntryRow .emp-job {
+            font-size: 12px;
+            color: rgba(99, 102, 241, 0.8);
+        }
+
+        .TimeEntryRow input[type="time"] {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            color: black;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            outline: none;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .TimeEntryRow input[type="time"]:focus {
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+        }
+
+        .TimeEntryRow .hours-badge {
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(99, 102, 241, 0.85);
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .TimeEntryRow .pay-badge {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.7);
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .FinanceEntryRow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            padding: 12px 16px;
+            backdrop-filter: blur(4px);
+        }
+
+        .FinanceEntryRow .entry-type {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .FinanceEntryRow .entry-type.income {
+            background: rgba(34, 197, 94, 0.12);
+            color: rgba(22, 163, 74, 0.9);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .FinanceEntryRow .entry-type.expense {
+            background: rgba(239, 68, 68, 0.12);
+            color: rgba(220, 38, 38, 0.9);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .FinanceEntryRow .entry-desc {
+            flex: 1;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        .FinanceEntryRow .entry-amount {
+            font-size: 14px;
+            font-weight: 600;
+            min-width: 70px;
+            text-align: right;
+        }
+
+        .FinanceEntryRow .entry-amount.income { color: rgba(22, 163, 74, 0.9); }
+        .FinanceEntryRow .entry-amount.expense { color: rgba(220, 38, 38, 0.9); }
+
+        /* ===== PARTNERSHIPS ===== */
+        .PartnerGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 14px;
+        }
+
+        .PartnerCard {
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 14px;
+            padding: 18px;
+            backdrop-filter: blur(6px);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            position: relative;
+        }
+
+        .PartnerCard:hover { background: rgba(255, 255, 255, 0.4); }
+
+        .PartnerLogo {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.3);
+            flex-shrink: 0;
+        }
+
+        .PartnerLogoPlaceholder {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(99, 102, 241, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(99, 102, 241, 0.5);
+            flex-shrink: 0;
+        }
+
+        .PartnerInfo {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .PartnerName {
+            font-size: 15px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .PartnerOwner {
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .PartnerDesc {
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.5);
+            line-height: 1.4;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .PartnerNetWorth {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(99, 102, 241, 0.85);
+        }
+
+        .PartnerCardActions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .PartnerCard:hover .PartnerCardActions { opacity: 1; }
+
+        .TransactionRow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            padding: 12px 16px;
+            backdrop-filter: blur(4px);
+        }
+
+        .TransactionRow .tx-date {
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.4);
+            min-width: 70px;
+        }
+
+        .TransactionRow .tx-type {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .TransactionRow .tx-type.investment {
+            background: rgba(99, 102, 241, 0.12);
+            color: rgba(99, 102, 241, 0.9);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .TransactionRow .tx-type.income {
+            background: rgba(34, 197, 94, 0.12);
+            color: rgba(22, 163, 74, 0.9);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .TransactionRow .tx-type.expense {
+            background: rgba(239, 68, 68, 0.12);
+            color: rgba(220, 38, 38, 0.9);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .TransactionRow .tx-desc {
+            flex: 1;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        .TransactionRow .tx-amount {
+            font-size: 14px;
+            font-weight: 600;
+            min-width: 70px;
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="gridOverlay"></div>
+
+    <div class="TopButtons">
+        <button class="GTextBtn" id="labelsTopBtn" onclick="openModal('labelManager')" title="Manage Labels">
+            <span class="material-symbols-outlined">label</span>
+            Labels
+        </button>
+        <button class="GTextBtn" onclick="openModal('businessLabels')" title="Business Labels">
+            <span class="material-symbols-outlined">store</span>
+            Businesses
+        </button>
+        <button class="GTextBtn" onclick="openModal('presets')" title="Presets">
+            <span class="material-symbols-outlined">bookmarks</span>
+            Presets
+        </button>
+        <button class="GTextBtn" onclick="window.location.href='../'" title="Back to Desktop">
+            <span class="material-symbols-outlined">home</span>
+            Home
+        </button>
+    </div>
+
+    <div class="MainLayout">
+        <!-- Sidebar -->
+        <div class="Sidebar">
+            <div class="SidebarCategory">
+                <div class="SidebarCategoryHeader">
+                    <span class="material-symbols-outlined">business</span>
+                    Business
+                </div>
+                <div class="SidebarTab active" data-page="permissions" onclick="switchPage('permissions')">
+                    <span class="material-symbols-outlined" style="font-size: 18px;">shield_person</span>
+                    Permission Tree
+                </div>
+                <div class="SidebarTab" data-page="salary" onclick="switchPage('salary')">
+                    <span class="material-symbols-outlined" style="font-size: 18px;">payments</span>
+                    Job Titles
+                </div>
+                <div class="SidebarTab" data-page="staff" onclick="switchPage('staff')">
+                    <span class="material-symbols-outlined" style="font-size: 18px;">groups</span>
+                    Staff Manager
+                </div>
+            </div>
+            <div class="SidebarCategory">
+                <div class="SidebarCategoryHeader">
+                    <span class="material-symbols-outlined">account_balance</span>
+                    Finances
+                </div>
+                <div class="SidebarTab" data-page="hours" onclick="switchPage('hours')">
+                    <span class="material-symbols-outlined" style="font-size: 18px;">schedule</span>
+                    Hours Tracker
+                </div>
+                <div class="SidebarTab" data-page="finance" onclick="switchPage('finance')">
+                    <span class="material-symbols-outlined" style="font-size: 18px;">receipt_long</span>
+                    Income / Expenses
+                </div>
+            </div>
+            <div class="SidebarCategory">
+                <div class="SidebarCategoryHeader">
+                    <span class="material-symbols-outlined">handshake</span>
+                    Partnerships
+                </div>
+                <div class="SidebarTab" data-page="partnerships" onclick="switchPage('partnerships')">
+                    <span class="material-symbols-outlined" style="font-size: 18px;">diversity_3</span>
+                    Partners
+                </div>
+            </div>
+            <div class="SidebarCategory">
+                <div class="SidebarCategoryHeader">
+                    <span class="material-symbols-outlined">more_horiz</span>
+                    Miscellaneous
+                </div>
+                <div class="SidebarTab" data-page="converters" onclick="switchPage('converters')">
+                    <span class="material-symbols-outlined" style="font-size: 18px;">calculate</span>
+                    Converters
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="ContentArea">
+            <!-- Permission Tree Manager Page -->
+            <div class="page active" id="page-permissions">
+                <div class="ContentTitle">Permission Tree Manager</div>
+                <div class="ContentDesc">Configure permissions for each role in your Bloxburg business. Toggle individual permissions on or off per role.</div>
+                <div class="PermissionGrid" id="permissionGrid">
+                    <!-- Generated by JS -->
+                </div>
+            </div>
+
+            <!-- Salary Manager Page -->
+            <div class="page" id="page-salary">
+                <div class="ContentTitle">Job Titles</div>
+                <div class="ContentDesc">Wages update in real time as you add jobs and set a budget. Each level maps to a salary range and jobs are labeled as average, underpaid, or overpaid relative to your budget.</div>
+
+                <div class="SalarySection">
+                    <div class="SectionHeader">Configuration</div>
+                    <div class="InputRow">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Total Budget ($)</label>
+                            <input type="number" id="budgetInput" placeholder="e.g. 10000" min="0" step="100" oninput="recalcWages()">
+                        </div>
+                        <div class="form-group" style="max-width: 100px;">
+                            <label>Hours / Day</label>
+                            <input type="number" id="hoursPerDayInput" value="24" min="1" max="24" step="1" oninput="recalcWages()">
+                        </div>
+                        <div class="form-group" style="max-width: 80px;">
+                            <label>Days</label>
+                            <input type="number" id="daysInput" value="1" min="1" max="365" step="1" oninput="recalcWages()">
+                        </div>
+                    </div>
+                    <div id="budgetBarContainer" style="display: none;">
+                        <div class="BudgetBar" id="budgetBar"></div>
+                        <div class="BudgetDayTicks" id="budgetDayTicks"></div>
+                        <div class="BudgetBarLabels">
+                            <span id="budgetBarUsed">$0 used</span>
+                            <span class="pct" id="budgetBarPct">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="ResultsSummary" id="resultsSummary" style="display: none;"></div>
+
+                    <div class="SectionHeader" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Job Titles</span>
+                        <button class="GTextBtn danger" onclick="clearAllJobs()" style="padding: 4px 10px; font-size: 12px;">
+                            <span class="material-symbols-outlined" style="font-size: 14px;">delete</span>
+                            Clear
+                        </button>
+                    </div>
+                    <div class="InputRow">
+                        <div class="form-group">
+                            <label>Job Title</label>
+                            <input type="text" id="jobTitleInput" placeholder="e.g. Manager">
+                        </div>
+                        <div class="form-group" style="max-width: 70px;">
+                            <label>Count</label>
+                            <input type="number" id="jobCountInput" value="1" min="1" max="99" step="1">
+                        </div>
+                        <div class="form-group" style="max-width: 160px;">
+                            <label>Pay Type</label>
+                            <div class="SalaryModeToggle" id="salaryModeToggle">
+                                <button class="active" data-mode="level" onclick="setSalaryMode('level')">Level</button>
+                                <button data-mode="fixed" onclick="setSalaryMode('fixed')">Fixed</button>
+                            </div>
+                        </div>
+                        <div class="form-group" style="max-width: 230px;" id="levelSelectGroup">
+                            <label>Level</label>
+                            <select id="jobLevelInput" onchange="handleLevelSelect(this)">
+                                <!-- Populated by JS -->
+                            </select>
+                        </div>
+                        <div class="form-group" style="max-width: 130px; display: none;" id="fixedSalaryGroup">
+                            <label>Salary ($)</label>
+                            <input type="number" id="fixedSalaryInput" placeholder="e.g. 500" min="0" step="5">
+                        </div>
+                        <button class="GTextBtn" onclick="addJobTitle()" style="margin-bottom: 0; height: 38px; align-self: flex-end;">
+                            <span class="material-symbols-outlined">add</span>
+                            Add
+                        </button>
+                    </div>
+
+                    <div class="JobTitleList" id="jobTitleList">
+                        <div class="EmptyState" id="jobEmptyState">
+                            <span class="material-symbols-outlined">work</span>
+                            <div>No job titles added yet. Add one above to get started.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Staff Manager Page -->
+            <div class="page" id="page-staff">
+                <div class="ContentTitle">Staff Manager</div>
+                <div class="ContentDesc">Manage your employee roster. Assign job titles and business labels to each employee.</div>
+
+                <div class="BusinessLabelFilter" id="staffBusinessFilter"></div>
+
+                <div class="StaffGrid" id="staffGrid">
+                    <div class="AddStaffCard" onclick="openAddEmployeeModal()">
+                        <span class="material-symbols-outlined" style="font-size: 36px;">person_add</span>
+                        <span style="font-size: 13px; font-weight: 500;">Add Employee</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hours Tracker Page -->
+            <div class="page" id="page-hours">
+                <div id="hoursListView">
+                    <div class="ContentTitle">Hours Tracker</div>
+                    <div class="ContentDesc">Track employee work hours and generate pay reports. Create a workday record, add employee clock-in/out times, and see calculated pay.</div>
+                    <div class="RecordGrid" id="hoursRecordGrid"></div>
+                </div>
+                <div id="hoursDetailView" style="display: none;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <button class="BackBtn" onclick="closeHoursDetail()">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                        </button>
+                        <div class="ContentTitle" id="hoursDetailTitle">Workday</div>
+                    </div>
+                    <div class="ContentDesc" id="hoursDetailMeta"></div>
+                    <div class="ResultsSummary" id="hoursDetailSummary"></div>
+                    <div class="SectionHeader" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Time Entries</span>
+                        <button class="GTextBtn" onclick="openAddTimeEntry()" style="padding: 4px 10px; font-size: 12px;">
+                            <span class="material-symbols-outlined" style="font-size: 14px;">add</span>
+                            Add Entry
+                        </button>
+                    </div>
+                    <div id="timeEntryList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                </div>
+            </div>
+
+            <!-- Income / Expenses Page -->
+            <div class="page" id="page-finance">
+                <div id="financeListView">
+                    <div class="ContentTitle">Income / Expenses</div>
+                    <div class="ContentDesc">Track all income and expenses for each day. Create daily records and log individual transactions.</div>
+                    <div class="RecordGrid" id="financeRecordGrid"></div>
+                </div>
+                <div id="financeDetailView" style="display: none;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <button class="BackBtn" onclick="closeFinanceDetail()">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                        </button>
+                        <div class="ContentTitle" id="financeDetailTitle">Daily Record</div>
+                    </div>
+                    <div class="ContentDesc" id="financeDetailMeta"></div>
+                    <div class="ResultsSummary" id="financeDetailSummary"></div>
+                    <div class="SectionHeader" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Entries</span>
+                        <button class="GTextBtn" onclick="openAddFinanceEntry()" style="padding: 4px 10px; font-size: 12px;">
+                            <span class="material-symbols-outlined" style="font-size: 14px;">add</span>
+                            Add Entry
+                        </button>
+                    </div>
+                    <div id="financeEntryList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                </div>
+            </div>
+
+            <!-- Partnerships Page -->
+            <div class="page" id="page-partnerships">
+                <div id="partnershipsListView">
+                    <div class="ContentTitle">Partnerships</div>
+                    <div class="ContentDesc">Manage your business partnerships. Track partner information, investments, and shared transactions.</div>
+                    <div class="PartnerGrid" id="partnerGrid"></div>
+                </div>
+                <div id="partnerDetailView" style="display: none;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <button class="BackBtn" onclick="closePartnerDetail()">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                        </button>
+                        <div class="ContentTitle" id="partnerDetailTitle">Partner</div>
+                    </div>
+                    <div class="ResultsSummary" id="partnerDetailInfo"></div>
+                    <div class="SectionHeader" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Transactions</span>
+                        <button class="GTextBtn" onclick="openAddTransaction()" style="padding: 4px 10px; font-size: 12px;">
+                            <span class="material-symbols-outlined" style="font-size: 14px;">add</span>
+                            Add Transaction
+                        </button>
+                    </div>
+                    <div id="transactionList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                </div>
+            </div>
+
+            <!-- Converters Page -->
+            <div class="page" id="page-converters">
+                <div class="ContentTitle">Converters</div>
+                <div class="ContentDesc">Quick conversion tools for Bloxburg values.</div>
+
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    <div class="ConverterCard">
+                        <div class="converter-title">
+                            <span class="material-symbols-outlined" style="font-size: 20px;">currency_exchange</span>
+                            Dollar ↔ Blockbux
+                        </div>
+                        <div class="ConverterRate">1 Blockbux = $20</div>
+                        <div class="ConverterRow">
+                            <div class="form-group">
+                                <label>Dollars ($)</label>
+                                <input type="number" id="convDollars" placeholder="0" min="0" step="1" oninput="convertDollarToBlockbux()">
+                            </div>
+                            <span class="material-symbols-outlined swap-icon">sync_alt</span>
+                            <div class="form-group">
+                                <label>Blockbux (B$)</label>
+                                <input type="number" id="convBlockbux" placeholder="0" min="0" step="0.01" oninput="convertBlockbuxToDollar()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ConverterCard">
+                        <div class="converter-title">
+                            <span class="material-symbols-outlined" style="font-size: 20px;">schedule</span>
+                            Bloxburg Time ↔ Real Time
+                        </div>
+                        <div class="ConverterRate">1 in-game day = 72 real minutes</div>
+                        <div class="ConverterRow">
+                            <div class="form-group">
+                                <label>In-Game Days</label>
+                                <input type="number" id="convGameDays" placeholder="0" min="0" step="0.01" oninput="convertGameToReal()">
+                            </div>
+                            <span class="material-symbols-outlined swap-icon">sync_alt</span>
+                            <div class="form-group">
+                                <label>Real Time</label>
+                                <input type="text" id="convRealTime" placeholder="0h 0m" oninput="convertRealToGame()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Label Manager Modal -->
+    <div class="ModalOverlay" id="labelManagerModal" onclick="if(event.target===this)closeModal('labelManager')">
+        <div class="ModalContent">
+            <div class="ModalTitle">
+                <span>Manage Labels</span>
+                <button class="ModalClose" onclick="closeModal('labelManager')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="ContentDesc">Create labels with custom colors to tag roles in the Permission Tree.</div>
+            <div id="labelEditorList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            <button class="GTextBtn" onclick="addLabel()" style="align-self: flex-start;">
+                <span class="material-symbols-outlined">add</span>
+                Add Label
+            </button>
+        </div>
+    </div>
+
+    <!-- Range Customizer Modal -->
+    <div class="ModalOverlay" id="rangeCustomizerModal" onclick="if(event.target===this)closeModal('rangeCustomizer')">
+        <div class="ModalContent">
+            <div class="ModalTitle">
+                <span>Customize Salary Ranges</span>
+                <button class="ModalClose" onclick="closeModal('rangeCustomizer')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="ModalTabBar">
+                <button class="ModalTabBtn active" data-tab="customize" onclick="setRangeEditorTab('customize')">Customize</button>
+                <button class="ModalTabBtn" data-tab="advanced" onclick="setRangeEditorTab('advanced')">Advanced</button>
+            </div>
+            <div class="ContentDesc" id="rangeEditorDesc">Drag the sliders to set the typical salary for each level. Min and max are calculated automatically.</div>
+            <div id="rangeEditorList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            <div style="display: flex; gap: 8px;">
+                <button class="GTextBtn" onclick="addRangeLevel()" style="flex: 1;">
+                    <span class="material-symbols-outlined">add</span>
+                    Add Level
+                </button>
+                <button class="GTextBtn primary" onclick="saveRanges()">
+                    <span class="material-symbols-outlined">save</span>
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Presets Modal -->
+    <div class="ModalOverlay" id="presetsModal" onclick="if(event.target===this)closeModal('presets')">
+        <div class="ModalContent">
+            <div class="ModalTitle">
+                <span>Presets</span>
+                <button class="ModalClose" onclick="closeModal('presets')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="ContentDesc">Save and load different configurations of your business settings.</div>
+            <div class="form-group">
+                <label>Save Current Preset</label>
+                <div class="InputRow">
+                    <div class="form-group" style="flex: 1;">
+                        <input type="text" id="presetNameInput" placeholder="Preset Name...">
+                    </div>
+                    <button class="GTextBtn" onclick="savePreset()" style="height: 38px; align-self: flex-end;">Save</button>
+                </div>
+            </div>
+            <div class="SectionHeader" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Saved Presets</span>
+                <div style="display: flex; gap: 6px;">
+                    <button class="GTextBtn" onclick="document.getElementById('importPresetFile').click()" style="padding: 4px 8px; font-size: 12px;">
+                        <span class="material-symbols-outlined" style="font-size: 14px;">upload</span> Import
+                    </button>
+                    <input type="file" id="importPresetFile" accept=".json" style="display:none;" onchange="importPreset(event)">
+                </div>
+            </div>
+            <div id="presetsList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
+    </div>
+
+    <!-- Business Labels Modal -->
+    <div class="ModalOverlay" id="businessLabelsModal" onclick="if(event.target===this)closeModal('businessLabels')">
+        <div class="ModalContent">
+            <div class="ModalTitle">
+                <span>Business Labels</span>
+                <button class="ModalClose" onclick="closeModal('businessLabels')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="ContentDesc">Create labels for your different businesses. Use them to filter and organize job titles and staff.</div>
+            <div id="businessLabelEditorList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            <button class="GTextBtn" onclick="addBusinessLabel()" style="align-self: flex-start;">
+                <span class="material-symbols-outlined">add</span>
+                Add Business
+            </button>
+        </div>
+    </div>
+
+    <!-- Add/Edit Employee Modal -->
+    <div class="ModalOverlay" id="addEmployeeModal" onclick="if(event.target===this)closeModal('addEmployee')">
+        <div class="ModalContent">
+            <div class="ModalTitle">
+                <span id="employeeModalTitle">Add Employee</span>
+                <button class="ModalClose" onclick="closeModal('addEmployee')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div id="employeeAvatarPreview" class="AvatarPreviewPlaceholder" onclick="document.getElementById('employeeAvatarFile').click()" style="cursor:pointer;">
+                <span class="material-symbols-outlined" style="font-size: 32px;">add_a_photo</span>
+            </div>
+            <div class="form-group">
+                <label>Profile Picture URL</label>
+                <div class="InputRow">
+                    <div class="form-group" style="flex: 1;">
+                        <input type="text" id="employeeAvatarUrl" placeholder="Paste image URL..." oninput="previewEmployeeAvatar()">
+                    </div>
+                    <button class="GTextBtn" onclick="document.getElementById('employeeAvatarFile').click()" style="height: 38px; align-self: flex-end;">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">upload_file</span>
+                    </button>
+                    <input type="file" id="employeeAvatarFile" accept="image/*" style="display:none;" onchange="handleEmployeeAvatarFile(event)">
+                </div>
+            </div>
+            <div class="InputRow">
+                <div class="form-group" style="flex: 1;">
+                    <label>Display Name</label>
+                    <input type="text" id="employeeName" placeholder="e.g. John Smith">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Username</label>
+                    <input type="text" id="employeeUsername" placeholder="e.g. JohnSmith123">
+                </div>
+            </div>
+            <div class="InputRow">
+                <div class="form-group" style="flex: 1;">
+                    <label>Job Title</label>
+                    <select id="employeeJobSelect">
+                        <option value="">— None —</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Business</label>
+                    <select id="employeeBusinessSelect">
+                        <option value="">— None —</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button class="GTextBtn" onclick="closeModal('addEmployee')">Cancel</button>
+                <button class="GTextBtn primary" onclick="saveEmployee()">
+                    <span class="material-symbols-outlined">check</span>
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workday Record Modal -->
+    <div class="ModalOverlay" id="workdayRecordModal" onclick="if(event.target===this)closeModal('workdayRecord')">
+        <div class="ModalContent" style="min-width:360px;">
+            <div class="ModalTitle">
+                <span id="workdayRecordModalTitle">New Workday Record</span>
+                <button class="ModalClose" onclick="closeModal('workdayRecord')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="workdayDate">
+            </div>
+            <div class="form-group">
+                <label>In-Game Day</label>
+                <select id="workdayInGameDay">
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </select>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button class="GTextBtn" onclick="closeModal('workdayRecord')">Cancel</button>
+                <button class="GTextBtn primary" onclick="saveWorkdayRecord()">
+                    <span class="material-symbols-outlined">check</span> Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Time Entry Modal -->
+    <div class="ModalOverlay" id="timeEntryModal" onclick="if(event.target===this)closeModal('timeEntry')">
+        <div class="ModalContent" style="min-width:360px;">
+            <div class="ModalTitle">
+                <span>Add Time Entry</span>
+                <button class="ModalClose" onclick="closeModal('timeEntry')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="form-group">
+                <label>Employee</label>
+                <select id="timeEntryEmployee"></select>
+            </div>
+            <div class="InputRow">
+                <div class="form-group" style="flex: 1;">
+                    <label>Clock In</label>
+                    <input type="time" id="timeEntryClockIn" value="09:00">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Clock Out</label>
+                    <input type="time" id="timeEntryClockOut" value="17:00">
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button class="GTextBtn" onclick="closeModal('timeEntry')">Cancel</button>
+                <button class="GTextBtn primary" onclick="saveTimeEntry()">
+                    <span class="material-symbols-outlined">check</span> Add
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Finance Record Modal -->
+    <div class="ModalOverlay" id="financeRecordModal" onclick="if(event.target===this)closeModal('financeRecord')">
+        <div class="ModalContent" style="min-width:360px;">
+            <div class="ModalTitle">
+                <span id="financeRecordModalTitle">New Daily Record</span>
+                <button class="ModalClose" onclick="closeModal('financeRecord')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="financeRecordDate">
+            </div>
+            <div class="form-group">
+                <label>In-Game Day</label>
+                <select id="financeRecordInGameDay">
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </select>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button class="GTextBtn" onclick="closeModal('financeRecord')">Cancel</button>
+                <button class="GTextBtn primary" onclick="saveFinanceRecord()">
+                    <span class="material-symbols-outlined">check</span> Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Finance Entry Modal -->
+    <div class="ModalOverlay" id="financeEntryModal" onclick="if(event.target===this)closeModal('financeEntry')">
+        <div class="ModalContent" style="min-width:360px;">
+            <div class="ModalTitle">
+                <span>Add Entry</span>
+                <button class="ModalClose" onclick="closeModal('financeEntry')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="form-group">
+                <label>Type</label>
+                <select id="financeEntryType">
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" id="financeEntryDesc" placeholder="e.g. Sold 10 pizzas">
+            </div>
+            <div class="InputRow">
+                <div class="form-group" style="flex: 1;">
+                    <label>Amount ($)</label>
+                    <input type="number" id="financeEntryAmount" placeholder="0" min="0" step="1">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Category</label>
+                    <select id="financeEntryCategory">
+                        <option value="Sales">Sales</option>
+                        <option value="Tips">Tips</option>
+                        <option value="Salary">Salary</option>
+                        <option value="Supplies">Supplies</option>
+                        <option value="Rent">Rent</option>
+                        <option value="Utilities">Utilities</option>
+                        <option value="Investment">Investment</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button class="GTextBtn" onclick="closeModal('financeEntry')">Cancel</button>
+                <button class="GTextBtn primary" onclick="saveFinanceEntry()">
+                    <span class="material-symbols-outlined">check</span> Add
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Partnership Modal -->
+    <div class="ModalOverlay" id="partnershipModal" onclick="if(event.target===this)closeModal('partnership')">
+        <div class="ModalContent">
+            <div class="ModalTitle">
+                <span id="partnershipModalTitle">Add Partner</span>
+                <button class="ModalClose" onclick="closeModal('partnership')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="form-group">
+                <label>Business Name</label>
+                <input type="text" id="partnerName" placeholder="e.g. Bob's Burgers">
+            </div>
+            <div class="InputRow">
+                <div class="form-group" style="flex: 1;">
+                    <label>Owner Username</label>
+                    <input type="text" id="partnerOwner" placeholder="e.g. BobTheBuilder">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Owner Profile URL</label>
+                    <input type="text" id="partnerProfileUrl" placeholder="https://roblox.com/users/...">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Logo URL</label>
+                <input type="text" id="partnerLogoUrl" placeholder="Paste image URL...">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" id="partnerDescription" placeholder="Brief description...">
+            </div>
+            <div class="form-group">
+                <label>Net Worth ($)</label>
+                <input type="number" id="partnerNetWorth" placeholder="0" min="0" step="100">
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button class="GTextBtn" onclick="closeModal('partnership')">Cancel</button>
+                <button class="GTextBtn primary" onclick="savePartnership()">
+                    <span class="material-symbols-outlined">check</span> Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Modal -->
+    <div class="ModalOverlay" id="transactionModal" onclick="if(event.target===this)closeModal('transaction')">
+        <div class="ModalContent" style="min-width:360px;">
+            <div class="ModalTitle">
+                <span>Add Transaction</span>
+                <button class="ModalClose" onclick="closeModal('transaction')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" id="transactionDate">
+            </div>
+            <div class="form-group">
+                <label>Type</label>
+                <select id="transactionType">
+                    <option value="investment">Investment</option>
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" id="transactionDesc" placeholder="e.g. Initial investment">
+            </div>
+            <div class="form-group">
+                <label>Amount ($)</label>
+                <input type="number" id="transactionAmount" placeholder="0" min="0" step="1">
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button class="GTextBtn" onclick="closeModal('transaction')">Cancel</button>
+                <button class="GTextBtn primary" onclick="saveTransaction()">
+                    <span class="material-symbols-outlined">check</span> Add
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== PAGE SWITCHING =====
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.SidebarTab').forEach(t => {
+                t.classList.remove('active');
+                t.classList.remove('inactive');
+            });
+
+            document.getElementById('page-' + pageId).classList.add('active');
+            const activeTab = document.querySelector(`.SidebarTab[data-page="${pageId}"]`);
+            activeTab.classList.add('active');
+
+            // Make non-active tabs slightly dimmed
+            document.querySelectorAll('.SidebarTab').forEach(t => {
+                if (!t.classList.contains('active')) {
+                    t.classList.add('inactive');
+                }
+            });
+
+            // Toggle Labels button visibility
+            const labelsBtn = document.getElementById('labelsTopBtn');
+            if (labelsBtn) labelsBtn.style.display = pageId === 'permissions' ? '' : 'none';
+
+            // Refresh views when switching
+            if (pageId === 'staff') renderStaffGrid();
+            if (pageId === 'hours') renderHoursRecordGrid();
+            if (pageId === 'finance') renderFinanceRecordGrid();
+            if (pageId === 'partnerships') renderPartnerGrid();
+
+            localStorage.setItem('bbActivePage', pageId);
+        }
+
+        // ===== PERMISSION TREE MANAGER =====
+        const roles = ['Guest', 'Custom', 'Roommate', 'Co-Owner'];
+
+        const permissionTree = {
+            'Build Mode': {
+                _perms: ['Buy', 'Sell', 'Inventory Access', 'Undo Redo']
+            },
+            'Interactions': {
+                _perms: ['Generate Items'],
+                'Interactions': ['Pickup Items', 'Place Down Items', 'Use General Items', 'Open/Close Doors', 'Change Decals'],
+                'Storage': ['Access Display Items', 'Empty Containers']
+            },
+            'Food': {
+                _perms: ['Take Food', 'Order Food'],
+                'Fridge': ['Take Quick Meal', 'Take Ingredients', 'Content Access', 'Store Content']
+            }
+        };
+
+        // Default states: Co-Owner gets everything on, others start off
+        const permState = {};
+
+        function initPermissions() {
+            roles.forEach(role => {
+                permState[role] = {};
+                for (const category in permissionTree) {
+                    const cat = permissionTree[category];
+                    if (cat._perms) {
+                        cat._perms.forEach(p => {
+                            permState[role][`${category}::${p}`] = role === 'Co-Owner';
+                        });
+                    }
+                    for (const sub in cat) {
+                        if (sub === '_perms') continue;
+                        cat[sub].forEach(p => {
+                            permState[role][`${category}::${sub}::${p}`] = role === 'Co-Owner';
+                        });
+                    }
+                }
+            });
+        }
+
+        function renderPermissions() {
+            const grid = document.getElementById('permissionGrid');
+            grid.innerHTML = '';
+
+            roles.forEach(role => {
+                const col = document.createElement('div');
+                col.className = 'RoleColumn';
+
+                const header = document.createElement('div');
+                header.className = 'RoleHeader';
+
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'RoleName';
+                nameSpan.textContent = role;
+                header.appendChild(nameSpan);
+
+                const pillsDiv = document.createElement('div');
+                pillsDiv.className = 'LabelPills';
+                (roleLabels[role] || []).forEach(id => {
+                    const lbl = permLabels.find(l => l.id === id);
+                    if (!lbl) return;
+                    const pill = document.createElement('span');
+                    pill.className = 'LabelPill';
+                    pill.style.background = lbl.color;
+                    pill.textContent = lbl.name;
+                    pillsDiv.appendChild(pill);
+                });
+                const addLblBtn = document.createElement('button');
+                addLblBtn.className = 'AddLabelBtn';
+                addLblBtn.title = 'Assign labels';
+                addLblBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 14px;">add</span>';
+                addLblBtn.onclick = (e) => toggleLabelDropdown(role, e);
+                pillsDiv.appendChild(addLblBtn);
+                header.appendChild(pillsDiv);
+
+                col.appendChild(header);
+
+                for (const category in permissionTree) {
+                    const cat = permissionTree[category];
+
+                    const catLabel = document.createElement('div');
+                    catLabel.className = 'PermCategory';
+                    catLabel.textContent = category;
+                    col.appendChild(catLabel);
+
+                    if (cat._perms) {
+                        cat._perms.forEach(perm => {
+                            col.appendChild(createPermRow(role, `${category}::${perm}`, perm));
+                        });
+                    }
+
+                    for (const sub in cat) {
+                        if (sub === '_perms') continue;
+
+                        const subLabel = document.createElement('div');
+                        subLabel.className = 'PermSubCategory';
+                        subLabel.textContent = sub;
+                        col.appendChild(subLabel);
+
+                        cat[sub].forEach(perm => {
+                            col.appendChild(createPermRow(role, `${category}::${sub}::${perm}`, perm));
+                        });
+                    }
+                }
+
+                grid.appendChild(col);
+            });
+        }
+
+        function createPermRow(role, key, label) {
+            const row = document.createElement('div');
+            row.className = 'PermRow';
+
+            const name = document.createElement('span');
+            name.className = 'PermName';
+            name.textContent = label;
+
+            const toggle = document.createElement('label');
+            toggle.className = 'toggle';
+
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.checked = permState[role][key] || false;
+            input.addEventListener('change', () => {
+                permState[role][key] = input.checked;
+                savePermissions();
+            });
+
+            const slider = document.createElement('span');
+            slider.className = 'toggle-slider';
+
+            toggle.appendChild(input);
+            toggle.appendChild(slider);
+
+            row.appendChild(name);
+            row.appendChild(toggle);
+
+            return row;
+        }
+
+        function savePermissions() {
+            localStorage.setItem('bbBusinessPermissions', JSON.stringify(permState));
+        }
+
+        function loadPermissions() {
+            const saved = localStorage.getItem('bbBusinessPermissions');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                for (const role in parsed) {
+                    if (permState[role]) {
+                        Object.assign(permState[role], parsed[role]);
+                    }
+                }
+            }
+        }
+
+        // ===== SALARY MANAGER =====
+        let jobTitles = [];
+        let currentSalaryMode = 'level';
+
+        // Salary ranges per level (min, mid, max)
+        let levelRanges = {
+            1: { min: 50,  mid: 100,  max: 200,  label: 'Entry' },
+            2: { min: 150, mid: 300,  max: 500,  label: 'Junior' },
+            3: { min: 400, mid: 700,  max: 1000, label: 'Senior' },
+            4: { min: 800, mid: 1200, max: 1800, label: 'Executive' }
+        };
+
+        function setSalaryMode(mode) {
+            currentSalaryMode = mode;
+            document.querySelectorAll('#salaryModeToggle button').forEach(b => {
+                b.classList.toggle('active', b.dataset.mode === mode);
+            });
+            document.getElementById('levelSelectGroup').style.display = '';
+            document.querySelector('#levelSelectGroup label').textContent = mode === 'fixed' ? 'Range' : 'Level';
+            document.getElementById('fixedSalaryGroup').style.display = mode === 'fixed' ? '' : 'none';
+            localStorage.setItem('bbSalaryMode', mode);
+        }
+
+        function loadJobTitles() {
+            const saved = localStorage.getItem('bbBusinessJobs');
+            if (saved) {
+                jobTitles = JSON.parse(saved);
+                // Migrate old data
+                jobTitles.forEach(j => {
+                    if (!j.count) j.count = 1;
+                    if (!j.hoursPerDay) j.hoursPerDay = 24;
+                    if (j.disabled === undefined) j.disabled = false;
+                });
+            }
+        }
+
+        function saveJobTitles() {
+            localStorage.setItem('bbBusinessJobs', JSON.stringify(jobTitles));
+        }
+
+        function addJobTitle() {
+            const titleInput = document.getElementById('jobTitleInput');
+            const title = titleInput.value.trim();
+            if (!title) return;
+            const count = Math.max(1, parseInt(document.getElementById('jobCountInput').value) || 1);
+            const hoursPerDay = Math.max(1, Math.min(24, parseInt(document.getElementById('hoursPerDayInput').value) || 24));
+
+            if (currentSalaryMode === 'level') {
+                const level = parseInt(document.getElementById('jobLevelInput').value);
+                jobTitles.push({ title, level, fixedSalary: null, wage: null, count, hoursPerDay, disabled: false });
+                document.getElementById('jobLevelInput').value = Object.keys(levelRanges).map(Number).sort((a,b) => a-b)[0];
+            } else {
+                const fixed = parseFloat(document.getElementById('fixedSalaryInput').value);
+                if (!fixed || fixed <= 0) {
+                    document.getElementById('fixedSalaryInput').focus();
+                    return;
+                }
+                const level = parseInt(document.getElementById('jobLevelInput').value);
+                jobTitles.push({ title, level, fixedSalary: fixed, wage: fixed, count, hoursPerDay, disabled: false });
+                document.getElementById('fixedSalaryInput').value = '';
+            }
+
+            titleInput.value = '';
+            document.getElementById('jobCountInput').value = '1';
+            titleInput.focus();
+            saveJobTitles();
+            recalcWages();
+        }
+
+        function removeJobTitle(index) {
+            jobTitles.splice(index, 1);
+            saveJobTitles();
+            recalcWages();
+        }
+
+        function duplicateJob(index) {
+            const job = JSON.parse(JSON.stringify(jobTitles[index]));
+            job.wage = null;
+            job.payStatus = undefined;
+            jobTitles.splice(index + 1, 0, job);
+            saveJobTitles();
+            recalcWages();
+        }
+
+        function clearAllJobs() {
+            jobTitles = [];
+            saveJobTitles();
+            recalcWages();
+        }
+
+        let editingJobIndex = -1;
+
+        function startEditJob(index) {
+            editingJobIndex = index;
+            renderJobTitles();
+        }
+
+        function saveEditJob(index) {
+            const row = document.querySelector(`[data-edit-index="${index}"]`);
+            if (!row) return;
+            const titleInput = row.querySelector('[data-field="title"]');
+            const countInput = row.querySelector('[data-field="count"]');
+            const levelInput = row.querySelector('[data-field="level"]');
+            const fixedInput = row.querySelector('[data-field="fixed"]');
+
+            if (titleInput) jobTitles[index].title = titleInput.value.trim() || jobTitles[index].title;
+            if (countInput) jobTitles[index].count = Math.max(1, parseInt(countInput.value) || 1);
+            if (levelInput) jobTitles[index].level = parseInt(levelInput.value);
+            const hpdInput = row.querySelector('[data-field="hoursPerDay"]');
+            if (hpdInput) jobTitles[index].hoursPerDay = Math.max(1, Math.min(24, parseInt(hpdInput.value) || 24));
+            if (fixedInput && jobTitles[index].fixedSalary !== null) {
+                const v = parseFloat(fixedInput.value);
+                if (v > 0) { jobTitles[index].fixedSalary = v; jobTitles[index].wage = v; }
+            }
+
+            editingJobIndex = -1;
+            saveJobTitles();
+            recalcWages();
+        }
+
+        function cancelEditJob() {
+            editingJobIndex = -1;
+            renderJobTitles();
+        }
+
+        function toggleJobDisabled(index) {
+            jobTitles[index].disabled = !jobTitles[index].disabled;
+            saveJobTitles();
+            recalcWages();
+        }
+
+        function getJobEmployeeCounts() {
+            const counts = {};
+            employees.forEach(emp => {
+                if (emp.jobIndex !== null && emp.jobIndex !== undefined) {
+                    counts[emp.jobIndex] = (counts[emp.jobIndex] || 0) + 1;
+                }
+            });
+            return counts;
+        }
+
+        function renderJobTitles() {
+            const list = document.getElementById('jobTitleList');
+            const emptyState = document.getElementById('jobEmptyState');
+
+            list.querySelectorAll('.JobTitleItem').forEach(el => el.remove());
+
+            if (jobTitles.length === 0) {
+                emptyState.style.display = '';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            const empCounts = getJobEmployeeCounts();
+
+            jobTitles.forEach((job, i) => {
+                const item = document.createElement('div');
+                item.className = 'JobTitleItem' + (editingJobIndex === i ? ' editing' : '') + (job.disabled ? ' disabled' : '');
+
+                // Inline edit mode
+                if (editingJobIndex === i) {
+                    item.dataset.editIndex = i;
+                    const editRow = document.createElement('div');
+                    editRow.className = 'InlineEditRow';
+                    editRow.style.cssText = 'flex: 1; flex-wrap: wrap;';
+
+                    const makeInput = (type, val, field, placeholder, style) => {
+                        const inp = document.createElement('input');
+                        inp.type = type;
+                        inp.value = val;
+                        inp.placeholder = placeholder || '';
+                        inp.dataset.field = field;
+                        inp.style.cssText = style || '';
+                        inp.addEventListener('keydown', (e) => {
+                            if (e.key === 'Enter') saveEditJob(i);
+                            if (e.key === 'Escape') cancelEditJob();
+                        });
+                        return inp;
+                    };
+
+                    editRow.appendChild(makeInput('text', job.title, 'title', 'Job title', 'flex:1;min-width:100px;'));
+                    editRow.appendChild(makeInput('number', job.count || 1, 'count', '#', 'width:55px;'));
+                    editRow.appendChild(makeInput('number', job.hoursPerDay || 24, 'hoursPerDay', 'h/d', 'width:55px;'));
+
+                    const levelSel = document.createElement('select');
+                    levelSel.dataset.field = 'level';
+                    levelSel.style.cssText = 'background:rgba(255,255,255,0.5);border:1px solid rgba(99,102,241,0.3);color:black;padding:5px 8px;border-radius:6px;font-size:12px;outline:none;font-family:Roboto,sans-serif;';
+                    Object.keys(levelRanges).map(Number).sort((a,b)=>a-b).forEach(lvl => {
+                        const opt = document.createElement('option');
+                        opt.value = lvl;
+                        opt.textContent = 'Lvl ' + lvl + ' — ' + levelRanges[lvl].label;
+                        opt.selected = job.level === lvl;
+                        levelSel.appendChild(opt);
+                    });
+                    editRow.appendChild(levelSel);
+
+                    if (job.fixedSalary !== null) {
+                        editRow.appendChild(makeInput('number', job.fixedSalary, 'fixed', '$', 'width:80px;'));
+                    }
+
+                    const saveBtn = document.createElement('button');
+                    saveBtn.className = 'JobActionBtn';
+                    saveBtn.title = 'Save';
+                    saveBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;color:rgba(34,197,94,0.8);">check</span>';
+                    saveBtn.onclick = () => saveEditJob(i);
+                    editRow.appendChild(saveBtn);
+
+                    const cancelBtn = document.createElement('button');
+                    cancelBtn.className = 'JobActionBtn';
+                    cancelBtn.title = 'Cancel';
+                    cancelBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">close</span>';
+                    cancelBtn.onclick = () => cancelEditJob();
+                    editRow.appendChild(cancelBtn);
+
+                    item.appendChild(editRow);
+                    list.appendChild(item);
+                    // Focus the title input
+                    setTimeout(() => editRow.querySelector('[data-field="title"]').select(), 0);
+                    return;
+                }
+
+                const count = job.count || 1;
+                const hpd = job.hoursPerDay || 24;
+                const hourlyRate = job.wage !== null ? Math.round(job.wage / 24 * 100) / 100 : null;
+                const dailyWage = hourlyRate !== null ? Math.round(hourlyRate * hpd * 100) / 100 : null;
+
+                let subtitle = '';
+                if (job.fixedSalary !== null) {
+                    const range = job.level && levelRanges[job.level] ? levelRanges[job.level] : null;
+                    subtitle = range ? `Fixed $${job.fixedSalary.toLocaleString()}/24h — Level ${job.level} (${range.label})` : `Fixed — $${job.fixedSalary.toLocaleString()}/24h`;
+                } else if (job.level) {
+                    const range = levelRanges[job.level];
+                    subtitle = `Level ${job.level} — ${range.label} ($${range.min}–$${range.max}/24h)`;
+                }
+
+                let wageHTML = '';
+                if (dailyWage !== null) {
+                    const totalCost = count > 1 ? `<div class="JobTotalCost">${count}× = $${(dailyWage * count).toLocaleString()}/day</div>` : '';
+                    const hourlyInfo = `<div class="HourlyRate">$${hourlyRate.toLocaleString()}/hr × ${hpd}h</div>`;
+                    wageHTML = `<div style="text-align: right;"><span class="JobTitleWage">$${dailyWage.toLocaleString()}</span>${hourlyInfo}${totalCost}</div>`;
+                }
+
+                let statusHTML = '';
+                if (job.payStatus) {
+                    statusHTML = `<span class="PayStatusLabel ${job.payStatus}">${job.payStatus}</span>`;
+                }
+
+                const countBadge = count > 1 ? `<span class="JobCountBadge">${count}×</span>` : '';
+
+                const assigned = empCounts[i] || 0;
+                const available = count - assigned;
+                const slotsClass = available <= 0 ? 'full' : assigned > 0 ? 'partial' : 'empty';
+                const slotsHTML = `<span class="JobAvailableSlots ${slotsClass}">${assigned}/${count} filled</span>`;
+
+                item.innerHTML = `
+                    <div class="JobTitleInfo">
+                        <div class="JobTitleName">${countBadge} ${escapeHtml(job.title)}</div>
+                        <div class="JobTitleLevel">${subtitle}</div>
+                        ${slotsHTML}
+                    </div>
+                    <div class="JobTitleActions">
+                        ${statusHTML}
+                        ${wageHTML}
+                        <button class="JobActionBtn" onclick="toggleJobDisabled(${i})" title="${job.disabled ? 'Enable' : 'Disable'}">
+                            <span class="material-symbols-outlined" style="font-size: 16px; color: ${job.disabled ? 'rgba(239,68,68,0.6)' : 'rgba(34,197,94,0.6)'};">${job.disabled ? 'toggle_off' : 'toggle_on'}</span>
+                        </button>
+                        <button class="JobActionBtn" onclick="startEditJob(${i})" title="Edit">
+                            <span class="material-symbols-outlined" style="font-size: 16px;">edit</span>
+                        </button>
+                        <button class="JobActionBtn" onclick="duplicateJob(${i})" title="Duplicate">
+                            <span class="material-symbols-outlined" style="font-size: 16px;">content_copy</span>
+                        </button>
+                        <button class="RemoveJobBtn" onclick="removeJobTitle(${i})" title="Remove">
+                            <span class="material-symbols-outlined" style="font-size: 18px;">close</span>
+                        </button>
+                    </div>
+                `;
+
+                list.appendChild(item);
+            });
+        }
+
+        function updateBudgetBar(dailyTotal, budget, days) {
+            const container = document.getElementById('budgetBarContainer');
+            const bar = document.getElementById('budgetBar');
+            const ticks = document.getElementById('budgetDayTicks');
+            const used = document.getElementById('budgetBarUsed');
+            const pct = document.getElementById('budgetBarPct');
+
+            if (!budget || budget <= 0) {
+                container.style.display = 'none';
+                return;
+            }
+            container.style.display = '';
+
+            const totalCost = dailyTotal * days;
+            const ratio = totalCost / budget;
+
+            // Build segmented bar: one segment per day
+            bar.innerHTML = '';
+            ticks.innerHTML = '';
+
+            const segPct = 100 / days;
+            const dayColors = [
+                'rgba(99, 102, 241, 0.55)',
+                'rgba(79, 82, 221, 0.55)',
+                'rgba(99, 102, 241, 0.4)',
+                'rgba(79, 82, 221, 0.4)'
+            ];
+
+            for (let d = 0; d < days; d++) {
+                const seg = document.createElement('div');
+                seg.className = 'BudgetBarSegment';
+                const dayEnd = dailyTotal * (d + 1);
+                const dayStart = dailyTotal * d;
+                let segFillPct;
+                if (dayEnd <= budget) {
+                    segFillPct = 100;
+                } else if (dayStart >= budget) {
+                    segFillPct = 0;
+                } else {
+                    segFillPct = ((budget - dayStart) / dailyTotal) * 100;
+                }
+
+                const colorIdx = d % dayColors.length;
+                const isOver = dayStart >= budget;
+                const isPartial = dayEnd > budget && dayStart < budget;
+
+                seg.style.cssText = 'width:' + segPct + '%;background:' + (isOver ? 'rgba(239, 68, 68, 0.2)' : dayColors[colorIdx]) + ';';
+                if (isPartial) {
+                    seg.style.background = 'linear-gradient(to right, ' + dayColors[colorIdx] + ' ' + segFillPct + '%, rgba(239, 68, 68, 0.25) ' + segFillPct + '%)';
+                }
+
+                bar.appendChild(seg);
+
+                const tick = document.createElement('div');
+                tick.className = 'BudgetDayTick';
+                tick.textContent = days <= 14 ? 'D' + (d + 1) : (d + 1);
+                ticks.appendChild(tick);
+            }
+
+            ticks.style.display = days > 1 ? '' : 'none';
+
+            used.textContent = '$' + totalCost.toLocaleString() + ' total' + (days > 1 ? ' (' + days + ' days × $' + dailyTotal.toLocaleString() + '/day)' : '');
+            pct.textContent = Math.round(ratio * 100) + '%';
+            pct.style.color = ratio > 1 ? 'rgba(239, 68, 68, 0.9)' : ratio > 0.85 ? 'rgba(245, 158, 11, 0.9)' : '';
+        }
+
+        function recalcWages() {
+            const budget = parseFloat(document.getElementById('budgetInput').value) || 0;
+            const days = Math.max(1, parseInt(document.getElementById('daysInput').value) || 1);
+
+            // Persist config fields
+            localStorage.setItem('bbBudget', document.getElementById('budgetInput').value);
+            localStorage.setItem('bbHoursPerDay', document.getElementById('hoursPerDayInput').value);
+            localStorage.setItem('bbDays', document.getElementById('daysInput').value);
+
+            if (jobTitles.length === 0 || budget <= 0) {
+                jobTitles.forEach(job => { job.wage = job.fixedSalary; job.payStatus = null; });
+                saveJobTitles();
+                renderJobTitles();
+                updateBudgetBar(0, 0, 1);
+                document.getElementById('resultsSummary').style.display = 'none';
+                return;
+            }
+
+            // Budget is the total across all days.
+            // Daily budget = budget / days.
+            // Wages (levelRanges) are defined as 24h rates.
+            // Each job's daily cost = (wage/24) * hoursPerDay * count
+            const dailyBudget = budget / days;
+
+            // Calculate fixed salary total first (daily cost with hours)
+            let fixedDailyTotal = 0;
+            let levelJobs = [];
+
+            jobTitles.forEach(job => {
+                const count = job.count || 1;
+                const hpd = job.hoursPerDay || 24;
+                if (job.disabled) {
+                    job.wage = job.fixedSalary;
+                    job.payStatus = null;
+                    return;
+                }
+                if (job.fixedSalary !== null) {
+                    job.wage = job.fixedSalary; // stored as 24h rate
+                    fixedDailyTotal += (job.fixedSalary / 24) * hpd * count;
+                } else {
+                    levelJobs.push(job);
+                }
+            });
+
+            // Remaining daily budget for level-based jobs
+            const remainingDailyBudget = dailyBudget - fixedDailyTotal;
+
+            if (levelJobs.length > 0) {
+                // Scale mid-points to fit remaining daily budget (accounting for hours and count)
+                const totalMidDaily = levelJobs.reduce((sum, job) => {
+                    const hpd = job.hoursPerDay || 24;
+                    return sum + (levelRanges[job.level].mid / 24) * hpd * (job.count || 1);
+                }, 0);
+                const scale = totalMidDaily > 0 ? remainingDailyBudget / totalMidDaily : 1;
+
+                levelJobs.forEach(job => {
+                    const range = levelRanges[job.level];
+                    let raw = range.mid * scale;
+                    raw = Math.max(range.min, Math.min(range.max, raw));
+                    job.wage = Math.round(raw / 5) * 5; // stored as 24h rate
+                });
+            }
+
+            // Determine pay status + compute daily total
+            let dailyTotal = 0;
+            let totalEmployees = 0;
+            jobTitles.forEach(job => {
+                if (job.disabled) return;
+                const count = job.count || 1;
+                const hpd = job.hoursPerDay || 24;
+                const dailyCost = (job.wage / 24) * hpd * count;
+                dailyTotal += dailyCost;
+                totalEmployees += count;
+
+                const range = job.level && levelRanges[job.level] ? levelRanges[job.level] : null;
+                if (range) {
+                    const rangeSpan = range.max - range.min;
+                    const pos = rangeSpan > 0 ? (job.wage - range.min) / rangeSpan : 0.5;
+                    if (pos < 0.3) job.payStatus = 'underpaid';
+                    else if (pos > 0.7) job.payStatus = 'overpaid';
+                    else job.payStatus = 'average';
+                } else {
+                    job.payStatus = 'average';
+                }
+            });
+
+            dailyTotal = Math.round(dailyTotal * 100) / 100;
+            const totalCost = Math.round(dailyTotal * days * 100) / 100;
+
+            saveJobTitles();
+            renderJobTitles();
+            updateBudgetBar(dailyTotal, budget, days);
+
+            // Update inline summary
+            const summaryDiv = document.getElementById('resultsSummary');
+            summaryDiv.style.display = '';
+            const remaining = budget - totalCost;
+            const avgPerEmployee = totalEmployees > 0 ? Math.round(dailyTotal / totalEmployees) : 0;
+
+            summaryDiv.innerHTML = `
+                <div class="SummaryCard">
+                    <div class="label">Budget</div>
+                    <div class="value">$${budget.toLocaleString()}</div>
+                    <div class="sub">${days > 1 ? '$' + Math.round(dailyBudget).toLocaleString() + '/day' : 'total'}</div>
+                </div>
+                <div class="SummaryCard">
+                    <div class="label">Daily Cost</div>
+                    <div class="value">$${dailyTotal.toLocaleString()}</div>
+                    <div class="sub">${days} day${days !== 1 ? 's' : ''} = $${totalCost.toLocaleString()}</div>
+                </div>
+                <div class="SummaryCard">
+                    <div class="label">Remaining</div>
+                    <div class="value" style="color: ${remaining >= 0 ? 'rgba(34, 197, 94, 0.9)' : 'rgba(239, 68, 68, 0.9)'}">$${remaining.toLocaleString()}</div>
+                </div>
+                <div class="SummaryCard">
+                    <div class="label">Employees</div>
+                    <div class="value">${totalEmployees}</div>
+                    <div class="sub">${jobTitles.length} title${jobTitles.length !== 1 ? 's' : ''} · avg $${avgPerEmployee.toLocaleString()}/day</div>
+                </div>
+            `;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Allow Enter key to add job titles
+        document.getElementById('jobTitleInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') addJobTitle();
+        });
+        document.getElementById('fixedSalaryInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') addJobTitle();
+        });
+        document.getElementById('jobCountInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') addJobTitle();
+        });
+
+        // ===== LABELS SYSTEM =====
+        let permLabels = [];
+        let roleLabels = {};
+
+        function loadLabels() {
+            const s1 = localStorage.getItem('bbPermLabels');
+            if (s1) permLabels = JSON.parse(s1);
+            const s2 = localStorage.getItem('bbRoleLabels');
+            if (s2) roleLabels = JSON.parse(s2);
+        }
+
+        function saveLabels() {
+            localStorage.setItem('bbPermLabels', JSON.stringify(permLabels));
+            localStorage.setItem('bbRoleLabels', JSON.stringify(roleLabels));
+        }
+
+        function openModal(id) {
+            document.getElementById(id + 'Modal').classList.add('open');
+            if (id === 'labelManager') renderLabelEditor();
+            if (id === 'businessLabels') renderBusinessLabelEditor();
+            if (id === 'rangeCustomizer') {
+                editingRanges = JSON.parse(JSON.stringify(levelRanges));
+                renderRangeEditor();
+            }
+            if (id === 'presets') renderPresetsList();
+        }
+
+        function closeModal(id) {
+            document.getElementById(id + 'Modal').classList.remove('open');
+        }
+
+        function addLabel() {
+            permLabels.push({ id: Date.now(), name: 'New Label', color: '#6366f1' });
+            saveLabels();
+            renderLabelEditor();
+        }
+
+        function removeLabel(id) {
+            permLabels = permLabels.filter(l => l.id !== id);
+            for (const role in roleLabels) {
+                roleLabels[role] = roleLabels[role].filter(lid => lid !== id);
+            }
+            saveLabels();
+            renderLabelEditor();
+            renderPermissions();
+        }
+
+        function updateLabel(id, field, value) {
+            const label = permLabels.find(l => l.id === id);
+            if (label) {
+                label[field] = value;
+                saveLabels();
+                renderPermissions();
+            }
+        }
+
+        function renderLabelEditor() {
+            const list = document.getElementById('labelEditorList');
+            list.innerHTML = '';
+            if (permLabels.length === 0) {
+                list.innerHTML = '<div class="EmptyState" style="padding: 20px;"><span class="material-symbols-outlined" style="font-size: 32px; margin-bottom: 8px;">label_off</span><div>No labels yet. Add one to get started.</div></div>';
+                return;
+            }
+            permLabels.forEach(label => {
+                const row = document.createElement('div');
+                row.className = 'LabelEditorRow';
+                const colorInput = document.createElement('input');
+                colorInput.type = 'color';
+                colorInput.value = label.color;
+                colorInput.addEventListener('input', () => updateLabel(label.id, 'color', colorInput.value));
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text';
+                nameInput.value = label.name;
+                nameInput.placeholder = 'Label name';
+                nameInput.addEventListener('change', () => updateLabel(label.id, 'name', nameInput.value));
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'RemoveJobBtn';
+                removeBtn.title = 'Remove label';
+                removeBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 18px;">close</span>';
+                removeBtn.addEventListener('click', () => removeLabel(label.id));
+                row.appendChild(colorInput);
+                row.appendChild(nameInput);
+                row.appendChild(removeBtn);
+                list.appendChild(row);
+            });
+        }
+
+        function toggleRoleLabel(role, labelId) {
+            if (!roleLabels[role]) roleLabels[role] = [];
+            const idx = roleLabels[role].indexOf(labelId);
+            if (idx >= 0) roleLabels[role].splice(idx, 1);
+            else roleLabels[role].push(labelId);
+            saveLabels();
+            renderPermissions();
+        }
+
+        let openLabelDropdownRole = null;
+
+        function toggleLabelDropdown(role, event) {
+            event.stopPropagation();
+            if (openLabelDropdownRole === role) { closeLabelDropdowns(); return; }
+            closeLabelDropdowns();
+            openLabelDropdownRole = role;
+            const header = event.currentTarget.closest('.RoleHeader');
+            const dropdown = document.createElement('div');
+            dropdown.className = 'LabelDropdown';
+            dropdown.id = 'activeLabelDropdown';
+            dropdown.onclick = (e) => e.stopPropagation();
+            if (permLabels.length === 0) {
+                dropdown.innerHTML = '<div style="padding: 8px 10px; font-size: 12px; color: rgba(0,0,0,0.4);">No labels created yet</div>';
+            } else {
+                permLabels.forEach(label => {
+                    const assigned = (roleLabels[role] || []).includes(label.id);
+                    const item = document.createElement('div');
+                    item.className = 'LabelDropdownItem';
+                    const check = document.createElement('span');
+                    check.className = 'check material-symbols-outlined';
+                    check.textContent = assigned ? 'check_box' : 'check_box_outline_blank';
+                    const dot = document.createElement('span');
+                    dot.className = 'LabelColorDot';
+                    dot.style.background = label.color;
+                    const name = document.createElement('span');
+                    name.textContent = label.name;
+                    item.appendChild(check);
+                    item.appendChild(dot);
+                    item.appendChild(name);
+                    item.onclick = (e) => { e.stopPropagation(); toggleRoleLabel(role, label.id); };
+                    dropdown.appendChild(item);
+                });
+            }
+            header.appendChild(dropdown);
+        }
+
+        function closeLabelDropdowns() {
+            openLabelDropdownRole = null;
+            const el = document.getElementById('activeLabelDropdown');
+            if (el) el.remove();
+        }
+
+        document.addEventListener('click', closeLabelDropdowns);
+
+        // ===== RANGE CUSTOMIZATION =====
+        let editingRanges = {};
+
+        function loadCustomRanges() {
+            const saved = localStorage.getItem('bbCustomRanges');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                for (const k in levelRanges) delete levelRanges[k];
+                Object.assign(levelRanges, parsed);
+            }
+        }
+
+        function saveCustomRanges() {
+            localStorage.setItem('bbCustomRanges', JSON.stringify(levelRanges));
+        }
+
+        function renderLevelDropdown() {
+            const select = document.getElementById('jobLevelInput');
+            select.innerHTML = '';
+            const keys = Object.keys(levelRanges).map(Number).sort((a, b) => a - b);
+            keys.forEach(lvl => {
+                const range = levelRanges[lvl];
+                const opt = document.createElement('option');
+                opt.value = lvl;
+                opt.textContent = 'Level ' + lvl + ' ($' + range.min.toLocaleString() + ' \u2013 $' + range.max.toLocaleString() + ')';
+                select.appendChild(opt);
+            });
+            const customOpt = document.createElement('option');
+            customOpt.value = 'customize';
+            customOpt.textContent = '\u2699 Customize\u2026';
+            select.appendChild(customOpt);
+        }
+
+        function handleLevelSelect(select) {
+            if (select.value === 'customize') {
+                const keys = Object.keys(levelRanges).map(Number).sort((a, b) => a - b);
+                select.value = keys[0];
+                openModal('rangeCustomizer');
+            }
+        }
+
+        function readRangeEditorValues() {
+            document.querySelectorAll('#rangeEditorList [data-level][data-field]').forEach(input => {
+                const lvl = parseInt(input.dataset.level);
+                const field = input.dataset.field;
+                if (!editingRanges[lvl]) return;
+                if (field === 'label') editingRanges[lvl][field] = input.value;
+                else editingRanges[lvl][field] = parseFloat(input.value) || 0;
+            });
+            if (rangeEditorTab === 'customize') {
+                for (const lvl in editingRanges) {
+                    const mid = editingRanges[lvl].mid;
+                    editingRanges[lvl].min = Math.round(mid * 0.5 / 5) * 5;
+                    editingRanges[lvl].max = Math.round(mid * 1.8 / 5) * 5;
+                }
+            }
+        }
+
+        let rangeEditorTab = 'customize';
+
+        function setRangeEditorTab(tab) {
+            readRangeEditorValues();
+            rangeEditorTab = tab;
+            document.querySelectorAll('#rangeCustomizerModal .ModalTabBtn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+            document.getElementById('rangeEditorDesc').textContent = tab === 'customize'
+                ? 'Drag the sliders to set the typical salary for each level. Min and max are calculated automatically.'
+                : 'Manually set the minimum, midpoint, and maximum salary for each level.';
+            renderRangeEditor();
+        }
+
+        function renderRangeEditor() {
+            if (rangeEditorTab === 'customize') renderCustomizeEditor();
+            else renderAdvancedEditor();
+        }
+
+        function renderCustomizeEditor() {
+            const list = document.getElementById('rangeEditorList');
+            list.innerHTML = '';
+            const keys = Object.keys(editingRanges).map(Number).sort((a, b) => a - b);
+            keys.forEach(lvl => {
+                const range = editingRanges[lvl];
+                const row = document.createElement('div');
+                row.className = 'RangeSliderRow';
+
+                const lvlNum = document.createElement('div');
+                lvlNum.className = 'lvl-num';
+                lvlNum.textContent = lvl;
+                row.appendChild(lvlNum);
+
+                const labelInput = document.createElement('input');
+                labelInput.type = 'text';
+                labelInput.value = range.label;
+                labelInput.placeholder = 'Label';
+                labelInput.dataset.level = lvl;
+                labelInput.dataset.field = 'label';
+                labelInput.style.cssText = 'width:80px;background:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.5);color:black;padding:6px 8px;border-radius:6px;font-size:12px;outline:none;font-family:Roboto,sans-serif;';
+                row.appendChild(labelInput);
+
+                const sliderBlock = document.createElement('div');
+                sliderBlock.className = 'slider-block';
+
+                const slider = document.createElement('input');
+                slider.type = 'range';
+                slider.min = '10';
+                slider.max = '5000';
+                slider.step = '10';
+                slider.value = range.mid;
+                slider.dataset.level = lvl;
+                slider.dataset.field = 'mid';
+
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'range-info';
+
+                const updateInfo = () => {
+                    const mid = parseInt(slider.value);
+                    const cMin = Math.round(mid * 0.5 / 5) * 5;
+                    const cMax = Math.round(mid * 1.8 / 5) * 5;
+                    infoDiv.innerHTML = '<span>$' + cMin.toLocaleString() + '</span><span class="range-mid">$' + mid.toLocaleString() + '</span><span>$' + cMax.toLocaleString() + '</span>';
+                };
+                slider.addEventListener('input', updateInfo);
+                updateInfo();
+
+                sliderBlock.appendChild(slider);
+                sliderBlock.appendChild(infoDiv);
+                row.appendChild(sliderBlock);
+
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'RemoveJobBtn';
+                removeBtn.title = 'Remove level';
+                removeBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">close</span>';
+                removeBtn.addEventListener('click', () => removeRangeLevel(lvl));
+                row.appendChild(removeBtn);
+
+                list.appendChild(row);
+            });
+        }
+
+        function renderAdvancedEditor() {
+            const list = document.getElementById('rangeEditorList');
+            list.innerHTML = '';
+            const keys = Object.keys(editingRanges).map(Number).sort((a, b) => a - b);
+            keys.forEach(lvl => {
+                const range = editingRanges[lvl];
+                const row = document.createElement('div');
+                row.className = 'RangeEditorRow';
+
+                const lvlLabel = document.createElement('div');
+                lvlLabel.style.cssText = 'font-weight:600;font-size:13px;color:rgba(0,0,0,0.6);min-width:16px;text-align:center;margin-bottom:8px;';
+                lvlLabel.textContent = lvl;
+                row.appendChild(lvlLabel);
+
+                const makeGroup = (lbl, type, val, field) => {
+                    const g = document.createElement('div');
+                    g.className = 'form-group';
+                    g.style.flex = '1';
+                    const l = document.createElement('label');
+                    l.textContent = lbl;
+                    const inp = document.createElement('input');
+                    inp.type = type;
+                    inp.value = val;
+                    if (type === 'number') inp.min = '0';
+                    inp.dataset.level = lvl;
+                    inp.dataset.field = field;
+                    g.appendChild(l);
+                    g.appendChild(inp);
+                    return g;
+                };
+
+                row.appendChild(makeGroup('Label', 'text', range.label, 'label'));
+                row.appendChild(makeGroup('Min ($)', 'number', range.min, 'min'));
+                row.appendChild(makeGroup('Mid ($)', 'number', range.mid, 'mid'));
+                row.appendChild(makeGroup('Max ($)', 'number', range.max, 'max'));
+
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'RemoveJobBtn';
+                removeBtn.title = 'Remove level';
+                removeBtn.style.cssText = 'align-self:center;';
+                removeBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">close</span>';
+                removeBtn.addEventListener('click', () => removeRangeLevel(lvl));
+                row.appendChild(removeBtn);
+
+                list.appendChild(row);
+            });
+        }
+
+        function addRangeLevel() {
+            readRangeEditorValues();
+            const keys = Object.keys(editingRanges).map(Number);
+            const newLevel = keys.length > 0 ? Math.max(...keys) + 1 : 1;
+            const last = keys.length > 0 ? editingRanges[Math.max(...keys)] : { min: 0, mid: 50, max: 100 };
+            editingRanges[newLevel] = { min: last.max, mid: Math.round(last.max * 1.5), max: last.max * 2, label: 'New' };
+            renderRangeEditor();
+        }
+
+        function removeRangeLevel(level) {
+            if (Object.keys(editingRanges).length <= 1) return;
+            readRangeEditorValues();
+            delete editingRanges[level];
+            renderRangeEditor();
+        }
+
+        function saveRanges() {
+            readRangeEditorValues();
+            const oldKeys = Object.keys(editingRanges).map(Number).sort((a, b) => a - b);
+            const mapping = {};
+            const reindexed = {};
+            oldKeys.forEach((oldKey, i) => {
+                mapping[oldKey] = i + 1;
+                reindexed[i + 1] = editingRanges[oldKey];
+            });
+            for (const k in levelRanges) delete levelRanges[k];
+            Object.assign(levelRanges, reindexed);
+            const validLevels = Object.keys(levelRanges).map(Number);
+            jobTitles.forEach(job => {
+                if (job.level !== null) {
+                    if (mapping[job.level] !== undefined) job.level = mapping[job.level];
+                    else job.level = validLevels[0] || 1;
+                }
+            });
+            saveCustomRanges();
+            saveJobTitles();
+            renderLevelDropdown();
+            recalcWages();
+            closeModal('rangeCustomizer');
+        }
+
+        // ===== PRESETS =====
+        function getAppState() {
+            return {
+                permState: JSON.parse(JSON.stringify(permState)),
+                permLabels: JSON.parse(JSON.stringify(permLabels)),
+                roleLabels: JSON.parse(JSON.stringify(roleLabels)),
+                jobTitles: JSON.parse(JSON.stringify(jobTitles)),
+                levelRanges: JSON.parse(JSON.stringify(levelRanges)),
+                budget: document.getElementById('budgetInput').value,
+                days: document.getElementById('daysInput').value,
+                businessLabels: JSON.parse(JSON.stringify(businessLabels)),
+                employees: JSON.parse(JSON.stringify(employees)),
+                workdayRecords: JSON.parse(JSON.stringify(workdayRecords)),
+                financeRecords: JSON.parse(JSON.stringify(financeRecords)),
+                partnerships: JSON.parse(JSON.stringify(partnerships))
+            };
+        }
+
+        function loadAppState(state) {
+            if (state.permState) {
+                for (const role in permState) delete permState[role];
+                Object.assign(permState, state.permState);
+                savePermissions();
+            }
+            if (state.permLabels) permLabels = state.permLabels;
+            if (state.roleLabels) roleLabels = state.roleLabels;
+            saveLabels();
+            if (state.levelRanges) {
+                for (const k in levelRanges) delete levelRanges[k];
+                Object.assign(levelRanges, state.levelRanges);
+                saveCustomRanges();
+                renderLevelDropdown();
+            }
+            if (state.jobTitles) {
+                jobTitles = state.jobTitles;
+                saveJobTitles();
+            }
+            if (state.budget !== undefined) {
+                document.getElementById('budgetInput').value = state.budget;
+            }
+            if (state.days !== undefined) {
+                document.getElementById('daysInput').value = state.days;
+            }
+            if (state.businessLabels) {
+                businessLabels = state.businessLabels;
+                saveBusinessLabels();
+            }
+            if (state.employees) {
+                employees = state.employees;
+                saveEmployees();
+            }
+            if (state.workdayRecords) {
+                workdayRecords = state.workdayRecords;
+                saveWorkdayRecords();
+            }
+            if (state.financeRecords) {
+                financeRecords = state.financeRecords;
+                saveFinanceRecords();
+            }
+            if (state.partnerships) {
+                partnerships = state.partnerships;
+                savePartnerships();
+            }
+            renderPermissions();
+            recalcWages();
+            renderStaffGrid();
+        }
+
+        function savePreset() {
+            const nameInput = document.getElementById('presetNameInput');
+            const name = nameInput.value.trim();
+            if (!name) { nameInput.focus(); return; }
+            const presets = JSON.parse(localStorage.getItem('bbBusinessPresets') || '{}');
+            if (presets[name] && !confirm('A preset named "' + name + '" already exists. Overwrite?')) return;
+            presets[name] = getAppState();
+            localStorage.setItem('bbBusinessPresets', JSON.stringify(presets));
+            nameInput.value = '';
+            renderPresetsList();
+        }
+
+        function renderPresetsList() {
+            const list = document.getElementById('presetsList');
+            list.innerHTML = '';
+            const presets = JSON.parse(localStorage.getItem('bbBusinessPresets') || '{}');
+            const keys = Object.keys(presets);
+            if (keys.length === 0) {
+                list.innerHTML = '<div class="EmptyState" style="padding: 16px;"><span class="material-symbols-outlined" style="font-size: 32px; margin-bottom: 8px;">bookmarks</span><div>No presets saved yet.</div></div>';
+                return;
+            }
+            keys.forEach(name => {
+                const item = document.createElement('div');
+                item.className = 'PresetItem';
+                const span = document.createElement('span');
+                span.textContent = name;
+                const actions = document.createElement('div');
+                actions.className = 'PresetActions';
+
+                const loadBtn = document.createElement('button');
+                loadBtn.className = 'GTextBtn';
+                loadBtn.style.cssText = 'padding: 6px 10px;';
+                loadBtn.title = 'Load Preset';
+                loadBtn.textContent = 'Load';
+                loadBtn.onclick = () => { loadAppState(presets[name]); closeModal('presets'); };
+
+                const overwriteBtn = document.createElement('button');
+                overwriteBtn.className = 'GTextBtn';
+                overwriteBtn.style.cssText = 'padding: 6px; background: rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.4); color: #3b82f6;';
+                overwriteBtn.title = 'Overwrite with Current';
+                overwriteBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 16px;">save</span>';
+                overwriteBtn.onclick = () => {
+                    if (confirm('Overwrite "' + name + '" with current settings?')) {
+                        presets[name] = getAppState();
+                        localStorage.setItem('bbBusinessPresets', JSON.stringify(presets));
+                        renderPresetsList();
+                    }
+                };
+
+                const exportBtn = document.createElement('button');
+                exportBtn.className = 'GTextBtn';
+                exportBtn.style.cssText = 'padding: 6px; background: rgba(34, 197, 94, 0.2); border-color: rgba(34, 197, 94, 0.4); color: #22c55e;';
+                exportBtn.title = 'Export JSON';
+                exportBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 16px;">download</span>';
+                exportBtn.onclick = () => {
+                    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(presets[name]));
+                    const a = document.createElement('a');
+                    a.href = dataStr;
+                    a.download = 'bb_preset_' + name.replace(/\s+/g, '_') + '.json';
+                    document.body.appendChild(a); a.click(); a.remove();
+                };
+
+                const delBtn = document.createElement('button');
+                delBtn.className = 'GTextBtn';
+                delBtn.style.cssText = 'padding: 6px; background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); color: #ef4444;';
+                delBtn.title = 'Delete Preset';
+                delBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 16px;">delete</span>';
+                delBtn.onclick = () => {
+                    if (confirm('Delete preset "' + name + '"?')) {
+                        delete presets[name];
+                        localStorage.setItem('bbBusinessPresets', JSON.stringify(presets));
+                        renderPresetsList();
+                    }
+                };
+
+                actions.appendChild(loadBtn);
+                actions.appendChild(overwriteBtn);
+                actions.appendChild(exportBtn);
+                actions.appendChild(delBtn);
+                item.appendChild(span);
+                item.appendChild(actions);
+                list.appendChild(item);
+            });
+        }
+
+        function importPreset(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const state = JSON.parse(e.target.result);
+                    const name = file.name.replace(/\.json$/, '').replace(/_/g, ' ');
+                    const presets = JSON.parse(localStorage.getItem('bbBusinessPresets') || '{}');
+                    presets[name] = state;
+                    localStorage.setItem('bbBusinessPresets', JSON.stringify(presets));
+                    renderPresetsList();
+                } catch (err) {
+                    alert('Invalid preset file.');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // ===== BUSINESS LABELS =====
+        let businessLabels = [];
+
+        function loadBusinessLabels() {
+            const saved = localStorage.getItem('bbBusinessLabels');
+            if (saved) businessLabels = JSON.parse(saved);
+        }
+
+        function saveBusinessLabels() {
+            localStorage.setItem('bbBusinessLabels', JSON.stringify(businessLabels));
+        }
+
+        function addBusinessLabel() {
+            businessLabels.push({ id: Date.now(), name: 'New Business', color: '#6366f1' });
+            saveBusinessLabels();
+            renderBusinessLabelEditor();
+        }
+
+        function removeBusinessLabel(id) {
+            businessLabels = businessLabels.filter(l => l.id !== id);
+            // Clear from employees
+            employees.forEach(emp => {
+                if (emp.businessLabelId === id) emp.businessLabelId = null;
+            });
+            saveEmployees();
+            saveBusinessLabels();
+            renderBusinessLabelEditor();
+            renderStaffGrid();
+        }
+
+        function updateBusinessLabel(id, field, value) {
+            const label = businessLabels.find(l => l.id === id);
+            if (label) {
+                label[field] = value;
+                saveBusinessLabels();
+                renderStaffGrid();
+            }
+        }
+
+        function renderBusinessLabelEditor() {
+            const list = document.getElementById('businessLabelEditorList');
+            list.innerHTML = '';
+            if (businessLabels.length === 0) {
+                list.innerHTML = '<div class="EmptyState" style="padding: 20px;"><span class="material-symbols-outlined" style="font-size: 32px; margin-bottom: 8px;">store</span><div>No businesses yet. Add one to get started.</div></div>';
+                return;
+            }
+            businessLabels.forEach(label => {
+                const row = document.createElement('div');
+                row.className = 'LabelEditorRow';
+                const colorInput = document.createElement('input');
+                colorInput.type = 'color';
+                colorInput.value = label.color;
+                colorInput.addEventListener('input', () => updateBusinessLabel(label.id, 'color', colorInput.value));
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text';
+                nameInput.value = label.name;
+                nameInput.placeholder = 'Business name';
+                nameInput.addEventListener('change', () => updateBusinessLabel(label.id, 'name', nameInput.value));
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'RemoveJobBtn';
+                removeBtn.title = 'Remove business';
+                removeBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 18px;">close</span>';
+                removeBtn.addEventListener('click', () => removeBusinessLabel(label.id));
+                row.appendChild(colorInput);
+                row.appendChild(nameInput);
+                row.appendChild(removeBtn);
+                list.appendChild(row);
+            });
+        }
+
+        // ===== STAFF MANAGER =====
+        let employees = [];
+        let editingEmployeeIndex = -1;
+        let staffFilterBusinessId = null;
+
+        function loadEmployees() {
+            const saved = localStorage.getItem('bbBusinessEmployees');
+            if (saved) employees = JSON.parse(saved);
+        }
+
+        function saveEmployees() {
+            localStorage.setItem('bbBusinessEmployees', JSON.stringify(employees));
+        }
+
+        function openAddEmployeeModal(index) {
+            editingEmployeeIndex = index !== undefined ? index : -1;
+            document.getElementById('employeeModalTitle').textContent = editingEmployeeIndex >= 0 ? 'Edit Employee' : 'Add Employee';
+
+            // Populate job title dropdown (only enabled jobs)
+            const jobSel = document.getElementById('employeeJobSelect');
+            jobSel.innerHTML = '<option value="">— None —</option>';
+            jobTitles.forEach((job, i) => {
+                if (job.disabled) return;
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = job.title;
+                jobSel.appendChild(opt);
+            });
+
+            // Populate business label dropdown
+            const bizSel = document.getElementById('employeeBusinessSelect');
+            bizSel.innerHTML = '<option value="">— None —</option>';
+            businessLabels.forEach(bl => {
+                const opt = document.createElement('option');
+                opt.value = bl.id;
+                opt.textContent = bl.name;
+                bizSel.appendChild(opt);
+            });
+
+            // Fill form if editing
+            if (editingEmployeeIndex >= 0) {
+                const emp = employees[editingEmployeeIndex];
+                document.getElementById('employeeAvatarUrl').value = emp.avatarUrl || '';
+                document.getElementById('employeeName').value = emp.name || '';
+                document.getElementById('employeeUsername').value = emp.username || '';
+                if (emp.jobIndex !== null && emp.jobIndex !== undefined && emp.jobIndex < jobTitles.length) {
+                    jobSel.value = emp.jobIndex;
+                }
+                if (emp.businessLabelId) bizSel.value = emp.businessLabelId;
+                previewEmployeeAvatar();
+            } else {
+                document.getElementById('employeeAvatarUrl').value = '';
+                document.getElementById('employeeName').value = '';
+                document.getElementById('employeeUsername').value = '';
+                resetEmployeeAvatarPreview();
+            }
+
+            openModal('addEmployee');
+        }
+
+        function previewEmployeeAvatar() {
+            const url = document.getElementById('employeeAvatarUrl').value.trim();
+            const preview = document.getElementById('employeeAvatarPreview');
+            if (url) {
+                preview.className = '';
+                preview.innerHTML = '';
+                const img = document.createElement('img');
+                img.src = url;
+                img.className = 'AvatarPreview';
+                img.onerror = () => resetEmployeeAvatarPreview();
+                preview.replaceWith(img);
+                img.id = 'employeeAvatarPreview';
+            } else {
+                resetEmployeeAvatarPreview();
+            }
+        }
+
+        function resetEmployeeAvatarPreview() {
+            const existing = document.getElementById('employeeAvatarPreview');
+            const placeholder = document.createElement('div');
+            placeholder.id = 'employeeAvatarPreview';
+            placeholder.className = 'AvatarPreviewPlaceholder';
+            placeholder.onclick = () => document.getElementById('employeeAvatarFile').click();
+            placeholder.style.cursor = 'pointer';
+            placeholder.innerHTML = '<span class="material-symbols-outlined" style="font-size: 32px;">add_a_photo</span>';
+            existing.replaceWith(placeholder);
+        }
+
+        function handleEmployeeAvatarFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('employeeAvatarUrl').value = e.target.result;
+                previewEmployeeAvatar();
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+
+        function saveEmployee() {
+            const name = document.getElementById('employeeName').value.trim();
+            const username = document.getElementById('employeeUsername').value.trim();
+            if (!name && !username) {
+                document.getElementById('employeeName').focus();
+                return;
+            }
+            const avatarUrl = document.getElementById('employeeAvatarUrl').value.trim();
+            const jobVal = document.getElementById('employeeJobSelect').value;
+            const jobIndex = jobVal !== '' ? parseInt(jobVal) : null;
+            const bizVal = document.getElementById('employeeBusinessSelect').value;
+            const businessLabelId = bizVal !== '' ? parseInt(bizVal) : null;
+
+            const emp = {
+                id: editingEmployeeIndex >= 0 ? employees[editingEmployeeIndex].id : Date.now(),
+                name,
+                username,
+                avatarUrl,
+                jobIndex,
+                businessLabelId
+            };
+
+            if (editingEmployeeIndex >= 0) {
+                employees[editingEmployeeIndex] = emp;
+            } else {
+                employees.push(emp);
+            }
+
+            saveEmployees();
+            closeModal('addEmployee');
+            renderStaffGrid();
+        }
+
+        function removeEmployee(index) {
+            employees.splice(index, 1);
+            saveEmployees();
+            renderStaffGrid();
+        }
+
+        function renderStaffBusinessFilter() {
+            const container = document.getElementById('staffBusinessFilter');
+            container.innerHTML = '';
+            if (businessLabels.length === 0) return;
+
+            const allBtn = document.createElement('button');
+            allBtn.className = 'BusinessLabelFilterBtn' + (staffFilterBusinessId === null ? ' active' : '');
+            allBtn.textContent = 'All';
+            allBtn.onclick = () => { staffFilterBusinessId = null; renderStaffGrid(); };
+            container.appendChild(allBtn);
+
+            businessLabels.forEach(bl => {
+                const btn = document.createElement('button');
+                btn.className = 'BusinessLabelFilterBtn' + (staffFilterBusinessId === bl.id ? ' active' : '');
+                const dot = document.createElement('span');
+                dot.style.cssText = 'width:10px;height:10px;border-radius:50%;background:' + bl.color + ';';
+                btn.appendChild(dot);
+                btn.appendChild(document.createTextNode(bl.name));
+                btn.onclick = () => { staffFilterBusinessId = staffFilterBusinessId === bl.id ? null : bl.id; renderStaffGrid(); };
+                container.appendChild(btn);
+            });
+        }
+
+        function renderStaffGrid() {
+            renderStaffBusinessFilter();
+            const grid = document.getElementById('staffGrid');
+            grid.innerHTML = '';
+
+            // Filter employees
+            const filtered = staffFilterBusinessId !== null
+                ? employees.filter(emp => emp.businessLabelId === staffFilterBusinessId)
+                : employees;
+
+            filtered.forEach((emp, filteredIdx) => {
+                const realIdx = employees.indexOf(emp);
+                const card = document.createElement('div');
+                card.className = 'StaffCard';
+
+                // Actions
+                const actions = document.createElement('div');
+                actions.className = 'StaffCardActions';
+                const editBtn = document.createElement('button');
+                editBtn.className = 'StaffCardBtn';
+                editBtn.title = 'Edit';
+                editBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 15px;">edit</span>';
+                editBtn.onclick = (e) => { e.stopPropagation(); openAddEmployeeModal(realIdx); };
+                const delBtn = document.createElement('button');
+                delBtn.className = 'StaffCardBtn danger';
+                delBtn.title = 'Remove';
+                delBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 15px; color: rgba(239,68,68,0.7);">close</span>';
+                delBtn.onclick = (e) => { e.stopPropagation(); removeEmployee(realIdx); };
+                actions.appendChild(editBtn);
+                actions.appendChild(delBtn);
+                card.appendChild(actions);
+
+                // Avatar
+                if (emp.avatarUrl) {
+                    const img = document.createElement('img');
+                    img.className = 'StaffAvatar';
+                    img.src = emp.avatarUrl;
+                    img.onerror = () => {
+                        const ph = document.createElement('div');
+                        ph.className = 'StaffAvatarPlaceholder';
+                        ph.innerHTML = '<span class="material-symbols-outlined" style="font-size: 28px;">person</span>';
+                        img.replaceWith(ph);
+                    };
+                    card.appendChild(img);
+                } else {
+                    const ph = document.createElement('div');
+                    ph.className = 'StaffAvatarPlaceholder';
+                    ph.innerHTML = '<span class="material-symbols-outlined" style="font-size: 28px;">person</span>';
+                    card.appendChild(ph);
+                }
+
+                // Name
+                if (emp.name) {
+                    const nameEl = document.createElement('div');
+                    nameEl.className = 'StaffName';
+                    nameEl.textContent = emp.name;
+                    card.appendChild(nameEl);
+                }
+
+                // Username
+                if (emp.username) {
+                    const userEl = document.createElement('div');
+                    userEl.className = 'StaffUsername';
+                    userEl.textContent = '@' + emp.username;
+                    card.appendChild(userEl);
+                }
+
+                // Job title + salary
+                if (emp.jobIndex !== null && emp.jobIndex !== undefined && emp.jobIndex < jobTitles.length) {
+                    const job = jobTitles[emp.jobIndex];
+                    const jobEl = document.createElement('div');
+                    jobEl.className = 'StaffJob';
+                    jobEl.textContent = job.title;
+                    card.appendChild(jobEl);
+
+                    if (job.wage !== null && job.wage !== undefined) {
+                        const hpd = job.hoursPerDay || 24;
+                        const hourlyRate = Math.round(job.wage / 24 * 100) / 100;
+                        const dailyWage = Math.round(hourlyRate * hpd * 100) / 100;
+                        const salaryEl = document.createElement('div');
+                        salaryEl.className = 'StaffSalary';
+                        salaryEl.textContent = '$' + dailyWage.toLocaleString() + '/day';
+                        card.appendChild(salaryEl);
+
+                        const breakdownEl = document.createElement('div');
+                        breakdownEl.className = 'StaffSalaryBreakdown';
+                        breakdownEl.textContent = '$' + hourlyRate.toLocaleString() + '/hr × ' + hpd + 'h';
+                        card.appendChild(breakdownEl);
+                    }
+                }
+
+                // Business label
+                if (emp.businessLabelId) {
+                    const bl = businessLabels.find(b => b.id === emp.businessLabelId);
+                    if (bl) {
+                        const pill = document.createElement('span');
+                        pill.className = 'BusinessLabelPill';
+                        pill.style.background = bl.color;
+                        pill.textContent = bl.name;
+                        card.appendChild(pill);
+                    }
+                }
+
+                grid.appendChild(card);
+            });
+
+            // Add card always at end
+            const addCard = document.createElement('div');
+            addCard.className = 'AddStaffCard';
+            addCard.onclick = () => openAddEmployeeModal();
+            addCard.innerHTML = '<span class="material-symbols-outlined" style="font-size: 36px;">person_add</span><span style="font-size: 13px; font-weight: 500;">Add Employee</span>';
+            grid.appendChild(addCard);
+        }
+
+        // ===== HOURS TRACKER =====
+        let workdayRecords = [];
+        let activeWorkdayId = null;
+        let editingWorkdayId = null;
+
+        function loadWorkdayRecords() {
+            const saved = localStorage.getItem('bbWorkdayRecords');
+            if (saved) workdayRecords = JSON.parse(saved);
+        }
+
+        function saveWorkdayRecords() {
+            localStorage.setItem('bbWorkdayRecords', JSON.stringify(workdayRecords));
+        }
+
+        function openNewWorkdayModal() {
+            document.getElementById('workdayRecordModalTitle').textContent = 'New Workday Record';
+            document.getElementById('workdayDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('workdayInGameDay').value = 'Monday';
+            editingWorkdayId = null;
+            openModal('workdayRecord');
+        }
+
+        function openEditWorkdayModal(id) {
+            const record = workdayRecords.find(r => r.id === id);
+            if (!record) return;
+            document.getElementById('workdayRecordModalTitle').textContent = 'Edit Workday Record';
+            document.getElementById('workdayDate').value = record.date;
+            document.getElementById('workdayInGameDay').value = record.inGameDay;
+            editingWorkdayId = id;
+            openModal('workdayRecord');
+        }
+
+        function saveWorkdayRecord() {
+            const date = document.getElementById('workdayDate').value;
+            const inGameDay = document.getElementById('workdayInGameDay').value;
+            if (!date) return;
+            if (editingWorkdayId !== null) {
+                const record = workdayRecords.find(r => r.id === editingWorkdayId);
+                if (record) { record.date = date; record.inGameDay = inGameDay; }
+            } else {
+                workdayRecords.push({ id: Date.now(), date, inGameDay, entries: [] });
+            }
+            saveWorkdayRecords();
+            closeModal('workdayRecord');
+            renderHoursRecordGrid();
+        }
+
+        function removeWorkdayRecord(id) {
+            if (!confirm('Delete this workday record?')) return;
+            workdayRecords = workdayRecords.filter(r => r.id !== id);
+            saveWorkdayRecords();
+            if (activeWorkdayId === id) closeHoursDetail();
+            renderHoursRecordGrid();
+        }
+
+        function renderHoursRecordGrid() {
+            const grid = document.getElementById('hoursRecordGrid');
+            grid.innerHTML = '';
+            const sorted = [...workdayRecords].sort((a, b) => b.date.localeCompare(a.date));
+            sorted.forEach(record => {
+                const totalHours = record.entries.reduce((sum, e) => sum + (e.hoursWorked || 0), 0);
+                const totalPay = record.entries.reduce((sum, e) => sum + (e.pay || 0), 0);
+                const card = document.createElement('div');
+                card.className = 'RecordCard';
+                card.onclick = () => openHoursDetail(record.id);
+                card.innerHTML = `
+                    <div class="RecordCardActions">
+                        <button class="StaffCardBtn" onclick="event.stopPropagation();openEditWorkdayModal(${record.id})" title="Edit"><span class="material-symbols-outlined" style="font-size:15px;">edit</span></button>
+                        <button class="StaffCardBtn danger" onclick="event.stopPropagation();removeWorkdayRecord(${record.id})" title="Delete"><span class="material-symbols-outlined" style="font-size:15px;color:rgba(239,68,68,0.7);">close</span></button>
+                    </div>
+                    <div class="RecordCardTitle">${escapeHtml(record.inGameDay)}</div>
+                    <div class="RecordCardMeta"><span class="material-symbols-outlined" style="font-size:14px;">calendar_today</span> ${record.date}</div>
+                    <div class="RecordCardStats">
+                        <span>${record.entries.length} employee${record.entries.length !== 1 ? 's' : ''}</span>
+                        <span>${Math.round(totalHours * 10) / 10}h total</span>
+                        <span>$${Math.round(totalPay).toLocaleString()}</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            const addCard = document.createElement('div');
+            addCard.className = 'AddRecordCard';
+            addCard.onclick = () => openNewWorkdayModal();
+            addCard.innerHTML = '<span class="material-symbols-outlined" style="font-size:36px;">add_circle</span><span style="font-size:13px;font-weight:500;">New Workday</span>';
+            grid.appendChild(addCard);
+        }
+
+        function openHoursDetail(id) {
+            activeWorkdayId = id;
+            document.getElementById('hoursListView').style.display = 'none';
+            const dv = document.getElementById('hoursDetailView');
+            dv.style.display = 'flex';
+            dv.style.flexDirection = 'column';
+            dv.style.gap = '16px';
+            renderHoursDetail();
+        }
+
+        function closeHoursDetail() {
+            activeWorkdayId = null;
+            document.getElementById('hoursListView').style.display = '';
+            document.getElementById('hoursDetailView').style.display = 'none';
+            renderHoursRecordGrid();
+        }
+
+        function renderHoursDetail() {
+            const record = workdayRecords.find(r => r.id === activeWorkdayId);
+            if (!record) return;
+
+            document.getElementById('hoursDetailTitle').textContent = record.inGameDay + ' — Workday';
+            document.getElementById('hoursDetailMeta').textContent = 'Date: ' + record.date;
+
+            const totalHours = record.entries.reduce((sum, e) => sum + (e.hoursWorked || 0), 0);
+            const totalPay = record.entries.reduce((sum, e) => sum + (e.pay || 0), 0);
+
+            document.getElementById('hoursDetailSummary').innerHTML = `
+                <div class="SummaryCard"><div class="label">Employees</div><div class="value">${record.entries.length}</div></div>
+                <div class="SummaryCard"><div class="label">Total Hours</div><div class="value">${Math.round(totalHours * 10) / 10}h</div></div>
+                <div class="SummaryCard"><div class="label">Total Pay</div><div class="value">$${Math.round(totalPay).toLocaleString()}</div></div>
+            `;
+
+            const list = document.getElementById('timeEntryList');
+            list.innerHTML = '';
+
+            if (record.entries.length === 0) {
+                list.innerHTML = '<div class="EmptyState" style="padding:20px;"><span class="material-symbols-outlined" style="font-size:32px;margin-bottom:8px;">schedule</span><div>No time entries yet. Add employees who worked this day.</div></div>';
+                return;
+            }
+
+            record.entries.forEach((entry, i) => {
+                const emp = employees.find(e => e.id === entry.employeeId);
+                const empName = emp ? (emp.name || emp.username) : 'Unknown';
+                let empJob = '';
+                let hourlyRate = 0;
+                if (emp && emp.jobIndex !== null && emp.jobIndex !== undefined && emp.jobIndex < jobTitles.length) {
+                    const job = jobTitles[emp.jobIndex];
+                    empJob = job.title;
+                    if (job.wage !== null) hourlyRate = Math.round(job.wage / 24 * 100) / 100;
+                }
+                const row = document.createElement('div');
+                row.className = 'TimeEntryRow';
+                row.innerHTML = `
+                    <div class="emp-info">
+                        <div class="emp-name">${escapeHtml(empName)}</div>
+                        ${empJob ? '<div class="emp-job">' + escapeHtml(empJob) + ' &middot; $' + hourlyRate.toLocaleString() + '/hr</div>' : ''}
+                    </div>
+                    <input type="time" value="${entry.clockIn}" onchange="updateTimeEntry(${i},'clockIn',this.value)">
+                    <span style="color:rgba(0,0,0,0.3);">&rarr;</span>
+                    <input type="time" value="${entry.clockOut}" onchange="updateTimeEntry(${i},'clockOut',this.value)">
+                    <div class="hours-badge">${Math.round((entry.hoursWorked || 0) * 10) / 10}h</div>
+                    <div class="pay-badge">$${Math.round(entry.pay || 0).toLocaleString()}</div>
+                    <button class="RemoveJobBtn" onclick="removeTimeEntry(${i})" title="Remove"><span class="material-symbols-outlined" style="font-size:18px;">close</span></button>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function openAddTimeEntry() {
+            const select = document.getElementById('timeEntryEmployee');
+            select.innerHTML = '';
+            employees.forEach(emp => {
+                const opt = document.createElement('option');
+                opt.value = emp.id;
+                opt.textContent = (emp.name || emp.username || 'Employee');
+                select.appendChild(opt);
+            });
+            if (employees.length === 0) {
+                select.innerHTML = '<option value="">No employees available</option>';
+            }
+            document.getElementById('timeEntryClockIn').value = '09:00';
+            document.getElementById('timeEntryClockOut').value = '17:00';
+            openModal('timeEntry');
+        }
+
+        function saveTimeEntry() {
+            const record = workdayRecords.find(r => r.id === activeWorkdayId);
+            if (!record) return;
+            const empId = parseInt(document.getElementById('timeEntryEmployee').value);
+            if (!empId) return;
+            const clockIn = document.getElementById('timeEntryClockIn').value;
+            const clockOut = document.getElementById('timeEntryClockOut').value;
+            const hoursWorked = calcHours(clockIn, clockOut);
+
+            const emp = employees.find(e => e.id === empId);
+            let pay = 0;
+            if (emp && emp.jobIndex !== null && emp.jobIndex !== undefined && emp.jobIndex < jobTitles.length) {
+                const job = jobTitles[emp.jobIndex];
+                if (job.wage !== null) pay = (job.wage / 24) * hoursWorked;
+            }
+
+            record.entries.push({ employeeId: empId, clockIn, clockOut, hoursWorked, pay });
+            saveWorkdayRecords();
+            closeModal('timeEntry');
+            renderHoursDetail();
+        }
+
+        function updateTimeEntry(i, field, value) {
+            const record = workdayRecords.find(r => r.id === activeWorkdayId);
+            if (!record || !record.entries[i]) return;
+            record.entries[i][field] = value;
+            record.entries[i].hoursWorked = calcHours(record.entries[i].clockIn, record.entries[i].clockOut);
+
+            const emp = employees.find(e => e.id === record.entries[i].employeeId);
+            let pay = 0;
+            if (emp && emp.jobIndex !== null && emp.jobIndex !== undefined && emp.jobIndex < jobTitles.length) {
+                const job = jobTitles[emp.jobIndex];
+                if (job.wage !== null) pay = (job.wage / 24) * record.entries[i].hoursWorked;
+            }
+            record.entries[i].pay = pay;
+
+            saveWorkdayRecords();
+            renderHoursDetail();
+        }
+
+        function removeTimeEntry(i) {
+            const record = workdayRecords.find(r => r.id === activeWorkdayId);
+            if (!record) return;
+            record.entries.splice(i, 1);
+            saveWorkdayRecords();
+            renderHoursDetail();
+        }
+
+        function calcHours(clockIn, clockOut) {
+            if (!clockIn || !clockOut) return 0;
+            const [h1, m1] = clockIn.split(':').map(Number);
+            const [h2, m2] = clockOut.split(':').map(Number);
+            let mins = (h2 * 60 + m2) - (h1 * 60 + m1);
+            if (mins < 0) mins += 1440;
+            return Math.round(mins / 60 * 100) / 100;
+        }
+
+        // ===== INCOME / EXPENSES TRACKER =====
+        let financeRecords = [];
+        let activeFinanceId = null;
+        let editingFinanceRecordId = null;
+
+        function loadFinanceRecords() {
+            const saved = localStorage.getItem('bbFinanceRecords');
+            if (saved) financeRecords = JSON.parse(saved);
+        }
+
+        function saveFinanceRecords() {
+            localStorage.setItem('bbFinanceRecords', JSON.stringify(financeRecords));
+        }
+
+        function openNewFinanceRecordModal() {
+            document.getElementById('financeRecordModalTitle').textContent = 'New Daily Record';
+            document.getElementById('financeRecordDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('financeRecordInGameDay').value = 'Monday';
+            editingFinanceRecordId = null;
+            openModal('financeRecord');
+        }
+
+        function openEditFinanceRecordModal(id) {
+            const record = financeRecords.find(r => r.id === id);
+            if (!record) return;
+            document.getElementById('financeRecordModalTitle').textContent = 'Edit Daily Record';
+            document.getElementById('financeRecordDate').value = record.date;
+            document.getElementById('financeRecordInGameDay').value = record.inGameDay;
+            editingFinanceRecordId = id;
+            openModal('financeRecord');
+        }
+
+        function saveFinanceRecord() {
+            const date = document.getElementById('financeRecordDate').value;
+            const inGameDay = document.getElementById('financeRecordInGameDay').value;
+            if (!date) return;
+            if (editingFinanceRecordId !== null) {
+                const record = financeRecords.find(r => r.id === editingFinanceRecordId);
+                if (record) { record.date = date; record.inGameDay = inGameDay; }
+            } else {
+                financeRecords.push({ id: Date.now(), date, inGameDay, entries: [] });
+            }
+            saveFinanceRecords();
+            closeModal('financeRecord');
+            renderFinanceRecordGrid();
+        }
+
+        function removeFinanceRecord(id) {
+            if (!confirm('Delete this record?')) return;
+            financeRecords = financeRecords.filter(r => r.id !== id);
+            saveFinanceRecords();
+            if (activeFinanceId === id) closeFinanceDetail();
+            renderFinanceRecordGrid();
+        }
+
+        function renderFinanceRecordGrid() {
+            const grid = document.getElementById('financeRecordGrid');
+            grid.innerHTML = '';
+            const sorted = [...financeRecords].sort((a, b) => b.date.localeCompare(a.date));
+
+            sorted.forEach(record => {
+                const totalIncome = record.entries.filter(e => e.type === 'income').reduce((s, e) => s + (e.amount || 0), 0);
+                const totalExpense = record.entries.filter(e => e.type === 'expense').reduce((s, e) => s + (e.amount || 0), 0);
+                const net = totalIncome - totalExpense;
+
+                const card = document.createElement('div');
+                card.className = 'RecordCard';
+                card.onclick = () => openFinanceDetail(record.id);
+                card.innerHTML = `
+                    <div class="RecordCardActions">
+                        <button class="StaffCardBtn" onclick="event.stopPropagation();openEditFinanceRecordModal(${record.id})" title="Edit"><span class="material-symbols-outlined" style="font-size:15px;">edit</span></button>
+                        <button class="StaffCardBtn danger" onclick="event.stopPropagation();removeFinanceRecord(${record.id})" title="Delete"><span class="material-symbols-outlined" style="font-size:15px;color:rgba(239,68,68,0.7);">close</span></button>
+                    </div>
+                    <div class="RecordCardTitle">${escapeHtml(record.inGameDay)}</div>
+                    <div class="RecordCardMeta"><span class="material-symbols-outlined" style="font-size:14px;">calendar_today</span> ${record.date}</div>
+                    <div class="RecordCardStats">
+                        <span>${record.entries.length} entr${record.entries.length !== 1 ? 'ies' : 'y'}</span>
+                        <span style="color:rgba(22,163,74,0.9);">+$${totalIncome.toLocaleString()}</span>
+                        <span style="color:rgba(220,38,38,0.9);">-$${totalExpense.toLocaleString()}</span>
+                    </div>
+                    <div style="font-size:13px;font-weight:600;color:${net >= 0 ? 'rgba(22,163,74,0.9)' : 'rgba(220,38,38,0.9)'};">Net: ${net >= 0 ? '+' : ''}$${net.toLocaleString()}</div>
+                `;
+                grid.appendChild(card);
+            });
+
+            const addCard = document.createElement('div');
+            addCard.className = 'AddRecordCard';
+            addCard.onclick = () => openNewFinanceRecordModal();
+            addCard.innerHTML = '<span class="material-symbols-outlined" style="font-size:36px;">add_circle</span><span style="font-size:13px;font-weight:500;">New Record</span>';
+            grid.appendChild(addCard);
+        }
+
+        function openFinanceDetail(id) {
+            activeFinanceId = id;
+            document.getElementById('financeListView').style.display = 'none';
+            const dv = document.getElementById('financeDetailView');
+            dv.style.display = 'flex';
+            dv.style.flexDirection = 'column';
+            dv.style.gap = '16px';
+            renderFinanceDetail();
+        }
+
+        function closeFinanceDetail() {
+            activeFinanceId = null;
+            document.getElementById('financeListView').style.display = '';
+            document.getElementById('financeDetailView').style.display = 'none';
+            renderFinanceRecordGrid();
+        }
+
+        function renderFinanceDetail() {
+            const record = financeRecords.find(r => r.id === activeFinanceId);
+            if (!record) return;
+
+            document.getElementById('financeDetailTitle').textContent = record.inGameDay + ' — Daily Record';
+            document.getElementById('financeDetailMeta').textContent = 'Date: ' + record.date;
+
+            const totalIncome = record.entries.filter(e => e.type === 'income').reduce((s, e) => s + (e.amount || 0), 0);
+            const totalExpense = record.entries.filter(e => e.type === 'expense').reduce((s, e) => s + (e.amount || 0), 0);
+            const net = totalIncome - totalExpense;
+
+            document.getElementById('financeDetailSummary').innerHTML = `
+                <div class="SummaryCard"><div class="label">Income</div><div class="value" style="color:rgba(22,163,74,0.9);">$${totalIncome.toLocaleString()}</div></div>
+                <div class="SummaryCard"><div class="label">Expenses</div><div class="value" style="color:rgba(220,38,38,0.9);">$${totalExpense.toLocaleString()}</div></div>
+                <div class="SummaryCard"><div class="label">Net</div><div class="value" style="color:${net >= 0 ? 'rgba(22,163,74,0.9)' : 'rgba(220,38,38,0.9)'};">${net >= 0 ? '+' : ''}$${net.toLocaleString()}</div></div>
+            `;
+
+            const list = document.getElementById('financeEntryList');
+            list.innerHTML = '';
+
+            if (record.entries.length === 0) {
+                list.innerHTML = '<div class="EmptyState" style="padding:20px;"><span class="material-symbols-outlined" style="font-size:32px;margin-bottom:8px;">receipt_long</span><div>No entries yet. Add income or expenses.</div></div>';
+                return;
+            }
+
+            record.entries.forEach((entry, i) => {
+                const row = document.createElement('div');
+                row.className = 'FinanceEntryRow';
+                row.innerHTML = `
+                    <span class="entry-type ${entry.type}">${entry.type}</span>
+                    <span class="entry-desc">${escapeHtml(entry.description || '')}</span>
+                    <span style="font-size:11px;color:rgba(0,0,0,0.4);padding:2px 6px;background:rgba(0,0,0,0.04);border-radius:4px;">${escapeHtml(entry.category || '')}</span>
+                    <span class="entry-amount ${entry.type}">${entry.type === 'income' ? '+' : '-'}$${(entry.amount || 0).toLocaleString()}</span>
+                    <button class="RemoveJobBtn" onclick="removeFinanceEntry(${i})" title="Remove"><span class="material-symbols-outlined" style="font-size:18px;">close</span></button>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function openAddFinanceEntry() {
+            document.getElementById('financeEntryType').value = 'income';
+            document.getElementById('financeEntryDesc').value = '';
+            document.getElementById('financeEntryAmount').value = '';
+            document.getElementById('financeEntryCategory').value = 'Sales';
+            openModal('financeEntry');
+        }
+
+        function saveFinanceEntry() {
+            const record = financeRecords.find(r => r.id === activeFinanceId);
+            if (!record) return;
+            const type = document.getElementById('financeEntryType').value;
+            const description = document.getElementById('financeEntryDesc').value.trim();
+            const amount = parseFloat(document.getElementById('financeEntryAmount').value) || 0;
+            const category = document.getElementById('financeEntryCategory').value;
+            if (amount <= 0) return;
+
+            record.entries.push({ id: Date.now(), type, description, amount, category });
+            saveFinanceRecords();
+            closeModal('financeEntry');
+            renderFinanceDetail();
+        }
+
+        function removeFinanceEntry(i) {
+            const record = financeRecords.find(r => r.id === activeFinanceId);
+            if (!record) return;
+            record.entries.splice(i, 1);
+            saveFinanceRecords();
+            renderFinanceDetail();
+        }
+
+        // ===== PARTNERSHIPS =====
+        let partnerships = [];
+        let activePartnerId = null;
+        let editingPartnerIndex = -1;
+
+        function loadPartnerships() {
+            const saved = localStorage.getItem('bbPartnerships');
+            if (saved) partnerships = JSON.parse(saved);
+        }
+
+        function savePartnerships() {
+            localStorage.setItem('bbPartnerships', JSON.stringify(partnerships));
+        }
+
+        function openNewPartnerModal() {
+            editingPartnerIndex = -1;
+            document.getElementById('partnershipModalTitle').textContent = 'Add Partner';
+            document.getElementById('partnerName').value = '';
+            document.getElementById('partnerOwner').value = '';
+            document.getElementById('partnerProfileUrl').value = '';
+            document.getElementById('partnerLogoUrl').value = '';
+            document.getElementById('partnerDescription').value = '';
+            document.getElementById('partnerNetWorth').value = '';
+            openModal('partnership');
+        }
+
+        function openEditPartnerModal(index) {
+            editingPartnerIndex = index;
+            const p = partnerships[index];
+            document.getElementById('partnershipModalTitle').textContent = 'Edit Partner';
+            document.getElementById('partnerName').value = p.name || '';
+            document.getElementById('partnerOwner').value = p.ownerUsername || '';
+            document.getElementById('partnerProfileUrl').value = p.ownerProfileUrl || '';
+            document.getElementById('partnerLogoUrl').value = p.logoUrl || '';
+            document.getElementById('partnerDescription').value = p.description || '';
+            document.getElementById('partnerNetWorth').value = p.netWorth || '';
+            openModal('partnership');
+        }
+
+        function savePartnership() {
+            const name = document.getElementById('partnerName').value.trim();
+            if (!name) { document.getElementById('partnerName').focus(); return; }
+            const data = {
+                name,
+                ownerUsername: document.getElementById('partnerOwner').value.trim(),
+                ownerProfileUrl: document.getElementById('partnerProfileUrl').value.trim(),
+                logoUrl: document.getElementById('partnerLogoUrl').value.trim(),
+                description: document.getElementById('partnerDescription').value.trim(),
+                netWorth: parseFloat(document.getElementById('partnerNetWorth').value) || 0
+            };
+            if (editingPartnerIndex >= 0) {
+                Object.assign(partnerships[editingPartnerIndex], data);
+            } else {
+                partnerships.push({ id: Date.now(), ...data, transactions: [] });
+            }
+            savePartnerships();
+            closeModal('partnership');
+            if (activePartnerId !== null) renderPartnerDetail();
+            renderPartnerGrid();
+        }
+
+        function removePartnership(index) {
+            if (!confirm('Delete this partner?')) return;
+            const id = partnerships[index].id;
+            partnerships.splice(index, 1);
+            savePartnerships();
+            if (activePartnerId === id) closePartnerDetail();
+            renderPartnerGrid();
+        }
+
+        function renderPartnerGrid() {
+            const grid = document.getElementById('partnerGrid');
+            grid.innerHTML = '';
+            partnerships.forEach((p, i) => {
+                const totalTx = p.transactions ? p.transactions.length : 0;
+                const card = document.createElement('div');
+                card.className = 'PartnerCard';
+                card.onclick = () => openPartnerDetail(p.id);
+                const logoHTML = p.logoUrl
+                    ? `<img class="PartnerLogo" src="${escapeHtml(p.logoUrl)}" onerror="this.outerHTML='<div class=\\'PartnerLogoPlaceholder\\'><span class=\\'material-symbols-outlined\\' style=\\'font-size:24px;\\'>storefront</span></div>'">`
+                    : '<div class="PartnerLogoPlaceholder"><span class="material-symbols-outlined" style="font-size:24px;">storefront</span></div>';
+                card.innerHTML = `
+                    <div class="PartnerCardActions">
+                        <button class="StaffCardBtn" onclick="event.stopPropagation();openEditPartnerModal(${i})" title="Edit"><span class="material-symbols-outlined" style="font-size:15px;">edit</span></button>
+                        <button class="StaffCardBtn danger" onclick="event.stopPropagation();removePartnership(${i})" title="Delete"><span class="material-symbols-outlined" style="font-size:15px;color:rgba(239,68,68,0.7);">close</span></button>
+                    </div>
+                    ${logoHTML}
+                    <div class="PartnerInfo">
+                        <div class="PartnerName">${escapeHtml(p.name)}</div>
+                        ${p.ownerUsername ? '<div class="PartnerOwner">@' + escapeHtml(p.ownerUsername) + '</div>' : ''}
+                        ${p.description ? '<div class="PartnerDesc">' + escapeHtml(p.description) + '</div>' : ''}
+                        ${p.netWorth ? '<div class="PartnerNetWorth">Net Worth: $' + p.netWorth.toLocaleString() + '</div>' : ''}
+                        <div style="font-size:11px;color:rgba(0,0,0,0.4);margin-top:2px;">${totalTx} transaction${totalTx !== 1 ? 's' : ''}</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            const addCard = document.createElement('div');
+            addCard.className = 'AddRecordCard';
+            addCard.onclick = () => openNewPartnerModal();
+            addCard.innerHTML = '<span class="material-symbols-outlined" style="font-size:36px;">handshake</span><span style="font-size:13px;font-weight:500;">Add Partner</span>';
+            grid.appendChild(addCard);
+        }
+
+        function openPartnerDetail(id) {
+            activePartnerId = id;
+            document.getElementById('partnershipsListView').style.display = 'none';
+            const dv = document.getElementById('partnerDetailView');
+            dv.style.display = 'flex';
+            dv.style.flexDirection = 'column';
+            dv.style.gap = '16px';
+            renderPartnerDetail();
+        }
+
+        function closePartnerDetail() {
+            activePartnerId = null;
+            document.getElementById('partnershipsListView').style.display = '';
+            document.getElementById('partnerDetailView').style.display = 'none';
+            renderPartnerGrid();
+        }
+
+        function renderPartnerDetail() {
+            const p = partnerships.find(x => x.id === activePartnerId);
+            if (!p) return;
+
+            document.getElementById('partnerDetailTitle').textContent = p.name;
+
+            const totalInvestment = (p.transactions || []).filter(t => t.type === 'investment').reduce((s, t) => s + (t.amount || 0), 0);
+            const totalIncome = (p.transactions || []).filter(t => t.type === 'income').reduce((s, t) => s + (t.amount || 0), 0);
+            const totalExpense = (p.transactions || []).filter(t => t.type === 'expense').reduce((s, t) => s + (t.amount || 0), 0);
+
+            let infoHTML = '';
+            if (p.ownerUsername) infoHTML += `<div class="SummaryCard"><div class="label">Owner</div><div class="value" style="font-size:16px;">@${escapeHtml(p.ownerUsername)}</div>${p.ownerProfileUrl ? '<div class="sub"><a href="' + escapeHtml(p.ownerProfileUrl) + '" target="_blank" rel="noopener noreferrer" style="color:rgba(99,102,241,0.8);">Profile</a></div>' : ''}</div>`;
+            if (p.netWorth) infoHTML += `<div class="SummaryCard"><div class="label">Net Worth</div><div class="value" style="font-size:16px;">$${p.netWorth.toLocaleString()}</div></div>`;
+            infoHTML += `<div class="SummaryCard"><div class="label">Invested</div><div class="value" style="font-size:16px;color:rgba(99,102,241,0.9);">$${totalInvestment.toLocaleString()}</div></div>`;
+            infoHTML += `<div class="SummaryCard"><div class="label">Income</div><div class="value" style="font-size:16px;color:rgba(22,163,74,0.9);">$${totalIncome.toLocaleString()}</div></div>`;
+            infoHTML += `<div class="SummaryCard"><div class="label">Expenses</div><div class="value" style="font-size:16px;color:rgba(220,38,38,0.9);">$${totalExpense.toLocaleString()}</div></div>`;
+
+            document.getElementById('partnerDetailInfo').innerHTML = infoHTML;
+
+            const list = document.getElementById('transactionList');
+            list.innerHTML = '';
+
+            if (!p.transactions || p.transactions.length === 0) {
+                list.innerHTML = '<div class="EmptyState" style="padding:20px;"><span class="material-symbols-outlined" style="font-size:32px;margin-bottom:8px;">receipt_long</span><div>No transactions recorded yet.</div></div>';
+                return;
+            }
+
+            const sorted = [...p.transactions].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+            sorted.forEach(tx => {
+                const realIdx = p.transactions.indexOf(tx);
+                const row = document.createElement('div');
+                row.className = 'TransactionRow';
+                row.innerHTML = `
+                    <span class="tx-date">${tx.date || '—'}</span>
+                    <span class="tx-type ${tx.type}">${tx.type}</span>
+                    <span class="tx-desc">${escapeHtml(tx.description || '')}</span>
+                    <span class="tx-amount" style="color:${tx.type === 'expense' ? 'rgba(220,38,38,0.9)' : tx.type === 'income' ? 'rgba(22,163,74,0.9)' : 'rgba(99,102,241,0.9)'};">${tx.type === 'expense' ? '-' : '+'}$${(tx.amount || 0).toLocaleString()}</span>
+                    <button class="RemoveJobBtn" onclick="removeTransaction(${realIdx})" title="Remove"><span class="material-symbols-outlined" style="font-size:18px;">close</span></button>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function openAddTransaction() {
+            document.getElementById('transactionDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('transactionType').value = 'investment';
+            document.getElementById('transactionDesc').value = '';
+            document.getElementById('transactionAmount').value = '';
+            openModal('transaction');
+        }
+
+        function saveTransaction() {
+            const p = partnerships.find(x => x.id === activePartnerId);
+            if (!p) return;
+            const date = document.getElementById('transactionDate').value;
+            const type = document.getElementById('transactionType').value;
+            const description = document.getElementById('transactionDesc').value.trim();
+            const amount = parseFloat(document.getElementById('transactionAmount').value) || 0;
+            if (amount <= 0) return;
+            if (!p.transactions) p.transactions = [];
+            p.transactions.push({ id: Date.now(), date, type, description, amount });
+            savePartnerships();
+            closeModal('transaction');
+            renderPartnerDetail();
+        }
+
+        function removeTransaction(i) {
+            const p = partnerships.find(x => x.id === activePartnerId);
+            if (!p) return;
+            p.transactions.splice(i, 1);
+            savePartnerships();
+            renderPartnerDetail();
+        }
+
+        // ===== CONVERTERS =====
+        function convertDollarToBlockbux() {
+            const dollars = parseFloat(document.getElementById('convDollars').value) || 0;
+            document.getElementById('convBlockbux').value = dollars > 0 ? Math.round(dollars / 20 * 100) / 100 : '';
+        }
+
+        function convertBlockbuxToDollar() {
+            const blockbux = parseFloat(document.getElementById('convBlockbux').value) || 0;
+            document.getElementById('convDollars').value = blockbux > 0 ? Math.round(blockbux * 20) : '';
+        }
+
+        function convertGameToReal() {
+            const days = parseFloat(document.getElementById('convGameDays').value) || 0;
+            if (days <= 0) { document.getElementById('convRealTime').value = ''; return; }
+            const totalMins = Math.round(days * 72);
+            const h = Math.floor(totalMins / 60);
+            const m = totalMins % 60;
+            document.getElementById('convRealTime').value = h + 'h ' + m + 'm';
+        }
+
+        function convertRealToGame() {
+            const raw = document.getElementById('convRealTime').value.trim();
+            if (!raw) { document.getElementById('convGameDays').value = ''; return; }
+            let totalMins = 0;
+            const hm = raw.match(/(\d+)\s*h\s*(\d+)\s*m/i);
+            const hOnly = raw.match(/^(\d+)\s*h$/i);
+            const mOnly = raw.match(/^(\d+)\s*m$/i);
+            const numOnly = raw.match(/^(\d+\.?\d*)$/);
+            if (hm) totalMins = parseInt(hm[1]) * 60 + parseInt(hm[2]);
+            else if (hOnly) totalMins = parseInt(hOnly[1]) * 60;
+            else if (mOnly) totalMins = parseInt(mOnly[1]);
+            else if (numOnly) totalMins = parseFloat(numOnly[1]);
+            else return;
+            document.getElementById('convGameDays').value = totalMins > 0 ? Math.round(totalMins / 72 * 100) / 100 : '';
+        }
+
+        // ===== INIT =====
+        loadLabels();
+        loadBusinessLabels();
+        initPermissions();
+        loadPermissions();
+        renderPermissions();
+        loadCustomRanges();
+        loadJobTitles();
+        loadEmployees();
+        loadWorkdayRecords();
+        loadFinanceRecords();
+        loadPartnerships();
+        renderLevelDropdown();
+
+        // Restore config fields
+        const savedBudget = localStorage.getItem('bbBudget');
+        if (savedBudget !== null) document.getElementById('budgetInput').value = savedBudget;
+        const savedHpd = localStorage.getItem('bbHoursPerDay');
+        if (savedHpd !== null) document.getElementById('hoursPerDayInput').value = savedHpd;
+        const savedDays = localStorage.getItem('bbDays');
+        if (savedDays !== null) document.getElementById('daysInput').value = savedDays;
+        const savedMode = localStorage.getItem('bbSalaryMode');
+        if (savedMode) setSalaryMode(savedMode);
+
+        recalcWages();
+
+        // Restore active page
+        const savedPage = localStorage.getItem('bbActivePage');
+        if (savedPage) switchPage(savedPage);
+
+        // Show Labels button if permissions page is active on load
+        const labelsBtn = document.getElementById('labelsTopBtn');
+        if (labelsBtn && document.getElementById('page-permissions').classList.contains('active')) {
+            labelsBtn.style.display = '';
+        }
+    </script>
+</body>
+
+</html>

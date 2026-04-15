@@ -32,6 +32,23 @@
             "author": "dummtoby",
             "path": "bbmural/",
             "icon": "https://cdn.shawnyxx.dev/icons/158450.png"
+        },
+        {
+            "name": "bbbusinessman",
+            "long_name": "Bloxburg Business Manager",
+            "version": "1.0",
+            "description": "Manage your Bloxburg businesses with permission trees and salary generation!",
+            "author": "dummtoby",
+            "path": "bbbusinessman/",
+            "icon": "media/100004.png"
+        },
+        {
+            "name": "settings",
+            "long_name": "Settings",
+            "version": "1.0",
+            "description": "Manage profiles, import/export data, and configure site settings.",
+            "author": "dummtoby",
+            "path": "settings/"
         }
     ]
 }

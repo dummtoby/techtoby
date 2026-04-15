@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings — Techtoby Corp</title>
+
+    <link rel="shortcut icon" href="https://static.wikia.nocookie.net/welcome-to-bloxburg/images/a/a1/Briefcase.png/revision/latest?cb=20240104022135" type="image/x-icon">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background: #DCDCDC url('https://cdn.ecxogames.ca/ecxogames/assets/794037.png') no-repeat center center / cover;
+            color: black;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .gridOverlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 1;
+            background-image: radial-gradient(circle, rgba(99, 102, 241, 0.15) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+        }
+
+        /* ===== Buttons ===== */
+        .GTextBtn {
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: black;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,0.6);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            justify-content: center;
+            white-space: nowrap;
+        }
+        .GTextBtn:hover {
+            transform: scale(1.05);
+            background: rgba(255,255,255,0.35);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.8);
+        }
+        .GTextBtn .material-symbols-outlined { font-size: 18px; }
+        .GTextBtn.primary { background: rgba(99,102,241,0.3); border-color: rgba(99,102,241,0.5); }
+        .GTextBtn.primary:hover { background: rgba(99,102,241,0.45); }
+        .GTextBtn.danger { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.4); }
+        .GTextBtn.danger:hover { background: rgba(239,68,68,0.35); }
+        .GTextBtn.success { background: rgba(34,197,94,0.2); border-color: rgba(34,197,94,0.4); }
+        .GTextBtn.success:hover { background: rgba(34,197,94,0.35); }
+        .GTextBtn:disabled { opacity: 0.5; pointer-events: none; }
+
+        /* ===== Layout ===== */
+        .MainLayout {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            z-index: 10;
+            position: relative;
+        }
+
+        .Sidebar {
+            width: 260px;
+            margin: 20px;
+            height: calc(100vh - 40px);
+            border-radius: 16px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.4);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,0.6);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        .Sidebar::-webkit-scrollbar { width: 6px; }
+        .Sidebar::-webkit-scrollbar-track { background: transparent; }
+        .Sidebar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
+
+        .SidebarTab {
+            padding: 12px 14px;
+            font-size: 14px;
+            font-weight: 400;
+            border: 1px solid rgba(255,255,255,0.5);
+            border-top-width: 2px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.4);
+            backdrop-filter: blur(8px);
+            color: rgba(0,0,0,0.8);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .SidebarTab:hover { background: rgba(255,255,255,0.55); }
+        .SidebarTab.active { background: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.75); font-weight: 500; }
+        .SidebarTab.inactive { opacity: 0.5; }
+
+        .ContentArea {
+            flex: 1;
+            margin: 20px 20px 20px 0;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.4);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,0.6);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+        }
+        .ContentArea::-webkit-scrollbar { width: 6px; }
+        .ContentArea::-webkit-scrollbar-track { background: transparent; }
+        .ContentArea::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
+
+        .ContentTitle { font-size: 18px; font-weight: 600; color: rgba(0,0,0,0.85); }
+        .ContentDesc { font-size: 13px; color: rgba(0,0,0,0.6); line-height: 1.5; }
+
+        .page { display: none; flex-direction: column; gap: 16px; flex: 1; }
+        .page.active { display: flex; }
+
+        /* ===== Form Controls ===== */
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 13px; font-weight: 600; color: rgba(0,0,0,0.7); }
+        .form-group input, .form-group select, .form-group textarea {
+            background: rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.5);
+            color: black;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+            backdrop-filter: blur(4px);
+            transition: all 0.2s ease;
+            font-family: 'Roboto', sans-serif;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            background: rgba(255,255,255,0.5);
+            border-color: rgba(99,102,241,0.6);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+        }
+        .form-group input::placeholder, .form-group textarea::placeholder { color: rgba(0,0,0,0.35); }
+        .form-group textarea { resize: vertical; min-height: 60px; }
+
+        .InputRow { display: flex; gap: 8px; align-items: flex-end; }
+
+        /* ===== Section ===== */
+        .SectionHeader {
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(0,0,0,0.8);
+            margin-top: 4px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .SettingsCard {
+            background: rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 14px;
+            padding: 20px;
+            backdrop-filter: blur(6px);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .SettingsCardTitle {
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .SettingsCardTitle .material-symbols-outlined { font-size: 20px; color: rgba(99,102,241,0.7); }
+
+        .SettingsCardDesc {
+            font-size: 12px;
+            color: rgba(0,0,0,0.5);
+            line-height: 1.5;
+        }
+
+        .SettingsCardActions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== Code Block (for compressed string) ===== */
+        .CodeBlock {
+            background: rgba(0,0,0,0.06);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            max-height: 120px;
+            overflow-y: auto;
+            color: rgba(0,0,0,0.7);
+            user-select: all;
+        }
+        .CodeBlock::-webkit-scrollbar { width: 4px; }
+        .CodeBlock::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
+
+        /* ===== Profile Cards ===== */
+        .ProfileGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 14px;
+        }
+
+        .ProfileCard {
+            background: rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 14px;
+            padding: 20px;
+            backdrop-filter: blur(6px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-align: center;
+            transition: all 0.2s ease;
+            position: relative;
+            cursor: pointer;
+        }
+        .ProfileCard:hover { background: rgba(255,255,255,0.4); }
+        .ProfileCard.active-profile {
+            border-color: rgba(99,102,241,0.5);
+            background: rgba(99,102,241,0.08);
+            box-shadow: 0 0 0 2px rgba(99,102,241,0.2);
+        }
+
+        .ProfileAvatar {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255,255,255,0.6);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.3);
+        }
+        .ProfileAvatarPlaceholder {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.6);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: rgba(99,102,241,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(99,102,241,0.6);
+        }
+
+        .ProfileName { font-size: 14px; font-weight: 600; color: rgba(0,0,0,0.85); }
+        .ProfileUsername { font-size: 12px; color: rgba(0,0,0,0.45); }
+        .ProfileBadge {
+            font-size: 10px; font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: rgba(99,102,241,0.15);
+            color: rgba(99,102,241,0.85);
+            border: 1px solid rgba(99,102,241,0.25);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .ProfileCardActions {
+            position: absolute;
+            top: 8px; right: 8px;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .ProfileCard:hover .ProfileCardActions { opacity: 1; }
+
+        .ProfileCardBtn {
+            background: rgba(255,255,255,0.5);
+            border: 1px solid rgba(255,255,255,0.6);
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .ProfileCardBtn:hover { background: rgba(255,255,255,0.7); }
+        .ProfileCardBtn.danger:hover { background: rgba(239,68,68,0.15); }
+
+        .AddProfileCard {
+            background: rgba(255,255,255,0.15);
+            border: 2px dashed rgba(0,0,0,0.15);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 160px;
+            color: rgba(0,0,0,0.35);
+        }
+        .AddProfileCard:hover {
+            background: rgba(255,255,255,0.25);
+            border-color: rgba(99,102,241,0.3);
+            color: rgba(99,102,241,0.6);
+        }
+
+        /* Avatar preview in edit */
+        .AvatarPreviewLarge {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255,255,255,0.6);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            align-self: center;
+        }
+        .AvatarPreviewPlaceholder {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            border: 2px dashed rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            align-self: center;
+            color: rgba(0,0,0,0.3);
+            background: rgba(255,255,255,0.2);
+            cursor: pointer;
+        }
+        .AvatarPreviewPlaceholder:hover {
+            border-color: rgba(99,102,241,0.3);
+            color: rgba(99,102,241,0.5);
+        }
+
+        /* ===== Modal ===== */
+        .ModalOverlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.25);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .ModalOverlay.open { opacity: 1; pointer-events: all; }
+
+        .ModalContent {
+            background: rgba(255,255,255,0.65);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.6);
+            border-radius: 18px;
+            box-shadow: 0 12px 48px rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.8);
+            padding: 28px;
+            min-width: 420px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .ModalContent::-webkit-scrollbar { width: 6px; }
+        .ModalContent::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 4px; }
+
+        .ModalTitle {
+            font-size: 18px;
+            font-weight: 600;
+            color: rgba(0,0,0,0.85);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ModalClose {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: rgba(0,0,0,0.5);
+            padding: 4px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        .ModalClose:hover { background: rgba(0,0,0,0.06); color: rgba(0,0,0,0.8); }
+
+        /* ===== Toast ===== */
+        .Toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(12px);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .Toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* ===== Top Buttons ===== */
+        .TopButtons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        /* ===== EmptyState ===== */
+        .EmptyState {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(0,0,0,0.4);
+            font-size: 14px;
+        }
+        .EmptyState .material-symbols-outlined {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.4;
+        }
+
+        /* Data size display */
+        .DataSizeInfo {
+            font-size: 12px;
+            color: rgba(0,0,0,0.45);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .DataSizeInfo .material-symbols-outlined { font-size: 14px; }
+
+        /* Profile description */
+        .ProfileDesc {
+            font-size: 12px;
+            color: rgba(0,0,0,0.5);
+            line-height: 1.4;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="gridOverlay"></div>
+
+    <div class="TopButtons">
+        <button class="GTextBtn" onclick="window.location.href='../'" title="Back to Desktop">
+            <span class="material-symbols-outlined">home</span>
+            Home
+        </button>
+    </div>
+
+    <div class="MainLayout">
+        <div class="Sidebar">
+            <div style="font-size: 16px; font-weight: 600; color: rgba(0,0,0,0.8); padding: 4px 8px 12px; display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="font-size: 22px;">settings</span>
+                Settings
+            </div>
+            <div class="SidebarTab active" data-page="profiles" onclick="switchPage('profiles')">
+                <span class="material-symbols-outlined" style="font-size: 18px;">person</span>
+                Profiles
+            </div>
+            <div class="SidebarTab" data-page="data" onclick="switchPage('data')">
+                <span class="material-symbols-outlined" style="font-size: 18px;">database</span>
+                Import / Export Data
+            </div>
+        </div>
+
+        <div class="ContentArea">
+            <!-- Profiles Page -->
+            <div class="page active" id="page-profiles">
+                <div class="ContentTitle">Profiles</div>
+                <div class="ContentDesc">Create and switch between player profiles. Each profile stores its own separate data across all apps on the site.</div>
+
+                <div id="activeProfileBanner" style="display: none;"></div>
+
+                <div class="ProfileGrid" id="profileGrid"></div>
+            </div>
+
+            <!-- Import / Export Page -->
+            <div class="page" id="page-data">
+                <div class="ContentTitle">Import / Export Data</div>
+                <div class="ContentDesc">Export all site data to transfer between devices or browsers. You can export as a JSON file or a compressed string you can paste.</div>
+
+                <div id="dataSizeInfo" class="DataSizeInfo"></div>
+
+                <div class="SettingsCard">
+                    <div class="SettingsCardTitle">
+                        <span class="material-symbols-outlined">download</span>
+                        Export Data
+                    </div>
+                    <div class="SettingsCardDesc">Download all localStorage data for the current profile as a JSON file, or copy it as a compressed string.</div>
+                    <div class="SettingsCardActions">
+                        <button class="GTextBtn primary" onclick="exportAsJSON()">
+                            <span class="material-symbols-outlined">description</span>
+                            Export JSON File
+                        </button>
+                        <button class="GTextBtn" onclick="exportAsString()">
+                            <span class="material-symbols-outlined">content_copy</span>
+                            Copy as String
+                        </button>
+                    </div>
+                    <div id="exportStringOutput" style="display: none;">
+                        <div class="CodeBlock" id="exportStringBlock"></div>
+                        <div style="margin-top: 6px; font-size: 11px; color: rgba(0,0,0,0.4);" id="exportStringSize"></div>
+                    </div>
+                </div>
+
+                <div class="SettingsCard">
+                    <div class="SettingsCardTitle">
+                        <span class="material-symbols-outlined">upload</span>
+                        Import Data
+                    </div>
+                    <div class="SettingsCardDesc">Restore data from a JSON file or paste a compressed string. This will <strong>overwrite</strong> all current data for the active profile.</div>
+                    <div class="SettingsCardActions">
+                        <button class="GTextBtn primary" onclick="document.getElementById('importFileInput').click()">
+                            <span class="material-symbols-outlined">upload_file</span>
+                            Import JSON File
+                        </button>
+                        <input type="file" id="importFileInput" accept=".json" style="display:none;" onchange="importFromFile(event)">
+                        <button class="GTextBtn" onclick="showImportStringInput()">
+                            <span class="material-symbols-outlined">content_paste</span>
+                            Paste String
+                        </button>
+                    </div>
+                    <div id="importStringArea" style="display: none;">
+                        <div class="form-group">
+                            <label>Paste compressed data string</label>
+                            <textarea id="importStringInput" rows="3" placeholder="Paste the exported string here..."></textarea>
+                        </div>
+                        <div style="display: flex; gap: 8px; margin-top: 4px;">
+                            <button class="GTextBtn primary" onclick="importFromString()">
+                                <span class="material-symbols-outlined">check</span>
+                                Apply
+                            </button>
+                            <button class="GTextBtn" onclick="document.getElementById('importStringArea').style.display='none'">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="SettingsCard">
+                    <div class="SettingsCardTitle">
+                        <span class="material-symbols-outlined" style="color: rgba(239,68,68,0.7);">delete_forever</span>
+                        Danger Zone
+                    </div>
+                    <div class="SettingsCardDesc">Permanently erase all site data for the current profile. This cannot be undone.</div>
+                    <div class="SettingsCardActions">
+                        <button class="GTextBtn danger" onclick="clearAllData()">
+                            <span class="material-symbols-outlined">delete</span>
+                            Clear All Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Edit Modal -->
+    <div class="ModalOverlay" id="profileEditModal" onclick="if(event.target===this)closeModal()">
+        <div class="ModalContent">
+            <div class="ModalTitle">
+                <span id="profileModalTitle">Create Profile</span>
+                <button class="ModalClose" onclick="closeModal()">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <div id="profileAvatarPreview" class="AvatarPreviewPlaceholder" onclick="document.getElementById('profileAvatarFile').click()" style="cursor:pointer;">
+                <span class="material-symbols-outlined" style="font-size: 32px;">add_a_photo</span>
+            </div>
+
+            <div class="form-group">
+                <label>Profile Picture URL</label>
+                <div class="InputRow">
+                    <div class="form-group" style="flex: 1;">
+                        <input type="text" id="profileAvatarUrl" placeholder="Paste image URL..." oninput="previewProfileAvatar()">
+                    </div>
+                    <button class="GTextBtn" onclick="document.getElementById('profileAvatarFile').click()" style="height: 38px; align-self: flex-end;">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">upload_file</span>
+                    </button>
+                    <input type="file" id="profileAvatarFile" accept="image/*" style="display:none;" onchange="handleProfileAvatarFile(event)">
+                </div>
+            </div>
+
+            <div class="InputRow">
+                <div class="form-group" style="flex: 1;">
+                    <label>Display Name</label>
+                    <input type="text" id="profileName" placeholder="e.g. John">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Roblox Username</label>
+                    <input type="text" id="profileUsername" placeholder="e.g. JohnSmith123">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Roblox Profile URL</label>
+                <input type="text" id="profileUrl" placeholder="e.g. https://www.roblox.com/users/12345/profile">
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="profileDescription" placeholder="A short description about this profile..." rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Businesses (comma-separated)</label>
+                <input type="text" id="profileBusinesses" placeholder="e.g. Restaurant, Cafe, Hotel">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px;">
+                <button class="GTextBtn" onclick="closeModal()">Cancel</button>
+                <button class="GTextBtn primary" onclick="saveProfile()">
+                    <span class="material-symbols-outlined">check</span>
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="Toast" id="toast"></div>
+
+    <script>
+        // ===== CONSTANTS =====
+        const PROFILES_KEY = 'ttcProfiles';          // Array of profile metadata
+        const ACTIVE_PROFILE_KEY = 'ttcActiveProfile'; // ID of active profile
+        const PROFILE_DATA_PREFIX = 'ttcData_';      // Prefix for profile data snapshots
+
+        // All known localStorage keys used by the site (that belong to profile data)
+        const SITE_DATA_KEYS = [
+            'bbActivePage', 'bbBusinessPermissions', 'bbSalaryMode',
+            'bbBusinessJobs', 'bbBudget', 'bbHoursPerDay', 'bbDays',
+            'bbPermLabels', 'bbRoleLabels', 'bbCustomRanges',
+            'bbBusinessPresets', 'bbBusinessLabels', 'bbBusinessEmployees',
+            'bbWorkdayRecords', 'bbFinanceRecords', 'bbPartnerships',
+            'itemPositions', 'placeAnywhere', 'desktopItemOrder'
+        ];
+
+        // ===== PAGE SWITCHING =====
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.SidebarTab').forEach(t => {
+                t.classList.remove('active');
+                t.classList.remove('inactive');
+            });
+            document.getElementById('page-' + pageId).classList.add('active');
+            const activeTab = document.querySelector(`.SidebarTab[data-page="${pageId}"]`);
+            activeTab.classList.add('active');
+            document.querySelectorAll('.SidebarTab').forEach(t => {
+                if (!t.classList.contains('active')) t.classList.add('inactive');
+            });
+            if (pageId === 'data') updateDataSizeInfo();
+        }
+
+        // ===== TOAST =====
+        let toastTimer = null;
+        function showToast(message, icon) {
+            const toast = document.getElementById('toast');
+            toast.innerHTML = (icon ? '<span class="material-symbols-outlined" style="font-size: 18px;">' + icon + '</span>' : '') + escapeHtml(message);
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ===== DATA SIZE INFO =====
+        function updateDataSizeInfo() {
+            let totalSize = 0;
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                totalSize += key.length + (localStorage.getItem(key) || '').length;
+            }
+            const sizeKB = (totalSize * 2 / 1024).toFixed(1); // UTF-16 = 2 bytes per char
+            const el = document.getElementById('dataSizeInfo');
+            el.innerHTML = '<span class="material-symbols-outlined">storage</span> Total data: ' + sizeKB + ' KB (' + localStorage.length + ' keys)';
+        }
+
+        // ===== PROFILES =====
+        function getProfiles() {
+            try { return JSON.parse(localStorage.getItem(PROFILES_KEY)) || []; }
+            catch { return []; }
+        }
+
+        function saveProfiles(profiles) {
+            localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
+        }
+
+        function getActiveProfileId() {
+            return localStorage.getItem(ACTIVE_PROFILE_KEY);
+        }
+
+        function setActiveProfileId(id) {
+            localStorage.setItem(ACTIVE_PROFILE_KEY, id);
+        }
+
+        // Collect current site data into a snapshot object
+        function collectSiteData() {
+            const data = {};
+            SITE_DATA_KEYS.forEach(key => {
+                const val = localStorage.getItem(key);
+                if (val !== null) data[key] = val;
+            });
+            return data;
+        }
+
+        // Restore a snapshot into localStorage (site data keys only)
+        function applySiteData(data) {
+            // Clear existing site data keys
+            SITE_DATA_KEYS.forEach(key => localStorage.removeItem(key));
+            // Apply new data
+            for (const key in data) {
+                if (SITE_DATA_KEYS.includes(key)) {
+                    localStorage.setItem(key, data[key]);
+                }
+            }
+        }
+
+        // Save current site data to the active profile's storage slot
+        function saveCurrentProfileData() {
+            const activeId = getActiveProfileId();
+            if (!activeId) return;
+            const data = collectSiteData();
+            localStorage.setItem(PROFILE_DATA_PREFIX + activeId, JSON.stringify(data));
+        }
+
+        // Load a profile's data into the live localStorage keys
+        function loadProfileData(profileId) {
+            const raw = localStorage.getItem(PROFILE_DATA_PREFIX + profileId);
+            const data = raw ? JSON.parse(raw) : {};
+            applySiteData(data);
+        }
+
+        function switchProfile(profileId) {
+            const currentId = getActiveProfileId();
+            if (currentId === String(profileId)) return;
+
+            // Save current profile's data before switching
+            if (currentId) saveCurrentProfileData();
+
+            // Load new profile's data
+            loadProfileData(profileId);
+            setActiveProfileId(String(profileId));
+
+            renderProfiles();
+            showToast('Switched profile', 'swap_horiz');
+        }
+
+        let editingProfileId = null;
+
+        function openProfileModal(id) {
+            editingProfileId = id || null;
+            document.getElementById('profileModalTitle').textContent = editingProfileId ? 'Edit Profile' : 'Create Profile';
+
+            if (editingProfileId) {
+                const profiles = getProfiles();
+                const p = profiles.find(pr => String(pr.id) === String(editingProfileId));
+                if (p) {
+                    document.getElementById('profileAvatarUrl').value = p.avatarUrl || '';
+                    document.getElementById('profileName').value = p.name || '';
+                    document.getElementById('profileUsername').value = p.username || '';
+                    document.getElementById('profileUrl').value = p.profileUrl || '';
+                    document.getElementById('profileDescription').value = p.description || '';
+                    document.getElementById('profileBusinesses').value = (p.businesses || []).join(', ');
+                    previewProfileAvatar();
+                }
+            } else {
+                document.getElementById('profileAvatarUrl').value = '';
+                document.getElementById('profileName').value = '';
+                document.getElementById('profileUsername').value = '';
+                document.getElementById('profileUrl').value = '';
+                document.getElementById('profileDescription').value = '';
+                document.getElementById('profileBusinesses').value = '';
+                resetProfileAvatarPreview();
+            }
+
+            document.getElementById('profileEditModal').classList.add('open');
+        }
+
+        function closeModal() {
+            document.getElementById('profileEditModal').classList.remove('open');
+        }
+
+        function previewProfileAvatar() {
+            const url = document.getElementById('profileAvatarUrl').value.trim();
+            const preview = document.getElementById('profileAvatarPreview');
+            if (url) {
+                const img = document.createElement('img');
+                img.src = url;
+                img.id = 'profileAvatarPreview';
+                img.className = 'AvatarPreviewLarge';
+                img.onerror = () => resetProfileAvatarPreview();
+                preview.replaceWith(img);
+            } else {
+                resetProfileAvatarPreview();
+            }
+        }
+
+        function resetProfileAvatarPreview() {
+            const existing = document.getElementById('profileAvatarPreview');
+            const placeholder = document.createElement('div');
+            placeholder.id = 'profileAvatarPreview';
+            placeholder.className = 'AvatarPreviewPlaceholder';
+            placeholder.onclick = () => document.getElementById('profileAvatarFile').click();
+            placeholder.style.cursor = 'pointer';
+            placeholder.innerHTML = '<span class="material-symbols-outlined" style="font-size: 32px;">add_a_photo</span>';
+            existing.replaceWith(placeholder);
+        }
+
+        function handleProfileAvatarFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('profileAvatarUrl').value = e.target.result;
+                previewProfileAvatar();
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+
+        function saveProfile() {
+            const name = document.getElementById('profileName').value.trim();
+            const username = document.getElementById('profileUsername').value.trim();
+            if (!name && !username) {
+                document.getElementById('profileName').focus();
+                return;
+            }
+
+            const profiles = getProfiles();
+            const profileData = {
+                id: editingProfileId || Date.now(),
+                name: name || 'Unnamed',
+                username,
+                avatarUrl: document.getElementById('profileAvatarUrl').value.trim(),
+                profileUrl: document.getElementById('profileUrl').value.trim(),
+                description: document.getElementById('profileDescription').value.trim(),
+                businesses: document.getElementById('profileBusinesses').value.split(',').map(s => s.trim()).filter(Boolean)
+            };
+
+            if (editingProfileId) {
+                const idx = profiles.findIndex(p => String(p.id) === String(editingProfileId));
+                if (idx >= 0) profiles[idx] = profileData;
+            } else {
+                profiles.push(profileData);
+                // If this is the first profile, or no active profile, make it active
+                if (!getActiveProfileId()) {
+                    setActiveProfileId(String(profileData.id));
+                    // Save current data as this profile's data
+                    saveCurrentProfileData();
+                }
+            }
+
+            saveProfiles(profiles);
+            closeModal();
+            renderProfiles();
+            showToast(editingProfileId ? 'Profile updated' : 'Profile created', 'check');
+        }
+
+        function deleteProfile(id) {
+            if (!confirm('Delete this profile and all its data? This cannot be undone.')) return;
+            let profiles = getProfiles();
+            profiles = profiles.filter(p => String(p.id) !== String(id));
+            saveProfiles(profiles);
+
+            // Remove profile data
+            localStorage.removeItem(PROFILE_DATA_PREFIX + id);
+
+            // If we deleted the active profile, switch to another or clear
+            if (getActiveProfileId() === String(id)) {
+                if (profiles.length > 0) {
+                    switchProfile(profiles[0].id);
+                } else {
+                    localStorage.removeItem(ACTIVE_PROFILE_KEY);
+                }
+            }
+
+            renderProfiles();
+            showToast('Profile deleted', 'delete');
+        }
+
+        function renderProfiles() {
+            const grid = document.getElementById('profileGrid');
+            const banner = document.getElementById('activeProfileBanner');
+            const profiles = getProfiles();
+            const activeId = getActiveProfileId();
+
+            grid.innerHTML = '';
+
+            // Active profile banner
+            const activeProfile = profiles.find(p => String(p.id) === String(activeId));
+            if (activeProfile) {
+                banner.style.display = '';
+                banner.className = 'SettingsCard';
+                banner.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        ${activeProfile.avatarUrl
+                            ? '<img src="' + escapeHtml(activeProfile.avatarUrl) + '" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.6);">'
+                            : '<div style="width:40px;height:40px;border-radius:50%;background:rgba(99,102,241,0.12);display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="color:rgba(99,102,241,0.6);">person</span></div>'
+                        }
+                        <div>
+                            <div style="font-weight:600;font-size:14px;color:rgba(0,0,0,0.85);">Active: ${escapeHtml(activeProfile.name)}</div>
+                            <div style="font-size:12px;color:rgba(0,0,0,0.45);">${activeProfile.username ? '@' + escapeHtml(activeProfile.username) : 'No username'}</div>
+                        </div>
+                        <span class="ProfileBadge" style="margin-left: auto;">Active</span>
+                    </div>
+                `;
+            } else {
+                banner.style.display = 'none';
+            }
+
+            profiles.forEach(p => {
+                const isActive = String(p.id) === String(activeId);
+                const card = document.createElement('div');
+                card.className = 'ProfileCard' + (isActive ? ' active-profile' : '');
+                card.onclick = () => { if (!isActive) switchProfile(p.id); };
+
+                // Actions
+                const actions = document.createElement('div');
+                actions.className = 'ProfileCardActions';
+                const editBtn = document.createElement('button');
+                editBtn.className = 'ProfileCardBtn';
+                editBtn.title = 'Edit';
+                editBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:15px;">edit</span>';
+                editBtn.onclick = (e) => { e.stopPropagation(); openProfileModal(p.id); };
+                const delBtn = document.createElement('button');
+                delBtn.className = 'ProfileCardBtn danger';
+                delBtn.title = 'Delete';
+                delBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:15px;color:rgba(239,68,68,0.7);">close</span>';
+                delBtn.onclick = (e) => { e.stopPropagation(); deleteProfile(p.id); };
+                actions.appendChild(editBtn);
+                actions.appendChild(delBtn);
+                card.appendChild(actions);
+
+                // Avatar
+                if (p.avatarUrl) {
+                    const img = document.createElement('img');
+                    img.className = 'ProfileAvatar';
+                    img.src = p.avatarUrl;
+                    img.onerror = () => {
+                        const ph = document.createElement('div');
+                        ph.className = 'ProfileAvatarPlaceholder';
+                        ph.innerHTML = '<span class="material-symbols-outlined" style="font-size:28px;">person</span>';
+                        img.replaceWith(ph);
+                    };
+                    card.appendChild(img);
+                } else {
+                    const ph = document.createElement('div');
+                    ph.className = 'ProfileAvatarPlaceholder';
+                    ph.innerHTML = '<span class="material-symbols-outlined" style="font-size:28px;">person</span>';
+                    card.appendChild(ph);
+                }
+
+                // Name
+                const nameEl = document.createElement('div');
+                nameEl.className = 'ProfileName';
+                nameEl.textContent = p.name || 'Unnamed';
+                card.appendChild(nameEl);
+
+                // Username
+                if (p.username) {
+                    const userEl = document.createElement('div');
+                    userEl.className = 'ProfileUsername';
+                    userEl.textContent = '@' + p.username;
+                    card.appendChild(userEl);
+                }
+
+                // Active badge
+                if (isActive) {
+                    const badge = document.createElement('span');
+                    badge.className = 'ProfileBadge';
+                    badge.textContent = 'Active';
+                    card.appendChild(badge);
+                }
+
+                // Description
+                if (p.description) {
+                    const desc = document.createElement('div');
+                    desc.className = 'ProfileDesc';
+                    desc.textContent = p.description;
+                    card.appendChild(desc);
+                }
+
+                // Businesses
+                if (p.businesses && p.businesses.length > 0) {
+                    const bizDiv = document.createElement('div');
+                    bizDiv.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;justify-content:center;';
+                    p.businesses.forEach(b => {
+                        const pill = document.createElement('span');
+                        pill.style.cssText = 'font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(99,102,241,0.1);color:rgba(99,102,241,0.8);border:1px solid rgba(99,102,241,0.2);';
+                        pill.textContent = b;
+                        bizDiv.appendChild(pill);
+                    });
+                    card.appendChild(bizDiv);
+                }
+
+                grid.appendChild(card);
+            });
+
+            // Add profile card
+            const addCard = document.createElement('div');
+            addCard.className = 'AddProfileCard';
+            addCard.onclick = () => openProfileModal();
+            addCard.innerHTML = '<span class="material-symbols-outlined" style="font-size:36px;">person_add</span><span style="font-size:13px;font-weight:500;">New Profile</span>';
+            grid.appendChild(addCard);
+        }
+
+        // ===== IMPORT / EXPORT =====
+
+        // Collect ALL data for export (profile-aware)
+        function collectExportData() {
+            // Save current profile data first
+            saveCurrentProfileData();
+
+            const data = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                data[key] = localStorage.getItem(key);
+            }
+            return data;
+        }
+
+        function exportAsJSON() {
+            const data = collectExportData();
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const date = new Date().toISOString().slice(0, 10);
+            a.download = 'techtoby_corp_backup_' + date + '.json';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+            showToast('Data exported as JSON', 'download');
+        }
+
+        function exportAsString() {
+            const data = collectExportData();
+            const json = JSON.stringify(data);
+            // Compress using base64 encoding with URI component encoding to shrink it
+            try {
+                const compressed = btoa(unescape(encodeURIComponent(json)));
+                const outputDiv = document.getElementById('exportStringOutput');
+                const block = document.getElementById('exportStringBlock');
+                const sizeEl = document.getElementById('exportStringSize');
+                block.textContent = compressed;
+                sizeEl.textContent = 'String length: ' + compressed.length.toLocaleString() + ' characters (original: ' + json.length.toLocaleString() + ')';
+                outputDiv.style.display = '';
+
+                // Copy to clipboard
+                navigator.clipboard.writeText(compressed).then(() => {
+                    showToast('Copied to clipboard', 'content_copy');
+                }).catch(() => {
+                    showToast('String generated — select and copy manually', 'info');
+                });
+            } catch (err) {
+                showToast('Failed to generate string: ' + err.message, 'error');
+            }
+        }
+
+        function importFromFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (typeof data !== 'object' || data === null) throw new Error('Invalid format');
+                    if (!confirm('This will overwrite ALL current data. Continue?')) return;
+                    applyImportedData(data);
+                    showToast('Data imported successfully', 'check');
+                } catch (err) {
+                    showToast('Invalid file: ' + err.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function showImportStringInput() {
+            document.getElementById('importStringArea').style.display = '';
+            document.getElementById('importStringInput').value = '';
+            document.getElementById('importStringInput').focus();
+        }
+
+        function importFromString() {
+            const input = document.getElementById('importStringInput').value.trim();
+            if (!input) {
+                showToast('Paste a data string first', 'warning');
+                return;
+            }
+            try {
+                const json = decodeURIComponent(escape(atob(input)));
+                const data = JSON.parse(json);
+                if (typeof data !== 'object' || data === null) throw new Error('Invalid format');
+                if (!confirm('This will overwrite ALL current data. Continue?')) return;
+                applyImportedData(data);
+                document.getElementById('importStringArea').style.display = 'none';
+                showToast('Data imported successfully', 'check');
+            } catch (err) {
+                showToast('Invalid string: ' + err.message, 'error');
+            }
+        }
+
+        function applyImportedData(data) {
+            // Clear all existing localStorage
+            localStorage.clear();
+            // Restore all keys
+            for (const key in data) {
+                localStorage.setItem(key, data[key]);
+            }
+            // Reload profile view
+            renderProfiles();
+            updateDataSizeInfo();
+
+            // Reload the active profile's data into the live keys
+            const activeId = getActiveProfileId();
+            if (activeId) {
+                loadProfileData(activeId);
+            }
+        }
+
+        function clearAllData() {
+            if (!confirm('This will permanently delete ALL data for the entire site. Are you sure?')) return;
+            if (!confirm('This is your last chance. All profiles, settings, and app data will be erased.')) return;
+            localStorage.clear();
+            renderProfiles();
+            updateDataSizeInfo();
+            showToast('All data cleared', 'delete_forever');
+        }
+
+        // ===== INIT =====
+        renderProfiles();
+    </script>
+</body>
+
+</html>
