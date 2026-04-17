@@ -604,9 +604,78 @@
         .GuideDismissBtn:hover {
             color: rgba(0,0,0,0.6);
         }
+
+        /* ===== MOBILE RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .desktop {
+                padding: 1rem;
+                grid-template-columns: repeat(auto-fill, 100px);
+                grid-auto-rows: 100px;
+                gap: 1rem;
+            }
+            .icon-img {
+                width: 52px;
+                height: 52px;
+                margin-bottom: 0.5rem;
+            }
+            .app-name {
+                font-size: 0.75rem;
+            }
+            .credits {
+                font-size: 0.7rem;
+                padding: 0.4rem 0.8rem;
+                bottom: 10px;
+                left: 10px;
+            }
+            .bloxburg-logo {
+                width: 120px;
+                bottom: 10px;
+                right: 10px;
+            }
+            .customize-banner {
+                font-size: 13px;
+                padding: 10px;
+            }
+            .ModalContent {
+                width: 95%;
+                max-width: 95%;
+            }
+            .GuideCard {
+                width: 95%;
+                max-width: 95%;
+            }
+            .GuideImage, .GuideVideo, .GuideIframe, .GuideImagePlaceholder {
+                height: 150px;
+            }
+            .GuideBody {
+                padding: 20px 20px 14px;
+            }
+            .GuideFooter {
+                padding: 0 20px 18px;
+            }
+            .GuideTitle {
+                font-size: 18px;
+            }
+            .GuideDesc {
+                font-size: 13px;
+            }
+        }
+    </style>
+    <style>
+        @media (max-width: 768px) {
+            .MobileBlock { display: flex !important; }
+            body > *:not(.MobileBlock) { display: none !important; }
+        }
     </style>
 </head>
 <body>
+    <div class="MobileBlock" style="display:none;position:fixed;inset:0;z-index:999999;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+        <div style="background:rgba(255,255,255,0.2);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.4);border-radius:20px;padding:2.5rem 2rem;max-width:380px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,0.1);">
+            <span style="font-size:48px;display:block;margin-bottom:16px;">🖥️</span>
+            <h2 style="font-size:20px;font-weight:600;margin-bottom:8px;color:rgba(0,0,0,0.8);">Desktop Only</h2>
+            <p style="font-size:14px;color:rgba(0,0,0,0.5);line-height:1.6;">Sorry, this site is currently only available on desktop devices.</p>
+        </div>
+    </div>
     <div class="gridOverlay"></div>
     <div id="appTooltip" class="app-tooltip">
         <div class="app-tooltip-title"></div>
@@ -648,7 +717,7 @@
     </div>
 
     <div class="credits">
-        Designed by <a href="https://www.youtube.com/channel/@dummtoby" target="_blank">dummtoby</a>
+        Designed by <a href="https://www.youtube.com/@dummtoby" target="_blank">dummtoby</a>
     </div>
     <a href="https://www.roblox.com/games/185655149/" target="_blank">
         <img src="media/100002.png" alt="Welcome to Bloxburg" class="bloxburg-logo" style="pointer-events: auto; cursor: pointer; transition: transform 0.2s;">

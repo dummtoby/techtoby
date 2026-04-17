@@ -1662,6 +1662,7 @@
             text-overflow: ellipsis;
             display: -webkit-box;
             -webkit-line-clamp: 2;
+            line-clamp: 2;
             -webkit-box-orient: vertical;
         }
 
@@ -1739,13 +1740,1276 @@
             min-width: 70px;
             text-align: right;
         }
+
+        /* ===== INVENTORY ===== */
+        .InventoryGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .ItemCard {
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 14px;
+            padding: 0;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            position: relative;
+            transition: transform 0.15s, box-shadow 0.15s;
+            overflow: hidden;
+        }
+
+        .ItemCard:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .ItemCardImage {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .ItemCardBody {
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .ItemCardActions {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .ItemCard:hover .ItemCardActions {
+            opacity: 1;
+        }
+
+        .ItemCardName {
+            font-size: 15px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .ItemCardCategory {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(99, 102, 241, 0.8);
+            background: rgba(99, 102, 241, 0.1);
+            padding: 2px 8px;
+            border-radius: 6px;
+            align-self: flex-start;
+        }
+
+        .ItemCardPrice {
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.7);
+        }
+
+        .AddItemCard {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px dashed rgba(0, 0, 0, 0.15);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 120px;
+            color: rgba(0, 0, 0, 0.35);
+        }
+
+        .AddItemCard:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: rgba(99, 102, 241, 0.6);
+        }
+
+        /* Item Charts */
+        .OrderBusinessBadge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 8px;
+            display: inline-block;
+            align-self: flex-start;
+        }
+
+        .ItemImagePreview {
+            width: 100%;
+            max-height: 160px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .ItemImagePreviewPlaceholder {
+            width: 100%;
+            height: 80px;
+            border: 2px dashed rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: rgba(0, 0, 0, 0.3);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .ItemImagePreviewPlaceholder:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            color: rgba(99, 102, 241, 0.6);
+        }
+
+        /* Help Button */
+        .HelpBtn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(8px);
+            color: rgba(0, 0, 0, 0.35);
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .HelpBtn:hover {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: rgba(99, 102, 241, 0.8);
+        }
+
+        .HelpPopover {
+            position: fixed;
+            width: 380px;
+            max-width: 90vw;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+            font-size: 13px;
+            line-height: 1.6;
+            color: rgba(0, 0, 0, 0.7);
+            animation: helpFadeIn 0.15s ease;
+        }
+
+        @keyframes helpFadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .HelpPopover strong {
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .HelpPopover .help-example {
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: rgba(99, 102, 241, 0.06);
+            border-left: 3px solid rgba(99, 102, 241, 0.3);
+            border-radius: 0 8px 8px 0;
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.55);
+        }
+
+        /* Stock/Inventory Cards */
+        .StockCard {
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 14px;
+            padding: 16px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .StockCard:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .StockCardActions {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .StockCard:hover .StockCardActions {
+            opacity: 1;
+        }
+
+        .StockCardName {
+            font-size: 15px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .StockCardMeta {
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.45);
+        }
+
+        .StockCardValue {
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(99, 102, 241, 0.8);
+            margin-top: 2px;
+        }
+
+        .AddStockCard {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px dashed rgba(0, 0, 0, 0.15);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 100px;
+            color: rgba(0, 0, 0, 0.35);
+        }
+
+        .AddStockCard:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: rgba(99, 102, 241, 0.6);
+        }
+
+        .StockItemRow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .StockItemRow img {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .StockItemRow .si-name {
+            flex: 1;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        .StockItemRow .si-price {
+            font-size: 13px;
+            color: rgba(0, 0, 0, 0.5);
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .StockItemRow .si-stock {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .StockItemRow .si-stock input {
+            width: 60px;
+            text-align: center;
+        }
+
+        .StockItemRow .si-stock.low input {
+            border-color: rgba(239, 68, 68, 0.5);
+            color: rgba(239, 68, 68, 0.8);
+        }
+
+        .StockItemRow .si-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.7);
+            min-width: 70px;
+            text-align: right;
+        }
+
+        .StockItemRow .si-remove {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: rgba(239, 68, 68, 0.5);
+            padding: 2px;
+            display: flex;
+            transition: color 0.2s;
+        }
+
+        .StockItemRow .si-remove:hover {
+            color: rgba(239, 68, 68, 0.9);
+        }
+
+        /* Business Detail */
+        .BusinessDetailGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .BusinessDetailCard {
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 14px;
+            padding: 0;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            position: relative;
+        }
+
+        .BusinessDetailCard:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .BusinessDetailCard .bdc-banner {
+            height: 6px;
+            width: 100%;
+        }
+
+        .BusinessDetailCard .bdc-body {
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .BusinessDetailCard .bdc-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .BusinessDetailCard .bdc-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: rgba(0, 0, 0, 0.05);
+            flex-shrink: 0;
+        }
+
+        .BusinessDetailCard .bdc-logo-placeholder {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(0, 0, 0, 0.25);
+            flex-shrink: 0;
+        }
+
+        .BusinessDetailCard .bdc-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .BusinessDetailCard .bdc-owner {
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.45);
+        }
+
+        .BusinessDetailCard .bdc-desc {
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.5);
+            line-height: 1.4;
+        }
+
+        .BusinessDetailCard .bdc-actions {
+            position: absolute;
+            top: 12px;
+            right: 8px;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .BusinessDetailCard:hover .bdc-actions {
+            opacity: 1;
+        }
+
+        .AddBusinessDetailCard {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px dashed rgba(0, 0, 0, 0.15);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 100px;
+            color: rgba(0, 0, 0, 0.35);
+        }
+
+        .AddBusinessDetailCard:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: rgba(99, 102, 241, 0.6);
+        }
+
+        /* Image preview in item modal */
+        .ItemImagePreview {
+            width: 100%;
+            height: 100px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .ItemImagePreviewPlaceholder {
+            width: 100%;
+            height: 80px;
+            border-radius: 10px;
+            border: 2px dashed rgba(0, 0, 0, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(0, 0, 0, 0.25);
+            background: rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+            gap: 6px;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .ItemImagePreviewPlaceholder:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            color: rgba(99, 102, 241, 0.5);
+        }
+
+        /* Orders */
+        .OrderGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .OrderCard {
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 14px;
+            padding: 16px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .OrderCard:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .OrderCardActions {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .OrderCard:hover .OrderCardActions {
+            opacity: 1;
+        }
+
+        .OrderCardHeader {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .OrderCardId {
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .OrderStatusBadge {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 3px 10px;
+            border-radius: 8px;
+        }
+
+        .OrderStatusBadge.pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: rgba(180, 110, 0, 0.9);
+        }
+
+        .OrderStatusBadge.completed {
+            background: rgba(34, 197, 94, 0.15);
+            color: rgba(22, 130, 62, 0.9);
+        }
+
+        .OrderStatusBadge.cancelled {
+            background: rgba(239, 68, 68, 0.15);
+            color: rgba(180, 40, 40, 0.9);
+        }
+
+        .OrderCardMeta {
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .OrderCardTotal {
+            font-size: 16px;
+            font-weight: 700;
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        .OrderItemRow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .OrderItemRow .oir-name {
+            flex: 1;
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        .OrderItemRow .oir-qty {
+            min-width: 40px;
+            text-align: center;
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .OrderItemRow .oir-price {
+            min-width: 70px;
+            text-align: right;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.7);
+        }
+
+        .OrderLineItemRow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+        }
+
+        .OrderLineItemRow select,
+        .OrderLineItemRow input {
+            flex: 1;
+        }
+
+        .OrderLineItemRow .remove-line-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: rgba(239, 68, 68, 0.6);
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            transition: color 0.2s;
+        }
+
+        .OrderLineItemRow .remove-line-btn:hover {
+            color: rgba(239, 68, 68, 0.9);
+        }
+
+        .InventoryStats {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .InventoryStat {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            padding: 12px 18px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 120px;
+        }
+
+        .InventoryStat .stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(0, 0, 0, 0.4);
+            font-weight: 600;
+        }
+
+        .InventoryStat .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+
+            .HelpPopover {
+                top: auto !important;
+                bottom: 10px !important;
+                left: 10px !important;
+                right: 10px !important;
+                max-width: none !important;
+                width: auto !important;
+            }
+
+            .MainLayout {
+                flex-direction: column;
+            }
+
+            .Sidebar {
+                width: auto;
+                height: auto;
+                margin: 10px;
+                padding: 12px;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 6px;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }
+
+            .SidebarCategory {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                flex-wrap: nowrap;
+            }
+
+            .SidebarCategory h3 {
+                font-size: 10px;
+                margin: 0;
+                writing-mode: vertical-rl;
+                text-orientation: mixed;
+            }
+
+            .SidebarTab {
+                padding: 8px 12px;
+                font-size: 12px;
+                white-space: nowrap;
+            }
+
+            .ContentArea {
+                margin: 0 10px 10px;
+                padding: 16px;
+                height: auto;
+                min-height: 0;
+                flex: 1;
+                overflow-y: auto;
+            }
+
+            .StaffGrid,
+            .RecordGrid,
+            .PartnerGrid,
+            .InventoryGrid,
+            .OrderGrid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .InputRow {
+                flex-direction: column;
+            }
+
+            .InputRow .InputGroup {
+                width: 100%;
+            }
+
+            .ModalOverlay .ModalContent {
+                width: 95% !important;
+                max-width: none !important;
+                margin: 10px;
+                max-height: 85vh;
+            }
+
+            .TopBar {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .TopBar input[type="text"],
+            .TopBar input[type="search"] {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .ConverterCard {
+                padding: 16px;
+            }
+        }
+
+        /* ===== PROFILE SYSTEM ===== */
+        .ProfileBar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            background: rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 12px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            cursor: pointer;
+            transition: all 0.2s;
+            max-width: 220px;
+        }
+
+        .ProfileBar:hover {
+            background: rgba(255, 255, 255, 0.28);
+        }
+
+        .ProfileBar .profile-icon {
+            font-size: 18px;
+            color: rgba(99, 102, 241, 0.7);
+        }
+
+        .ProfileBar .profile-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.7);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+
+        .ProfileBar .profile-type {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+
+        .ProfileBar .profile-type.local {
+            background: rgba(34, 197, 94, 0.15);
+            color: rgba(22, 130, 62, 0.9);
+        }
+
+        .ProfileBar .profile-type.shared {
+            background: rgba(99, 102, 241, 0.15);
+            color: rgba(79, 70, 229, 0.9);
+        }
+
+        .ProfilePanel {
+            position: fixed;
+            top: 0;
+            right: -420px;
+            width: 400px;
+            height: 100vh;
+            background: rgba(245, 245, 250, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-left: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
+            z-index: 1000;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .ProfilePanel.open {
+            right: 0;
+        }
+
+        .ProfilePanel .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .ProfilePanel .panel-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        .ProfilePanel .panel-section {
+            padding: 16px 20px;
+        }
+
+        .ProfilePanel .panel-section-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: rgba(0, 0, 0, 0.4);
+            margin-bottom: 10px;
+        }
+
+        .ProfileCard {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.15s;
+            margin-bottom: 6px;
+        }
+
+        .ProfileCard:hover {
+            background: rgba(255, 255, 255, 0.45);
+        }
+
+        .ProfileCard.active {
+            border-color: rgba(99, 102, 241, 0.4);
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .ProfileCard .pc-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .ProfileCard .pc-icon.local {
+            background: rgba(34, 197, 94, 0.12);
+            color: rgba(22, 130, 62, 0.8);
+        }
+
+        .ProfileCard .pc-icon.shared {
+            background: rgba(99, 102, 241, 0.12);
+            color: rgba(79, 70, 229, 0.8);
+        }
+
+        .ProfileCard .pc-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .ProfileCard .pc-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.8);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ProfileCard .pc-meta {
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        .ProfileCard .pc-actions {
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+
+        .ProfileCard:hover .pc-actions {
+            opacity: 1;
+        }
+
+        .ProfileCard .pc-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            color: rgba(0, 0, 0, 0.4);
+            display: flex;
+            transition: all 0.15s;
+        }
+
+        .ProfileCard .pc-actions button:hover {
+            background: rgba(0, 0, 0, 0.06);
+            color: rgba(0, 0, 0, 0.7);
+        }
+
+        .ProfileCard .pc-actions button.danger:hover {
+            color: rgba(239, 68, 68, 0.8);
+        }
+
+        .AddProfileCard {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px;
+            border: 1.5px dashed rgba(0, 0, 0, 0.12);
+            border-radius: 10px;
+            cursor: pointer;
+            color: rgba(0, 0, 0, 0.3);
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.15s;
+            margin-bottom: 6px;
+        }
+
+        .AddProfileCard:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            color: rgba(99, 102, 241, 0.6);
+            background: rgba(99, 102, 241, 0.04);
+        }
+
+        .ProfileOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .ProfileOverlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .SyncIndicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        .SyncIndicator.synced {
+            background: rgba(34, 197, 94, 0.12);
+            color: rgba(22, 130, 62, 0.8);
+        }
+
+        .SyncIndicator.syncing {
+            background: rgba(245, 158, 11, 0.12);
+            color: rgba(180, 110, 0, 0.8);
+        }
+
+        .SyncIndicator.offline {
+            background: rgba(239, 68, 68, 0.12);
+            color: rgba(180, 40, 40, 0.8);
+        }
+
+        .SyncIndicator .sync-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .SyncIndicator.synced .sync-dot { background: rgba(34, 197, 94, 0.8); }
+        .SyncIndicator.syncing .sync-dot { background: rgba(245, 158, 11, 0.8); animation: pulse 1s infinite; }
+        .SyncIndicator.offline .sync-dot { background: rgba(239, 68, 68, 0.8); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .RemoteCursor {
+            position: fixed;
+            pointer-events: none;
+            z-index: 900;
+            transition: left 0.3s ease, top 0.3s ease;
+        }
+
+        .RemoteCursor .cursor-pointer {
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 10px solid var(--cursor-color, #6366f1);
+        }
+
+        .RemoteCursor .cursor-label {
+            background: var(--cursor-color, #6366f1);
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 1px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+            margin-top: 2px;
+            margin-left: 6px;
+        }
+
+        .RemoteTypingIndicator {
+            position: absolute;
+            top: -18px;
+            left: 0;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--cursor-color, #6366f1);
+            white-space: nowrap;
+            animation: fadeInOut 2s ease infinite;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .CollaboratorBubbles {
+            display: flex;
+            margin-left: 2px;
+        }
+
+        .CollaboratorBubble {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            margin-left: -6px;
+        }
+
+        .CollaboratorBubble:first-child {
+            margin-left: 0;
+        }
+
+        .SyncCollabCount {
+            font-size: 10px;
+            font-weight: 700;
+            margin-left: 4px;
+            opacity: 0.7;
+        }
+
+        .CollabPopover {
+            position: fixed;
+            width: 280px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 14px;
+            padding: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+            animation: helpFadeIn 0.15s ease;
+        }
+
+        .CollabPopover .collab-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(0, 0, 0, 0.4);
+            margin-bottom: 8px;
+        }
+
+        .CollabPopover .collab-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 10px;
+            transition: background 0.15s;
+        }
+
+        .CollabPopover .collab-item:hover {
+            background: rgba(99, 102, 241, 0.06);
+        }
+
+        .CollabPopover .collab-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: rgba(99, 102, 241, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .CollabPopover .collab-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .CollabPopover .collab-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .CollabPopover .collab-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.8);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .CollabPopover .collab-username {
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.4);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .CollabPopover .collab-username a {
+            color: rgba(99, 102, 241, 0.7);
+            text-decoration: none;
+        }
+
+        .CollabPopover .collab-username a:hover {
+            text-decoration: underline;
+        }
+
+        .CollabPopover .collab-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .CollabPopover .collab-status.online {
+            background: rgba(34, 197, 94, 0.8);
+            box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
+        }
+
+        .CollabPopover .collab-status.offline {
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        @media (max-width: 768px) {
+            .ProfilePanel {
+                width: 100%;
+                right: -100%;
+            }
+
+            .ProfileBar {
+                max-width: 160px;
+            }
+
+            .ProfileBar .profile-name {
+                font-size: 12px;
+            }
+        }
+    </style>
+    <style>
+        @media (max-width: 768px) {
+            .MobileBlock { display: flex !important; }
+            body > *:not(.MobileBlock) { display: none !important; }
+        }
     </style>
 </head>
 
 <body>
+    <div class="MobileBlock" style="display:none;position:fixed;inset:0;z-index:999999;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;font-family:'Roboto',sans-serif;">
+        <div style="background:rgba(255,255,255,0.2);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.4);border-radius:20px;padding:2.5rem 2rem;max-width:380px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,0.1);">
+            <span style="font-size:48px;display:block;margin-bottom:16px;">🖥️</span>
+            <h2 style="font-size:20px;font-weight:600;margin-bottom:8px;color:rgba(0,0,0,0.8);">Desktop Only</h2>
+            <p style="font-size:14px;color:rgba(0,0,0,0.5);line-height:1.6;">Sorry, this site is currently only available on desktop devices.</p>
+        </div>
+    </div>
     <div class="gridOverlay"></div>
 
     <div class="TopButtons">
+        <div class="ProfileBar" onclick="toggleProfilePanel()" id="profileBarBtn">
+            <span class="material-symbols-outlined profile-icon">person</span>
+            <span class="profile-name" id="profileBarName">Default</span>
+            <span class="profile-type local" id="profileBarType">Local</span>
+        </div>
+        <button class="GTextBtn" id="syncIndicatorWrapper" style="display:none;padding:6px 12px;cursor:pointer;gap:8px;position:relative;" onmouseenter="showCollabPopover()" onmouseleave="hideCollabPopover()">
+            <div class="SyncIndicator synced" id="syncIndicator">
+                <span class="sync-dot"></span>
+                <span id="syncStatusText">Synced</span>
+                <span class="SyncCollabCount" id="syncCollabCount"></span>
+            </div>
+            <div class="CollaboratorBubbles" id="collaboratorBubbles"></div>
+        </button>
         <button class="GTextBtn" id="labelsTopBtn" onclick="openModal('labelManager')" title="Manage Labels">
             <span class="material-symbols-outlined">label</span>
             Labels
@@ -1811,6 +3075,24 @@
             </div>
             <div class="SidebarCategory">
                 <div class="SidebarCategoryHeader">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    Inventory
+                </div>
+                <div class="SidebarTab" data-page="inventory" onclick="switchPage('inventory')">
+                    <span class="material-symbols-outlined" style="font-size: 18px;">category</span>
+                    Items
+                </div>
+                <div class="SidebarTab" data-page="stocks" onclick="switchPage('stocks')">
+                    <span class="material-symbols-outlined" style="font-size: 18px;">warehouse</span>
+                    Stocks
+                </div>
+                <div class="SidebarTab" data-page="orders" onclick="switchPage('orders')">
+                    <span class="material-symbols-outlined" style="font-size: 18px;">shopping_cart</span>
+                    Orders
+                </div>
+            </div>
+            <div class="SidebarCategory">
+                <div class="SidebarCategoryHeader">
                     <span class="material-symbols-outlined">more_horiz</span>
                     Miscellaneous
                 </div>
@@ -1825,7 +3107,10 @@
         <div class="ContentArea">
             <!-- Permission Tree Manager Page -->
             <div class="page active" id="page-permissions">
-                <div class="ContentTitle">Permission Tree Manager</div>
+                <div style="display:flex;align-items:center;gap:8px;position:relative;">
+                    <div class="ContentTitle">Permission Tree Manager</div>
+                    <button class="HelpBtn" onclick="toggleHelp(this, 'permissions')">?</button>
+                </div>
                 <div class="ContentDesc">Configure permissions for each role in your Bloxburg business. Toggle individual permissions on or off per role.</div>
                 <div class="PermissionGrid" id="permissionGrid">
                     <!-- Generated by JS -->
@@ -1834,7 +3119,10 @@
 
             <!-- Salary Manager Page -->
             <div class="page" id="page-salary">
-                <div class="ContentTitle">Job Titles</div>
+                <div style="display:flex;align-items:center;gap:8px;position:relative;">
+                    <div class="ContentTitle">Job Titles</div>
+                    <button class="HelpBtn" onclick="toggleHelp(this, 'salary')">?</button>
+                </div>
                 <div class="ContentDesc">Wages update in real time as you add jobs and set a budget. Each level maps to a salary range and jobs are labeled as average, underpaid, or overpaid relative to your budget.</div>
 
                 <div class="SalarySection">
@@ -1914,7 +3202,10 @@
 
             <!-- Staff Manager Page -->
             <div class="page" id="page-staff">
-                <div class="ContentTitle">Staff Manager</div>
+                <div style="display:flex;align-items:center;gap:8px;position:relative;">
+                    <div class="ContentTitle">Staff Manager</div>
+                    <button class="HelpBtn" onclick="toggleHelp(this, 'staff')">?</button>
+                </div>
                 <div class="ContentDesc">Manage your employee roster. Assign job titles and business labels to each employee.</div>
 
                 <div class="BusinessLabelFilter" id="staffBusinessFilter"></div>
@@ -1930,7 +3221,10 @@
             <!-- Hours Tracker Page -->
             <div class="page" id="page-hours">
                 <div id="hoursListView">
-                    <div class="ContentTitle">Hours Tracker</div>
+                    <div style="display:flex;align-items:center;gap:8px;position:relative;">
+                        <div class="ContentTitle">Hours Tracker</div>
+                        <button class="HelpBtn" onclick="toggleHelp(this, 'hours')">?</button>
+                    </div>
                     <div class="ContentDesc">Track employee work hours and generate pay reports. Create a workday record, add employee clock-in/out times, and see calculated pay.</div>
                     <div class="RecordGrid" id="hoursRecordGrid"></div>
                 </div>
@@ -1957,7 +3251,10 @@
             <!-- Income / Expenses Page -->
             <div class="page" id="page-finance">
                 <div id="financeListView">
-                    <div class="ContentTitle">Income / Expenses</div>
+                    <div style="display:flex;align-items:center;gap:8px;position:relative;">
+                        <div class="ContentTitle">Income / Expenses</div>
+                        <button class="HelpBtn" onclick="toggleHelp(this, 'finance')">?</button>
+                    </div>
                     <div class="ContentDesc">Track all income and expenses for each day. Create daily records and log individual transactions.</div>
                     <div class="RecordGrid" id="financeRecordGrid"></div>
                 </div>
@@ -1984,7 +3281,10 @@
             <!-- Partnerships Page -->
             <div class="page" id="page-partnerships">
                 <div id="partnershipsListView">
-                    <div class="ContentTitle">Partnerships</div>
+                    <div style="display:flex;align-items:center;gap:8px;position:relative;">
+                        <div class="ContentTitle">Partnerships</div>
+                        <button class="HelpBtn" onclick="toggleHelp(this, 'partnerships')">?</button>
+                    </div>
                     <div class="ContentDesc">Manage your business partnerships. Track partner information, investments, and shared transactions.</div>
                     <div class="PartnerGrid" id="partnerGrid"></div>
                 </div>
@@ -2007,9 +3307,95 @@
                 </div>
             </div>
 
+            <!-- Inventory Items Page -->
+            <div class="page" id="page-inventory">
+                <div style="display:flex;align-items:center;gap:8px;position:relative;">
+                    <div class="ContentTitle">Items Catalog</div>
+                    <button class="HelpBtn" onclick="toggleHelp(this, 'items')">?</button>
+                </div>
+                <div class="ContentDesc">Define your product catalog. Create items here, then add them to inventories in the Stocks tab.</div>
+                <div class="InventoryStats" id="inventoryStats"></div>
+                <div class="InventoryGrid" id="inventoryGrid">
+                    <div class="AddItemCard" onclick="openAddItemModal()">
+                        <span class="material-symbols-outlined" style="font-size: 36px;">add_shopping_cart</span>
+                        <span style="font-size: 13px; font-weight: 500;">Add Item</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stocks / Inventories Page -->
+            <div class="page" id="page-stocks">
+                <div id="stocksListView">
+                    <div style="display:flex;align-items:center;gap:8px;position:relative;">
+                        <div class="ContentTitle">Stocks</div>
+                        <button class="HelpBtn" onclick="toggleHelp(this, 'stocks')">?</button>
+                    </div>
+                    <div class="ContentDesc">Create named inventories for your businesses and track stock levels per item. Total value is calculated per inventory.</div>
+                    <div class="InventoryGrid" id="stocksGrid" style="margin-top:12px;"></div>
+                </div>
+                <div id="stockDetailView" style="display: none;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <button class="BackBtn" onclick="closeStockDetail()">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                        </button>
+                        <div class="ContentTitle" id="stockDetailTitle">Inventory</div>
+                    </div>
+                    <div class="InventoryStats" id="stockDetailStats"></div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; align-items: center;">
+                        <input type="text" id="stockSearchInput" placeholder="Search items..." oninput="renderStockDetail()" style="padding:6px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.4);background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);font-size:13px;flex:1;min-width:140px;max-width:260px;">
+                        <button class="GTextBtn" onclick="openAddItemToStock()" style="padding: 4px 10px; font-size: 12px;">
+                            <span class="material-symbols-outlined" style="font-size: 14px;">add</span>
+                            Add Item
+                        </button>
+                    </div>
+                    <div id="stockDetailItems" style="display: flex; flex-direction: column; gap: 6px;"></div>
+                </div>
+            </div>
+
+            <!-- Orders Page -->
+            <div class="page" id="page-orders">
+                <div id="ordersListView">
+                    <div style="display:flex;align-items:center;gap:8px;position:relative;">
+                        <div class="ContentTitle">Orders</div>
+                        <button class="HelpBtn" onclick="toggleHelp(this, 'orders')">?</button>
+                    </div>
+                    <div class="ContentDesc">Create and manage customer orders. Track order status, discounts, and payment methods.</div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
+                        <button class="GTextBtn primary" onclick="openCreateOrderModal()">
+                            <span class="material-symbols-outlined">add</span>
+                            New Order
+                        </button>
+                        <select id="orderStatusFilter" onchange="renderOrderGrid()" style="padding: 6px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); font-size: 13px; cursor: pointer;">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                        <select id="orderBusinessFilter" onchange="renderOrderGrid()" style="padding: 6px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); font-size: 13px; cursor: pointer;">
+                            <option value="all">All Businesses</option>
+                        </select>
+                    </div>
+                    <div class="OrderGrid" id="orderGrid"></div>
+                </div>
+                <div id="orderDetailView" style="display: none;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <button class="BackBtn" onclick="closeOrderDetail()">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                        </button>
+                        <div class="ContentTitle" id="orderDetailTitle">Order</div>
+                    </div>
+                    <div class="ResultsSummary" id="orderDetailSummary"></div>
+                    <div class="SectionHeader">Items</div>
+                    <div id="orderDetailItems" style="display: flex; flex-direction: column; gap: 6px;"></div>
+                </div>
+            </div>
+
             <!-- Converters Page -->
             <div class="page" id="page-converters">
-                <div class="ContentTitle">Converters</div>
+                <div style="display:flex;align-items:center;gap:8px;position:relative;">
+                    <div class="ContentTitle">Converters</div>
+                    <button class="HelpBtn" onclick="toggleHelp(this, 'converters')">?</button>
+                </div>
                 <div class="ContentDesc">Quick conversion tools for Bloxburg values.</div>
 
                 <div style="display: flex; flex-direction: column; gap: 16px;">
@@ -2135,19 +3521,70 @@
 
     <!-- Business Labels Modal -->
     <div class="ModalOverlay" id="businessLabelsModal" onclick="if(event.target===this)closeModal('businessLabels')">
-        <div class="ModalContent">
+        <div class="ModalContent" style="max-width: 480px;">
             <div class="ModalTitle">
-                <span>Business Labels</span>
+                <span id="businessModalTitle">Manage Businesses</span>
                 <button class="ModalClose" onclick="closeModal('businessLabels')">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
-            <div class="ContentDesc">Create labels for your different businesses. Use them to filter and organize job titles and staff.</div>
-            <div id="businessLabelEditorList" style="display: flex; flex-direction: column; gap: 8px;"></div>
-            <button class="GTextBtn" onclick="addBusinessLabel()" style="align-self: flex-start;">
-                <span class="material-symbols-outlined">add</span>
-                Add Business
-            </button>
+            <div id="businessListView">
+                <div class="ContentDesc">Create and manage your businesses. Each business has a name, color, logo, and owner details.</div>
+                <div class="BusinessDetailGrid" id="businessDetailGrid"></div>
+            </div>
+            <div id="businessEditView" style="display:none;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+                    <button class="BackBtn" onclick="closeBusinessEdit()" style="width:28px;height:28px;">
+                        <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+                    </button>
+                    <span style="font-weight:600;font-size:15px;" id="businessEditTitle">Edit Business</span>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div class="InputRow">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Business Name</label>
+                            <input type="text" id="businessNameInput" placeholder="e.g. Golhem Markets">
+                        </div>
+                        <div class="form-group" style="max-width: 60px;">
+                            <label>Color</label>
+                            <input type="color" id="businessColorInput" value="#6366f1" style="width:100%;height:38px;border:none;padding:0;cursor:pointer;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Logo</label>
+                        <div id="businessLogoPreview" class="ItemImagePreviewPlaceholder" onclick="document.getElementById('businessLogoFile').click()" style="height:60px;">
+                            <span class="material-symbols-outlined" style="font-size: 20px;">image</span>
+                            Click to upload or enter URL
+                        </div>
+                        <input type="file" id="businessLogoFile" accept="image/*" style="display:none" onchange="handleBusinessLogoFile(this)">
+                        <input type="text" id="businessLogoUrlInput" placeholder="Or paste logo URL" oninput="previewBusinessLogo(this.value)" style="margin-top: 4px;">
+                    </div>
+                    <div class="form-group">
+                        <label>Owner Name</label>
+                        <input type="text" id="businessOwnerInput" placeholder="e.g. Techtoby">
+                    </div>
+                    <div class="form-group">
+                        <label>Owner Profile URL</label>
+                        <input type="text" id="businessOwnerProfileInput" placeholder="e.g. roblox.com/users/...">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="businessDescInput" placeholder="What does this business do?" rows="2" style="resize:vertical;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Type / Category</label>
+                        <input type="text" id="businessTypeInput" placeholder="e.g. Restaurant, Shop, Café">
+                    </div>
+                </div>
+                <input type="hidden" id="editBusinessId" value="">
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
+                    <button class="GTextBtn" onclick="closeBusinessEdit()">Cancel</button>
+                    <button class="GTextBtn primary" onclick="saveBusinessDetail()">
+                        <span class="material-symbols-outlined">check</span>
+                        <span id="saveBusinessBtnText">Save</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -2283,6 +3720,10 @@
                 <button class="ModalClose" onclick="closeModal('financeRecord')">
                     <span class="material-symbols-outlined">close</span>
                 </button>
+            </div>
+            <div class="form-group">
+                <label>Record Name</label>
+                <input type="text" id="financeRecordName" placeholder="e.g. Opening Day Sales">
             </div>
             <div class="form-group">
                 <label>Date</label>
@@ -2439,7 +3880,1647 @@
         </div>
     </div>
 
+    <!-- Add/Edit Item Modal -->
+    <div class="ModalOverlay" id="addItemModal" onclick="if(event.target===this)closeModal('addItem')">
+        <div class="ModalContent" style="max-width: 420px;">
+            <div class="ModalTitle">
+                <span id="addItemModalTitle">Add Item</span>
+                <button class="ModalClose" onclick="closeModal('addItem')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="form-group">
+                    <label>Image</label>
+                    <div id="itemImagePreviewArea">
+                        <div class="ItemImagePreviewPlaceholder" onclick="document.getElementById('itemImageFileInput').click()">
+                            <span class="material-symbols-outlined" style="font-size: 20px;">image</span>
+                            Click to upload or enter URL below
+                        </div>
+                    </div>
+                    <input type="file" id="itemImageFileInput" accept="image/*" style="display:none" onchange="handleItemImageFile(this)">
+                    <input type="text" id="itemImageUrlInput" placeholder="Or paste image URL" oninput="previewItemImageUrl(this.value)" style="margin-top: 6px;">
+                </div>
+                <div class="form-group">
+                    <label>Item Name</label>
+                    <input type="text" id="itemNameInput" placeholder="e.g. Bloxy Cola">
+                </div>
+                <div class="InputRow">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Category</label>
+                        <input type="text" id="itemCategoryInput" placeholder="e.g. Drinks" list="itemCategoryList">
+                        <datalist id="itemCategoryList"></datalist>
+                    </div>
+                    <div class="form-group" style="max-width: 120px;">
+                        <label>Price ($)</label>
+                        <input type="number" id="itemPriceInput" placeholder="0" min="0" step="1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <input type="text" id="itemNotesInput" placeholder="Optional notes">
+                </div>
+            </div>
+            <input type="hidden" id="editItemId" value="">
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
+                <button class="GTextBtn" onclick="closeModal('addItem')">Cancel</button>
+                <button class="GTextBtn primary" onclick="saveItem()">
+                    <span class="material-symbols-outlined">check</span>
+                    <span id="saveItemBtnText">Add</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Order Modal -->
+    <div class="ModalOverlay" id="createOrderModal" onclick="if(event.target===this)closeModal('createOrder')">
+        <div class="ModalContent" style="max-width: 560px;">
+            <div class="ModalTitle">
+                <span id="createOrderModalTitle">New Order</span>
+                <button class="ModalClose" onclick="closeModal('createOrder')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="InputRow">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Customer Name</label>
+                        <input type="text" id="orderCustomerInput" placeholder="e.g. Player123">
+                    </div>
+                    <div class="form-group" style="max-width: 160px;">
+                        <label>Business</label>
+                        <select id="orderBusinessInput">
+                            <option value="">None</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="InputRow">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Payment Method</label>
+                        <select id="orderPaymentInput">
+                            <option value="cash">Cash ($)</option>
+                            <option value="blockbux">Blockbux (B$)</option>
+                            <option value="card">Card</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="SectionHeader" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>Line Items</span>
+                    <button class="GTextBtn" onclick="addOrderLineItem()" style="padding: 4px 10px; font-size: 12px;">
+                        <span class="material-symbols-outlined" style="font-size: 14px;">add</span>
+                        Add Item
+                    </button>
+                </div>
+                <div id="orderLineItems" style="display: flex; flex-direction: column; gap: 6px;"></div>
+                <div class="InputRow">
+                    <div class="form-group" style="max-width: 120px;">
+                        <label>Discount (%)</label>
+                        <input type="number" id="orderDiscountInput" value="0" min="0" max="100" step="1" oninput="updateOrderPreview()">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Notes</label>
+                        <input type="text" id="orderNotesInput" placeholder="Optional">
+                    </div>
+                </div>
+                <div class="ResultsSummary" id="orderPreviewSummary" style="display: none;"></div>
+            </div>
+            <input type="hidden" id="editOrderId" value="">
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
+                <button class="GTextBtn" onclick="closeModal('createOrder')">Cancel</button>
+                <button class="GTextBtn primary" onclick="saveOrder()">
+                    <span class="material-symbols-outlined">check</span>
+                    <span id="saveOrderBtnText">Create</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Panel Overlay -->
+    <div class="ProfileOverlay" id="profileOverlay" onclick="toggleProfilePanel()"></div>
+
+    <!-- Profile Side Panel -->
+    <div class="ProfilePanel" id="profilePanel">
+        <div class="panel-header">
+            <h3>Profiles</h3>
+            <button class="ModalClose" onclick="toggleProfilePanel()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="panel-section">
+            <div class="panel-section-title">Personal Profiles</div>
+            <div id="localProfilesList"></div>
+            <a href="../settings/" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;font-size:12px;color:rgba(99,102,241,0.7);text-decoration:none;font-weight:500;border-radius:8px;transition:background 0.2s;" onmouseover="this.style.background='rgba(99,102,241,0.06)'" onmouseout="this.style.background='transparent'">
+                <span class="material-symbols-outlined" style="font-size:14px;">settings</span>
+                Manage in Settings
+            </a>
+        </div>
+        <div class="panel-section" style="border-top: 1px solid rgba(0,0,0,0.06);">
+            <div class="panel-section-title" style="display:flex;align-items:center;gap:6px;position:relative;">
+                Shared Profiles
+                <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:2px 6px;border-radius:4px;background:rgba(245,158,11,0.15);color:rgba(180,110,0,0.8);">Experimental</span>
+                <button class="HelpBtn" onclick="toggleHelp(this, 'sharedProfiles')" style="margin-left:auto;">?</button>
+            </div>
+            <div id="sharedProfilesList"></div>
+            <div style="display: flex; gap: 6px;">
+                <div class="AddProfileCard" onclick="createSharedProfile()" style="flex:1;">
+                    <span class="material-symbols-outlined" style="font-size:16px;">add</span>
+                    Create
+                </div>
+                <div class="AddProfileCard" onclick="joinSharedProfile()" style="flex:1;">
+                    <span class="material-symbols-outlined" style="font-size:16px;">login</span>
+                    Join
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Profile Modal -->
+    <div class="ModalOverlay" id="createProfileModal" onclick="if(event.target===this)closeModal('createProfile')">
+        <div class="ModalContent" style="max-width: 420px;">
+            <div class="ModalTitle">
+                <span id="createProfileModalTitle">Create Shared Profile</span>
+                <button class="ModalClose" onclick="closeModal('createProfile')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="form-group">
+                    <label>Profile Name</label>
+                    <input type="text" id="newProfileNameInput" placeholder="e.g. My Café Business">
+                </div>
+                <div class="form-group" id="sharedProfileFields">
+                    <label>Business Label</label>
+                    <input type="text" id="newProfileBusinessInput" placeholder="e.g. Golhem Markets">
+                    <div style="font-size:11px;color:rgba(0,0,0,0.4);margin-top:4px;">This label will show to users when they join your session.</div>
+                </div>
+                <div class="form-group" id="sharedProfileAffiliate">
+                    <label>Use Profile</label>
+                    <select id="newProfileAffiliateSelect">
+                        <option value="">— Choose a profile —</option>
+                    </select>
+                    <div style="font-size:11px;color:rgba(0,0,0,0.4);margin-top:4px;">Select which profile's data to use for this shared session.</div>
+                </div>
+                <div class="form-group" id="sharedProfileMaxField">
+                    <label>Max Collaborators</label>
+                    <input type="number" id="newProfileMaxInput" value="3" min="1" max="10">
+                </div>
+            </div>
+            <input type="hidden" id="createProfileType" value="shared">
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
+                <button class="GTextBtn" onclick="closeModal('createProfile')">Cancel</button>
+                <button class="GTextBtn primary" onclick="confirmCreateProfile()">
+                    <span class="material-symbols-outlined">check</span>
+                    Create
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Join Shared Profile Modal -->
+    <div class="ModalOverlay" id="joinProfileModal" onclick="if(event.target===this)closeModal('joinProfile')">
+        <div class="ModalContent" style="max-width: 380px;">
+            <div class="ModalTitle">
+                <span>Join Shared Profile</span>
+                <button class="ModalClose" onclick="closeModal('joinProfile')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="form-group">
+                    <label>Session Code</label>
+                    <input type="text" id="joinProfileCodeInput" placeholder="Enter the unique word" style="text-transform: lowercase;">
+                </div>
+                <div class="form-group">
+                    <label>Join with Profile</label>
+                    <select id="joinProfileAffiliateSelect">
+                        <option value="">— Choose a profile —</option>
+                    </select>
+                </div>
+                <div id="joinProfilePreview" style="display:none;padding:10px;background:rgba(99,102,241,0.06);border-radius:10px;">
+                    <div style="font-size:13px;font-weight:600;" id="joinPreviewBusiness"></div>
+                    <div style="font-size:12px;color:rgba(0,0,0,0.5);" id="joinPreviewMeta"></div>
+                </div>
+                <div id="joinProfileError" style="display:none;padding:8px 10px;background:rgba(239,68,68,0.08);border-radius:8px;font-size:12px;color:rgba(239,68,68,0.8);"></div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
+                <button class="GTextBtn" onclick="closeModal('joinProfile')">Cancel</button>
+                <button class="GTextBtn primary" onclick="confirmJoinProfile()">
+                    <span class="material-symbols-outlined">login</span>
+                    Join
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shared Profile Settings Modal -->
+    <div class="ModalOverlay" id="sharedSettingsModal" onclick="if(event.target===this)closeModal('sharedSettings')">
+        <div class="ModalContent" style="max-width: 420px;">
+            <div class="ModalTitle">
+                <span>Shared Profile Settings</span>
+                <button class="ModalClose" onclick="closeModal('sharedSettings')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="form-group">
+                    <label>Session Code</label>
+                    <div style="display:flex;gap:6px;align-items:center;">
+                        <input type="text" id="sharedSettingsCodeInput" readonly style="flex:1;font-weight:600;letter-spacing:1px;">
+                        <button class="GTextBtn" onclick="copySessionCode()" style="padding:6px 10px;">
+                            <span class="material-symbols-outlined" style="font-size:16px;">content_copy</span>
+                        </button>
+                        <button class="GTextBtn" onclick="regenerateSessionCode()" style="padding:6px 10px;" title="Generate new code">
+                            <span class="material-symbols-outlined" style="font-size:16px;">refresh</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Custom Code (optional)</label>
+                    <div style="display:flex;gap:6px;">
+                        <input type="text" id="sharedSettingsCustomCode" placeholder="Choose a custom word" style="flex:1;text-transform:lowercase;">
+                        <button class="GTextBtn primary" onclick="applyCustomCode()" style="padding:6px 10px;">Apply</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Max Collaborators</label>
+                    <input type="number" id="sharedSettingsMaxInput" min="1" max="10" onchange="updateSharedMax(this.value)">
+                </div>
+                <div class="form-group">
+                    <label>Collaborators</label>
+                    <div id="sharedSettingsCollaborators" style="display:flex;flex-direction:column;gap:4px;"></div>
+                </div>
+                <div style="display:flex;gap:8px;margin-top:8px;">
+                    <button class="GTextBtn danger" onclick="kickAllCollaborators()" style="flex:1;">
+                        <span class="material-symbols-outlined" style="font-size:16px;">group_remove</span>
+                        Kick All
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // ===== PROFILE SYSTEM =====
+        const API_BASE = 'https://api.shawnyxx.dev';
+        const DB_PARAMS = 'db=techtoby&table=sessions';
+
+        // Roblox-safe words for session codes
+        const SAFE_WORDS = [
+            'apple','banana','cherry','dolphin','eagle','falcon','garden','harbor','island','jungle',
+            'kitten','lemon','mountain','neptune','ocean','panda','quartz','rainbow','sunset','tiger',
+            'umbrella','valley','waterfall','yellow','zephyr','anchor','bridge','castle','diamond','ember',
+            'forest','glacier','horizon','ivory','jasper','knight','lantern','marble','nebula','orchid',
+            'phoenix','crystal','ripple','silver','thunder','velvet','willow','cobalt','breeze','coral',
+            'desert','eclipse','feather','galaxy','harvest','indigo','jewel','krypton','lotus','meadow',
+            'nimbus','oasis','prism','redwood','sapphire','tulip','voyage','whisper','zenith','aurora',
+            'blizzard','canyon','dusk','evergreen','flame','grove','hemlock','icicle','jade','kayak',
+            'lightning','mosaic','nucleus','onyx','plateau','quasar','riviera','summit','tornado','unity',
+            'vortex','wildfire','blossom','compass','dragonfly','emerald','frostbite','golden','haven',
+            'inferno','jetstream','kindle','lunar','mirage','nova','osprey','pinnacle','rapids','starlight',
+            'timber','ultraviolet','vapor','windmill','amber','basalt','crimson','dewdrop','element'
+        ];
+
+        // All localStorage keys used by the app
+        const PROFILE_DATA_KEYS = [
+            'bbBusinessPermissions','bbSalaryMode','bbBusinessJobs','bbBudget','bbHoursPerDay','bbDays',
+            'bbPermLabels','bbRoleLabels','bbCustomRanges','bbBusinessPresets','bbBusinessLabels',
+            'bbBusinessEmployees','bbWorkdayRecords','bbFinanceRecords','bbPartnerships',
+            'bbInventoryItems','bbInventories','bbOrders','bbWhiteboards'
+        ];
+
+        // Settings profile integration
+        const TTC_PROFILES_KEY = 'ttcProfiles';
+        const TTC_ACTIVE_KEY = 'ttcActiveProfile';
+        const TTC_DATA_PREFIX = 'ttcData_';
+        const BB_SHARED_KEY = 'bbSharedProfiles';
+
+        let profiles = [];
+        let activeProfileId = null;
+        let syncInterval = null;
+        let presenceInterval = null;
+        let lastSyncHash = '';
+        let remotePresences = {};
+        let remoteCursorEls = {};
+        let myPresence = { x: 0, y: 0, page: '', typing: null };
+
+        function loadProfiles() {
+            // Read personal profiles from Settings app
+            const settingsProfiles = (JSON.parse(localStorage.getItem(TTC_PROFILES_KEY) || '[]')).map(p => ({
+                ...p,
+                id: String(p.id),
+                type: 'local',
+                name: p.name || 'Unnamed'
+            }));
+
+            // Read shared profiles
+            const sharedProfiles = JSON.parse(localStorage.getItem(BB_SHARED_KEY) || '[]');
+
+            profiles = [...settingsProfiles, ...sharedProfiles];
+            activeProfileId = localStorage.getItem('bbActiveProfileId');
+
+            // Default to Settings active profile if current doesn't match
+            if (!activeProfileId || !profiles.find(p => String(p.id) === String(activeProfileId))) {
+                const settingsActive = localStorage.getItem(TTC_ACTIVE_KEY);
+                if (settingsActive && profiles.find(p => String(p.id) === String(settingsActive))) {
+                    activeProfileId = String(settingsActive);
+                } else if (profiles.length > 0) {
+                    activeProfileId = String(profiles[0].id);
+                }
+                if (activeProfileId) localStorage.setItem('bbActiveProfileId', activeProfileId);
+            }
+
+            updateProfileBar();
+        }
+
+        function saveProfiles() {
+            // Only save shared profiles — Settings profiles are managed by the Settings app
+            const sharedOnly = profiles.filter(p => p.type === 'shared').map(p => {
+                const { data, ...rest } = p;
+                return rest;
+            });
+            localStorage.setItem(BB_SHARED_KEY, JSON.stringify(sharedOnly));
+            localStorage.setItem('bbActiveProfileId', activeProfileId);
+        }
+
+        function getActiveProfile() {
+            return profiles.find(p => String(p.id) === String(activeProfileId));
+        }
+
+        function saveCurrentDataToProfile() {
+            const profile = getActiveProfile();
+            if (!profile) return;
+            const data = {};
+            PROFILE_DATA_KEYS.forEach(key => {
+                const val = localStorage.getItem(key);
+                if (val) data[key] = val;
+            });
+
+            if (profile.type === 'shared') {
+                localStorage.setItem('bbProfileData_' + profile.id, JSON.stringify(data));
+                if (profile.sessionId) debouncedCloudSync();
+            } else {
+                // Merge BB data into Settings profile data store
+                const existing = JSON.parse(localStorage.getItem(TTC_DATA_PREFIX + profile.id) || '{}');
+                PROFILE_DATA_KEYS.forEach(key => {
+                    if (data[key]) existing[key] = data[key];
+                    else delete existing[key];
+                });
+                localStorage.setItem(TTC_DATA_PREFIX + profile.id, JSON.stringify(existing));
+            }
+        }
+
+        function loadProfileData(profileId) {
+            const profile = profiles.find(p => String(p.id) === String(profileId));
+            if (profile && profile.type === 'shared') {
+                const saved = localStorage.getItem('bbProfileData_' + profileId);
+                return saved ? JSON.parse(saved) : {};
+            }
+            // Settings profile — read from ttcData_
+            const saved = localStorage.getItem(TTC_DATA_PREFIX + profileId);
+            if (!saved) return {};
+            const allData = JSON.parse(saved);
+            const bbData = {};
+            Object.keys(allData).forEach(key => {
+                if (PROFILE_DATA_KEYS.includes(key)) bbData[key] = allData[key];
+            });
+            return bbData;
+        }
+
+        function switchProfile(profileId) {
+            // Save current profile data first
+            saveCurrentDataToProfile();
+
+            // Stop sync if was shared
+            stopSync();
+
+            // Clear current data keys
+            PROFILE_DATA_KEYS.forEach(key => localStorage.removeItem(key));
+
+            // Load new profile data
+            activeProfileId = profileId;
+            localStorage.setItem('bbActiveProfileId', profileId);
+            const data = loadProfileData(profileId);
+            Object.entries(data).forEach(([key, val]) => {
+                localStorage.setItem(key, val);
+            });
+
+            // Reload all app data
+            reloadAllData();
+
+            // Start sync if shared
+            const profile = getActiveProfile();
+            if (profile && profile.type === 'shared' && profile.sessionId) {
+                startSync();
+            }
+
+            updateProfileBar();
+            renderProfilePanel();
+        }
+
+        function reloadAllData() {
+            loadLabels();
+            loadBusinessLabels();
+            initPermissions();
+            loadPermissions();
+            renderPermissions();
+            loadCustomRanges();
+            loadJobTitles();
+            loadEmployees();
+            loadWorkdayRecords();
+            loadFinanceRecords();
+            loadPartnerships();
+            loadInventoryItems();
+            loadOrders();
+            renderLevelDropdown();
+
+            const savedBudget = localStorage.getItem('bbBudget');
+            if (savedBudget !== null) document.getElementById('budgetInput').value = savedBudget;
+            const savedHpd = localStorage.getItem('bbHoursPerDay');
+            if (savedHpd !== null) document.getElementById('hoursPerDayInput').value = savedHpd;
+            const savedDays = localStorage.getItem('bbDays');
+            if (savedDays !== null) document.getElementById('daysInput').value = savedDays;
+            const savedMode = localStorage.getItem('bbSalaryMode');
+            if (savedMode) setSalaryMode(savedMode);
+
+            recalcWages();
+
+            const savedPage = localStorage.getItem('bbActivePage');
+            if (savedPage) switchPage(savedPage);
+            else switchPage('permissions');
+        }
+
+        function updateProfileBar() {
+            const profile = getActiveProfile();
+            if (!profile) return;
+            document.getElementById('profileBarName').textContent = profile.name || 'Unnamed';
+            const typeEl = document.getElementById('profileBarType');
+            typeEl.textContent = profile.type === 'shared' ? 'Shared' : 'Local';
+            typeEl.className = 'profile-type ' + (profile.type === 'shared' ? 'shared' : 'local');
+
+            const syncWrapper = document.getElementById('syncIndicatorWrapper');
+            syncWrapper.style.display = profile.type === 'shared' ? '' : 'none';
+        }
+
+        function toggleProfilePanel() {
+            const panel = document.getElementById('profilePanel');
+            const overlay = document.getElementById('profileOverlay');
+            const isOpen = panel.classList.contains('open');
+            panel.classList.toggle('open');
+            overlay.classList.toggle('open');
+            if (!isOpen) renderProfilePanel();
+        }
+
+        function renderProfilePanel() {
+            const localList = document.getElementById('localProfilesList');
+            const sharedList = document.getElementById('sharedProfilesList');
+            const settingsProfiles = profiles.filter(p => p.type === 'local');
+            const sharedProfiles = profiles.filter(p => p.type === 'shared');
+
+            if (settingsProfiles.length === 0) {
+                localList.innerHTML = '<div style="padding:12px;text-align:center;font-size:12px;color:rgba(0,0,0,0.3);">No profiles yet. Create one in <a href="../settings/" style="color:rgba(99,102,241,0.8);text-decoration:none;font-weight:500;">Settings</a>.</div>';
+            } else {
+                localList.innerHTML = settingsProfiles.map(p => `
+                    <div class="ProfileCard ${String(p.id) === String(activeProfileId) ? 'active' : ''}" onclick="switchProfile('${p.id}')">
+                        ${p.avatarUrl
+                            ? `<div class="pc-icon local" style="background:none;border:none;width:24px;height:24px;overflow:hidden;border-radius:50%;"><img src="${escapeHtml(p.avatarUrl)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<span class=\\'material-symbols-outlined\\' style=\\'font-size:16px;\\'>person</span>';this.parentElement.style.background='rgba(99,102,241,0.12)';"></div>`
+                            : '<div class="pc-icon local"><span class="material-symbols-outlined" style="font-size:16px;">person</span></div>'
+                        }
+                        <div class="pc-info">
+                            <div class="pc-name">${escapeHtml(p.name)}</div>
+                            <div class="pc-meta">${p.username ? '@' + escapeHtml(p.username) : 'No username'}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            sharedList.innerHTML = sharedProfiles.map(p => `
+                <div class="ProfileCard ${p.id === activeProfileId ? 'active' : ''}" onclick="switchProfile('${p.id}')">
+                    <div class="pc-icon shared"><span class="material-symbols-outlined" style="font-size:16px;">cloud</span></div>
+                    <div class="pc-info">
+                        <div class="pc-name">${escapeHtml(p.name)}</div>
+                        <div class="pc-meta">${p.sessionId ? 'Code: ' + p.sessionId : 'Syncing...'} · ${p.business || ''}</div>
+                    </div>
+                    <div class="pc-actions">
+                        ${p.isOwner ? `<button onclick="event.stopPropagation();mergeLocalIntoShared('${p.id}')" title="Merge local profile">
+                            <span class="material-symbols-outlined" style="font-size:16px;">merge</span>
+                        </button>` : ''}
+                        ${p.isOwner ? `<button onclick="event.stopPropagation();openSharedSettings('${p.id}')" title="Settings">
+                            <span class="material-symbols-outlined" style="font-size:16px;">settings</span>
+                        </button>` : ''}
+                        <button class="danger" onclick="event.stopPropagation();leaveSharedProfile('${p.id}')" title="${p.isOwner ? 'Delete' : 'Leave'}">
+                            <span class="material-symbols-outlined" style="font-size:16px;">${p.isOwner ? 'delete' : 'logout'}</span>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            if (sharedProfiles.length === 0) {
+                sharedList.innerHTML = '<div style="padding:12px;text-align:center;font-size:12px;color:rgba(0,0,0,0.3);">No shared profiles yet. Create or join one!</div>';
+            }
+        }
+
+        // ===== LOCAL PROFILE MANAGEMENT =====
+        // Personal profiles are managed in Settings — no local CRUD needed here
+
+        function createSharedProfile() {
+            const settingsProfiles = profiles.filter(p => p.type === 'local');
+            if (settingsProfiles.length === 0) {
+                return alert('You need to create a profile in Settings first.');
+            }
+
+            document.getElementById('createProfileModalTitle').textContent = 'Create Shared Profile';
+            document.getElementById('newProfileNameInput').value = '';
+            document.getElementById('newProfileBusinessInput').value = '';
+
+            // Populate affiliate dropdown with Settings profiles
+            const sel = document.getElementById('newProfileAffiliateSelect');
+            sel.innerHTML = '<option value="">— Choose a profile —</option>';
+            settingsProfiles.forEach(p => {
+                sel.innerHTML += `<option value="${p.id}">${escapeHtml(p.name)}${p.username ? ' (@' + escapeHtml(p.username) + ')' : ''}</option>`;
+            });
+
+            openModal('createProfile');
+        }
+
+        async function confirmCreateProfile() {
+            const name = document.getElementById('newProfileNameInput').value.trim();
+            if (!name) return alert('Please enter a profile name.');
+
+            // Shared profile creation only
+            const business = document.getElementById('newProfileBusinessInput').value.trim();
+            if (!business) return alert('Please enter a business label.');
+            const affiliateId = document.getElementById('newProfileAffiliateSelect').value;
+            if (!affiliateId) return alert('Please select a profile to use.');
+            const max = parseInt(document.getElementById('newProfileMaxInput').value) || 3;
+
+            // Get affiliate profile data as owner identity
+            const affiliateData = loadProfileData(affiliateId);
+            const ownerB64 = btoa(unescape(encodeURIComponent(JSON.stringify(affiliateData))));
+
+            // Pick a unique word
+            const sessionId = await generateUniqueCode();
+            if (!sessionId) return alert('Could not generate a session code. Try again.');
+
+            setSyncStatus('syncing');
+
+            // Bootstrap: ensure sessions table exists
+            await fetch(`${API_BASE}/db?${DB_PARAMS}&action=create-table`).catch(() => {});
+
+            // Create on the cloud
+            try {
+                const resp = await fetch(`${API_BASE}/db?${DB_PARAMS}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: sessionId,
+                        data: '',
+                        owner: ownerB64.substring(0, 50000),
+                        max: max,
+                        collaborators: '',
+                        business: business,
+                        memory: ''
+                    })
+                });
+                if (!resp.ok) throw new Error('Failed to create session');
+
+                const profile = {
+                    id: 'shared_' + Date.now(),
+                    name,
+                    type: 'shared',
+                    created: Date.now(),
+                    sessionId,
+                    business,
+                    affiliateProfileId: affiliateId,
+                    isOwner: true,
+                    max
+                };
+                profiles.push(profile);
+                saveProfiles();
+                localStorage.setItem('bbProfileData_' + profile.id, JSON.stringify({}));
+                switchProfile(profile.id);
+                closeModal('createProfile');
+                renderProfilePanel();
+                setSyncStatus('synced');
+            } catch (err) {
+                console.error('Create shared profile error:', err);
+                alert('Failed to create shared profile: ' + err.message);
+                setSyncStatus('offline');
+            }
+        }
+
+        async function generateUniqueCode() {
+            // Try random words until we find one that's not taken
+            const shuffled = [...SAFE_WORDS].sort(() => Math.random() - 0.5);
+            for (const word of shuffled.slice(0, 20)) {
+                try {
+                    const resp = await fetch(`${API_BASE}/db?${DB_PARAMS}&key=${word}`);
+                    const data = await resp.json();
+                    if (!data || !data.id) return word;
+                } catch (e) {
+                    continue;
+                }
+            }
+            // Fallback: word + random digits
+            return shuffled[0] + Math.floor(Math.random() * 99);
+        }
+
+        function renameProfile(id) {
+            const profile = profiles.find(p => p.id === id);
+            if (!profile || profile.type === 'local') return; // Settings profiles are managed in Settings
+            const name = prompt('Rename profile:', profile.name);
+            if (!name || !name.trim()) return;
+            profile.name = name.trim();
+            saveProfiles();
+            updateProfileBar();
+            renderProfilePanel();
+        }
+
+        function deleteProfile(id) {
+            const profile = profiles.find(p => p.id === id);
+            if (!profile || profile.type === 'local') return; // Settings profiles are managed in Settings
+            if (!confirm('Delete profile "' + profile.name + '"? All data will be lost.')) return;
+
+            localStorage.removeItem('bbProfileData_' + id);
+            profiles = profiles.filter(p => p.id !== id);
+
+            if (activeProfileId === id) {
+                const fallback = profiles.find(p => p.type === 'local') || profiles[0];
+                if (fallback) activeProfileId = String(fallback.id);
+            }
+            saveProfiles();
+            switchProfile(activeProfileId);
+            renderProfilePanel();
+        }
+
+        // ===== SHARED PROFILE: JOIN =====
+        function joinSharedProfile() {
+            document.getElementById('joinProfileCodeInput').value = '';
+            document.getElementById('joinProfileError').style.display = 'none';
+            document.getElementById('joinProfilePreview').style.display = 'none';
+
+            const sel = document.getElementById('joinProfileAffiliateSelect');
+            sel.innerHTML = '<option value="">— Choose a profile —</option>';
+            profiles.filter(p => p.type === 'local').forEach(p => {
+                sel.innerHTML += `<option value="${p.id}">${escapeHtml(p.name)}${p.username ? ' (@' + escapeHtml(p.username) + ')' : ''}</option>`;
+            });
+
+            openModal('joinProfile');
+
+            // Auto-lookup on typing
+            document.getElementById('joinProfileCodeInput').oninput = debounce(async function() {
+                const code = this.value.trim().toLowerCase();
+                if (code.length < 2) {
+                    document.getElementById('joinProfilePreview').style.display = 'none';
+                    return;
+                }
+                try {
+                    const resp = await fetch(`${API_BASE}/db?${DB_PARAMS}&key=${code}`);
+                    const data = await resp.json();
+                    if (data && data.id) {
+                        document.getElementById('joinPreviewBusiness').textContent = data.business;
+                        const collabCount = data.collaborators ? data.collaborators.split(',').filter(Boolean).length : 0;
+                        document.getElementById('joinPreviewMeta').textContent = `${collabCount}/${data.max} collaborators`;
+                        document.getElementById('joinProfilePreview').style.display = '';
+                        document.getElementById('joinProfileError').style.display = 'none';
+                    } else {
+                        document.getElementById('joinProfilePreview').style.display = 'none';
+                        document.getElementById('joinProfileError').textContent = 'No session found with this code.';
+                        document.getElementById('joinProfileError').style.display = '';
+                    }
+                } catch (e) {
+                    document.getElementById('joinProfileError').textContent = 'Error looking up session.';
+                    document.getElementById('joinProfileError').style.display = '';
+                }
+            }, 500);
+        }
+
+        async function confirmJoinProfile() {
+            const code = document.getElementById('joinProfileCodeInput').value.trim().toLowerCase();
+            if (!code) return alert('Please enter a session code.');
+            const affiliateId = document.getElementById('joinProfileAffiliateSelect').value;
+            if (!affiliateId) return alert('Please select a profile to join with.');
+
+            try {
+                setSyncStatus('syncing');
+                const resp = await fetch(`${API_BASE}/db?${DB_PARAMS}&key=${code}`);
+                const session = await resp.json();
+
+                if (!session || !session.id) {
+                    document.getElementById('joinProfileError').textContent = 'Session not found.';
+                    document.getElementById('joinProfileError').style.display = '';
+                    setSyncStatus('offline');
+                    return;
+                }
+
+                // Check capacity
+                const currentCollabs = session.collaborators ? session.collaborators.split(',').filter(Boolean) : [];
+                if (currentCollabs.length >= session.max) {
+                    document.getElementById('joinProfileError').textContent = 'This session is full.';
+                    document.getElementById('joinProfileError').style.display = '';
+                    setSyncStatus('offline');
+                    return;
+                }
+
+                // Check if already joined
+                if (profiles.some(p => p.type === 'shared' && p.sessionId === code)) {
+                    document.getElementById('joinProfileError').textContent = 'You have already joined this session.';
+                    document.getElementById('joinProfileError').style.display = '';
+                    setSyncStatus('offline');
+                    return;
+                }
+
+                // Add our profile to collaborators
+                const affiliateData = loadProfileData(affiliateId);
+                const myB64 = btoa(unescape(encodeURIComponent(JSON.stringify(affiliateData))));
+                const shortB64 = myB64.substring(0, 50000);
+
+                currentCollabs.push(shortB64);
+                await fetch(`${API_BASE}/db?${DB_PARAMS}&key=${code}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ collaborators: currentCollabs.join(',') })
+                });
+
+                // Create local shared profile
+                const profile = {
+                    id: 'shared_' + Date.now(),
+                    name: session.business,
+                    type: 'shared',
+                    created: Date.now(),
+                    sessionId: code,
+                    business: session.business,
+                    affiliateProfileId: affiliateId,
+                    isOwner: false,
+                    max: session.max,
+                    collabIndex: currentCollabs.length - 1
+                };
+
+                profiles.push(profile);
+                saveProfiles();
+
+                // Load session data
+                if (session.data) {
+                    try {
+                        const decoded = JSON.parse(decodeURIComponent(escape(atob(session.data))));
+                        localStorage.setItem('bbProfileData_' + profile.id, JSON.stringify(decoded));
+                    } catch (e) {
+                        localStorage.setItem('bbProfileData_' + profile.id, JSON.stringify({}));
+                    }
+                } else {
+                    localStorage.setItem('bbProfileData_' + profile.id, JSON.stringify({}));
+                }
+
+                switchProfile(profile.id);
+                closeModal('joinProfile');
+                renderProfilePanel();
+                setSyncStatus('synced');
+            } catch (err) {
+                console.error('Join error:', err);
+                document.getElementById('joinProfileError').textContent = 'Error joining session: ' + err.message;
+                document.getElementById('joinProfileError').style.display = '';
+                setSyncStatus('offline');
+            }
+        }
+
+        async function leaveSharedProfile(id) {
+            const profile = profiles.find(p => p.id === id);
+            if (!profile) return;
+            const msg = profile.isOwner ? 'Delete this shared session? All collaborators will lose access.' : 'Leave this shared session?';
+            if (!confirm(msg)) return;
+
+            if (profile.isOwner && profile.sessionId) {
+                // Delete from cloud
+                try {
+                    await fetch(`${API_BASE}/db?${DB_PARAMS}&key=${profile.sessionId}`, { method: 'DELETE' });
+                } catch (e) {}
+            }
+
+            localStorage.removeItem('bbProfileData_' + id);
+            profiles = profiles.filter(p => p.id !== id);
+
+            if (activeProfileId === id) {
+                const fallback = profiles.find(p => p.type === 'local') || profiles[0];
+                activeProfileId = fallback.id;
+            }
+            saveProfiles();
+            switchProfile(activeProfileId);
+            renderProfilePanel();
+        }
+
+        function silentLeaveProfile(id) {
+            stopSync();
+            localStorage.removeItem('bbProfileData_' + id);
+            profiles = profiles.filter(p => p.id !== id);
+
+            if (activeProfileId === id) {
+                const fallback = profiles.find(p => p.type === 'local') || profiles[0];
+                activeProfileId = fallback ? fallback.id : null;
+            }
+            saveProfiles();
+            if (activeProfileId) switchProfile(activeProfileId);
+            renderProfilePanel();
+        }
+
+        function mergeLocalIntoShared(sharedId) {
+            const sharedProfile = profiles.find(p => p.id === sharedId);
+            if (!sharedProfile || sharedProfile.type !== 'shared' || !sharedProfile.isOwner) return;
+
+            const settingsProfiles = profiles.filter(p => p.type === 'local');
+            if (settingsProfiles.length === 0) return alert('No profiles to merge from. Create one in Settings first.');
+
+            // Build pick list
+            const overlay = document.createElement('div');
+            overlay.className = 'ModalOverlay open';
+            overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+            overlay.innerHTML = `
+                <div class="ModalContent" style="min-width:360px;">
+                    <div class="ModalTitle">
+                        <span>Merge Profile → ${escapeHtml(sharedProfile.name)}</span>
+                        <button class="ModalClose" onclick="this.closest('.ModalOverlay').remove()">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
+                    <div style="font-size:13px;color:rgba(0,0,0,0.5);margin-bottom:12px;">
+                        Select a profile whose data will be copied into the shared profile. The shared profile's current data will be overwritten with the selected profile's data.
+                    </div>
+                    <div id="mergeProfileList" style="display:flex;flex-direction:column;gap:6px;">
+                        ${settingsProfiles.map(p => `
+                            <div class="ProfileCard" style="cursor:pointer;" onclick="executeMerge('${p.id}','${sharedId}');this.closest('.ModalOverlay').remove();">
+                                ${p.avatarUrl
+                                    ? `<div class="pc-icon local" style="background:none;border:none;width:24px;height:24px;overflow:hidden;border-radius:50%;"><img src="${escapeHtml(p.avatarUrl)}" style="width:100%;height:100%;object-fit:cover;"></div>`
+                                    : '<div class="pc-icon local"><span class="material-symbols-outlined" style="font-size:16px;">person</span></div>'
+                                }
+                                <div class="pc-info">
+                                    <div class="pc-name">${escapeHtml(p.name)}</div>
+                                    <div class="pc-meta">${p.username ? '@' + escapeHtml(p.username) : 'No username'}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        function executeMerge(localId, sharedId) {
+            if (!confirm('Copy all data from the local profile into the shared profile? The shared profile\'s current data will be overwritten.')) return;
+            const localData = loadProfileData(localId);
+            // Save local data to the shared profile
+            localStorage.setItem('bbProfileData_' + sharedId, JSON.stringify(localData));
+            // If this shared profile is active, apply it to localStorage
+            if (activeProfileId === sharedId) {
+                PROFILE_DATA_KEYS.forEach(key => {
+                    if (localData[key] !== undefined) localStorage.setItem(key, localData[key]);
+                    else localStorage.removeItem(key);
+                });
+                reloadAllData();
+            }
+            // Push to cloud
+            const profile = profiles.find(p => p.id === sharedId);
+            if (profile && profile.sessionId) {
+                pushToCloud();
+            }
+            renderProfilePanel();
+        }
+
+        // ===== SHARED SETTINGS =====
+        function openSharedSettings(id) {
+            const profile = profiles.find(p => p.id === id);
+            if (!profile || !profile.isOwner) return;
+
+            document.getElementById('sharedSettingsCodeInput').value = profile.sessionId || '';
+            document.getElementById('sharedSettingsMaxInput').value = profile.max || 3;
+            document.getElementById('sharedSettingsCustomCode').value = '';
+
+            // Store which profile we're configuring
+            document.getElementById('sharedSettingsModal').dataset.profileId = id;
+
+            loadCollaboratorsList(profile);
+            openModal('sharedSettings');
+        }
+
+        async function loadCollaboratorsList(profile) {
+            const el = document.getElementById('sharedSettingsCollaborators');
+            if (!profile.sessionId) { el.innerHTML = '<div style="font-size:12px;color:rgba(0,0,0,0.4);">No session.</div>'; return; }
+
+            try {
+                const resp = await fetch(`${API_BASE}/db?${DB_PARAMS}&key=${profile.sessionId}`);
+                const session = await resp.json();
+                if (!session) { el.innerHTML = '<div style="font-size:12px;color:rgba(0,0,0,0.4);">Session not found.</div>'; return; }
+
+                const collabs = session.collaborators ? session.collaborators.split(',').filter(Boolean) : [];
+                if (collabs.length === 0) {
+                    el.innerHTML = '<div style="font-size:12px;color:rgba(0,0,0,0.4);">No collaborators yet.</div>';
+                    return;
+                }
+
+                // Get member metadata from memory
+                let members = {};
+                if (session.memory) {
+                    try {
+                        const mem = JSON.parse(decodeURIComponent(escape(atob(session.memory))));
+                        members = mem.members || {};
+                    } catch (e) {}
+                }
+
+                // Match collaborators to member entries by index
+                // Members are keyed by profile ID; build ordered list of non-owner members
+                const ownerIds = profiles.filter(p => p.type === 'shared' && p.sessionId === profile.sessionId && p.isOwner).map(p => p.id);
+                const memberEntries = Object.entries(members).filter(([id]) => !ownerIds.includes(id));
+
+                el.innerHTML = collabs.map((c, i) => {
+                    const memberInfo = memberEntries[i];
+                    const name = memberInfo ? escapeHtml(memberInfo[1].name || 'Unknown') : 'Collaborator ' + (i + 1);
+                    const avatarUrl = memberInfo ? memberInfo[1].avatarUrl : '';
+                    const username = memberInfo ? memberInfo[1].username : '';
+                    const memberId = memberInfo ? memberInfo[0] : '';
+                    const avatarHtml = avatarUrl
+                        ? `<div style="width:24px;height:24px;border-radius:50%;overflow:hidden;flex-shrink:0;"><img src="${escapeHtml(avatarUrl)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<span class=\'material-symbols-outlined\' style=\'font-size:16px;color:rgba(99,102,241,0.6);\'>person</span>';"></div>`
+                        : '<span class="material-symbols-outlined" style="font-size:16px;color:rgba(99,102,241,0.6);">person</span>';
+                    const usernameHtml = username ? `<span style="font-size:11px;color:rgba(0,0,0,0.35);">@${escapeHtml(username)}</span>` : '';
+
+                    return `
+                        <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:rgba(255,255,255,0.2);border-radius:8px;">
+                            ${avatarHtml}
+                            <div style="flex:1;min-width:0;">
+                                <div style="font-size:13px;font-weight:500;">${name}</div>
+                                ${usernameHtml}
+                            </div>
+                            <button class="StaffCardBtn danger" onclick="kickCollaborator(${i},'${memberId}')" style="padding:2px;" title="Kick">
+                                <span class="material-symbols-outlined" style="font-size:14px;">person_remove</span>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                el.innerHTML = '<div style="font-size:12px;color:rgba(239,68,68,0.6);">Error loading collaborators.</div>';
+            }
+        }
+
+        async function kickCollaborator(index, memberId) {
+            const profileId = document.getElementById('sharedSettingsModal').dataset.profileId;
+            const profile = profiles.find(p => p.id === profileId);
+            if (!profile || !profile.sessionId) return;
+
+            try {
+                const resp = await fetch(`${API_BASE}/db?${DB_PARAMS}&key=${profile.sessionId}`);
+                const session = await resp.json();
+                const collabs = session.collaborators ? session.collaborators.split(',').filter(Boolean) : [];
+                collabs.splice(index, 1);
+
+                // Add to kicked list in memory so the collaborator gets notified
+                let mem = {};
+                if (session.memory) {
+                    try { mem = JSON.parse(decodeURIComponent(escape(atob(session.memory)))); } catch (e) { mem = {}; }
+                }
+                if (!mem.kicked) mem.kicked = [];
+                if (memberId && !mem.kicked.includes(memberId)) mem.kicked.push(memberId);
+
+                // Clean up member entry
+                if (memberId && mem.members) delete mem.members[memberId];
+                if (memberId && mem.presences) delete mem.presences[memberId];
+
+                const memB64 = btoa(unescape(encodeURIComponent(JSON.stringify(mem))));
+
+                await fetch(`${API_BASE}/db?${DB_PARAMS}&key=${profile.sessionId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ collaborators: collabs.join(','), memory: memB64 })
+                });
+                loadCollaboratorsList(profile);
+            } catch (e) {
+                alert('Error kicking collaborator.');
+            }
+        }
+
+        async function kickAllCollaborators() {
+            const profileId = document.getElementById('sharedSettingsModal').dataset.profileId;
+            const profile = profiles.find(p => p.id === profileId);
+            if (!profile || !profile.sessionId) return;
+            if (!confirm('Kick all collaborators?')) return;
+
+            try {
+                const resp = await fetch(`${API_BASE}/db?${DB_PARAMS}&key=${profile.sessionId}`);
+                const session = await resp.json();
+
+                // Add all non-owner members to kicked list
+                let mem = {};
+                if (session.memory) {
+                    try { mem = JSON.parse(decodeURIComponent(escape(atob(session.memory)))); } catch (e) { mem = {}; }
+                }
+                if (!mem.kicked) mem.kicked = [];
+                if (mem.members) {
+                    Object.keys(mem.members).forEach(id => {
+                        if (id !== profile.id && !mem.kicked.includes(id)) mem.kicked.push(id);
+                    });
+                    // Clear non-owner members and presences
+                    Object.keys(mem.members).forEach(id => {
+                        if (id !== profile.id) {
+                            delete mem.members[id];
+                            if (mem.presences) delete mem.presences[id];
+                        }
+                    });
+                }
+
+                const memB64 = btoa(unescape(encodeURIComponent(JSON.stringify(mem))));
+
+                await fetch(`${API_BASE}/db?${DB_PARAMS}&key=${profile.sessionId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ collaborators: '', memory: memB64 })
+                });
+                loadCollaboratorsList(profile);
+            } catch (e) {
+                alert('Error kicking collaborators.');
+            }
+        }
+
+        function copySessionCode() {
+            const code = document.getElementById('sharedSettingsCodeInput').value;
+            navigator.clipboard.writeText(code);
+        }
+
+        async function regenerateSessionCode() {
+            const profileId = document.getElementById('sharedSettingsModal').dataset.profileId;
+            const profile = profiles.find(p => p.id === profileId);
+            if (!profile || !profile.sessionId) return;
+
+            const keepMembers = confirm('Keep current collaborators?');
+            const newCode = await generateUniqueCode();
+            if (!newCode) return alert('Could not generate a new code.');
+
+            try {
+                // Get current data
+                const resp = await fetch(`${API_BASE}/db?${DB_PARAMS}&key=${profile.sessionId}`);
+                const session = await resp.json();
+
+                // Create new entry
+                await fetch(`${API_BASE}/db?${DB_PARAMS}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: newCode,
+                        data: session.data || '',
+                        owner: session.owner || '',
+                        max: session.max || 3,
+                        collaborators: keepMembers ? (session.collaborators || '') : '',
+                        business: session.business || '',
+                        memory: ''
+                    })
+                });
+
+                // Delete old entry
+                await fetch(`${API_BASE}/db?${DB_PARAMS}&key=${profile.sessionId}`, { method: 'DELETE' });
+
+                profile.sessionId = newCode;
+                saveProfiles();
+                document.getElementById('sharedSettingsCodeInput').value = newCode;
+                loadCollaboratorsList(profile);
+            } catch (e) {
+                alert('Error regenerating code: ' + e.message);
+            }
+        }
+
+        async function applyCustomCode() {
+            const profileId = document.getElementById('sharedSettingsModal').dataset.profileId;
+            const profile = profiles.find(p => p.id === profileId);
+            if (!profile || !profile.sessionId) return;
+
+            const customCode = document.getElementById('sharedSettingsCustomCode').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (!customCode || customCode.length < 3) return alert('Code must be at least 3 characters (letters/numbers only).');
+
+            try {
+                // Check if taken
+                const checkResp = await fetch(`${API_BASE}/db?${DB_PARAMS}&key=${customCode}`);
+                const existing = await checkResp.json();
+                if (existing && existing.id) return alert('This code is already taken.');
+
+                // Get current data
+                const resp = await fetch(`${API_BASE}/db?${DB_PARAMS}&key=${profile.sessionId}`);
+                const session = await resp.json();
+
+                // Create new entry
+                await fetch(`${API_BASE}/db?${DB_PARAMS}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: customCode,
+                        data: session.data || '',
+                        owner: session.owner || '',
+                        max: session.max || 3,
+                        collaborators: session.collaborators || '',
+                        business: session.business || '',
+                        memory: ''
+                    })
+                });
+
+                // Delete old entry
+                await fetch(`${API_BASE}/db?${DB_PARAMS}&key=${profile.sessionId}`, { method: 'DELETE' });
+
+                profile.sessionId = customCode;
+                saveProfiles();
+                document.getElementById('sharedSettingsCodeInput').value = customCode;
+                document.getElementById('sharedSettingsCustomCode').value = '';
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+
+        async function updateSharedMax(val) {
+            const profileId = document.getElementById('sharedSettingsModal').dataset.profileId;
+            const profile = profiles.find(p => p.id === profileId);
+            if (!profile || !profile.sessionId) return;
+            const max = parseInt(val) || 3;
+            profile.max = max;
+            saveProfiles();
+            try {
+                await fetch(`${API_BASE}/db?${DB_PARAMS}&key=${profile.sessionId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ max })
+                });
+            } catch (e) {}
+        }
+
+        // ===== CLOUD SYNC ENGINE =====
+        let lastSessionMemberCount = 1;
+        let lastPresenceData = {};
+        let lastMembersData = {};
+
+        function setSyncStatus(status) {
+            const el = document.getElementById('syncIndicator');
+            const textEl = document.getElementById('syncStatusText');
+            el.className = 'SyncIndicator ' + status;
+            textEl.textContent = status === 'synced' ? 'Synced' : status === 'syncing' ? 'Syncing' : 'Offline';
+        }
+
+        let syncDebounceTimer = null;
+        function debouncedCloudSync() {
+            clearTimeout(syncDebounceTimer);
+            syncDebounceTimer = setTimeout(() => pushToCloud(), 2000);
+        }
+
+        async function pushToCloud() {
+            const profile = getActiveProfile();
+            if (!profile || profile.type !== 'shared' || !profile.sessionId) return;
+
+            setSyncStatus('syncing');
+            try {
+                const data = {};
+                PROFILE_DATA_KEYS.forEach(key => {
+                    const val = localStorage.getItem(key);
+                    if (val) data[key] = val;
+                });
+                const compressed = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+                const hash = simpleHash(compressed);
+
+                if (hash === lastSyncHash) {
+                    setSyncStatus('synced');
+                    return;
+                }
+
+                await fetch(`${API_BASE}/db?${DB_PARAMS}&key=${profile.sessionId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data: compressed })
+                });
+
+                lastSyncHash = hash;
+                setSyncStatus('synced');
+            } catch (err) {
+                console.error('Push sync error:', err);
+                setSyncStatus('offline');
+            }
+        }
+
+        async function pullFromCloud() {
+            const profile = getActiveProfile();
+            if (!profile || profile.type !== 'shared' || !profile.sessionId) return;
+
+            try {
+                const resp = await fetch(`${API_BASE}/db?${DB_PARAMS}&key=${profile.sessionId}`);
+                const session = await resp.json();
+
+                // Check if session was deleted
+                if (!session || !session.id) {
+                    alert('This shared session has been deleted by the owner.');
+                    silentLeaveProfile(profile.id);
+                    return;
+                }
+
+                // Check if we've been kicked (before processing data)
+                if (session.memory) {
+                    try {
+                        const mem = JSON.parse(decodeURIComponent(escape(atob(session.memory))));
+                        if (mem.kicked && mem.kicked.includes(profile.id)) {
+                            alert('You have been removed from this shared session by the owner.');
+                            silentLeaveProfile(profile.id);
+                            return;
+                        }
+                    } catch (e) {}
+                }
+
+                if (!session.data) {
+                    // Still check memory for presence even with no data
+                    if (session.memory) {
+                        try {
+                            const mem = JSON.parse(decodeURIComponent(escape(atob(session.memory))));
+                            handleMemoryUpdate(mem);
+                        } catch (e) {}
+                    }
+                    return;
+                }
+
+                const hash = simpleHash(session.data);
+                if (hash === lastSyncHash) {
+                    // Data unchanged, but still process memory for presence updates
+                    if (session.memory) {
+                        try {
+                            const mem = JSON.parse(decodeURIComponent(escape(atob(session.memory))));
+                            handleMemoryUpdate(mem);
+                        } catch (e) {}
+                    }
+                    const totalCollabs = session.collaborators ? session.collaborators.split(',').filter(Boolean).length : 0;
+                    lastSessionMemberCount = 1 + totalCollabs;
+                    return;
+                }
+
+                // Decode cloud data
+                const decoded = JSON.parse(decodeURIComponent(escape(atob(session.data))));
+
+                // Apply to localStorage
+                PROFILE_DATA_KEYS.forEach(key => {
+                    if (decoded[key] !== undefined) {
+                        localStorage.setItem(key, decoded[key]);
+                    } else {
+                        localStorage.removeItem(key);
+                    }
+                });
+
+                // Save locally
+                localStorage.setItem('bbProfileData_' + profile.id, JSON.stringify(decoded));
+                lastSyncHash = hash;
+
+                // Reload UI without full page reset
+                reloadAllData();
+
+                // Parse memory for presence
+                if (session.memory) {
+                    try {
+                        const mem = JSON.parse(decodeURIComponent(escape(atob(session.memory))));
+                        handleMemoryUpdate(mem);
+                    } catch (e) {}
+                }
+
+                // Track total session members for collaborator count
+                const totalCollabs = session.collaborators ? session.collaborators.split(',').filter(Boolean).length : 0;
+                lastSessionMemberCount = 1 + totalCollabs; // owner + collaborators
+            } catch (err) {
+                console.error('Pull sync error:', err);
+                setSyncStatus('offline');
+            }
+        }
+
+        function startSync() {
+            stopSync();
+            const profile = getActiveProfile();
+            if (!profile || profile.type !== 'shared') return;
+
+            setSyncStatus('synced');
+
+            // Pull every 5 seconds
+            syncInterval = setInterval(() => pullFromCloud(), 5000);
+
+            // Send presence every 5 seconds
+            presenceInterval = setInterval(() => sendPresence(), 5000);
+
+            // Initial push
+            pushToCloud();
+        }
+
+        function stopSync() {
+            if (syncInterval) { clearInterval(syncInterval); syncInterval = null; }
+            if (presenceInterval) { clearInterval(presenceInterval); presenceInterval = null; }
+            clearRemoteCursors();
+            setSyncStatus('synced');
+        }
+
+        // ===== PRESENCE & CURSOR SHARING =====
+        let lastMouseX = 0, lastMouseY = 0, lastMouseMoved = false;
+
+        document.addEventListener('mousemove', (e) => {
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+            lastMouseMoved = true;
+        });
+
+        async function sendPresence() {
+            const profile = getActiveProfile();
+            if (!profile || profile.type !== 'shared' || !profile.sessionId) return;
+            if (!lastMouseMoved && !myPresence.typing) return;
+            lastMouseMoved = false;
+
+            // Get display info from affiliated Settings profile
+            const affiliateProfile = profiles.find(p => p.id === profile.affiliateProfileId);
+            const displayName = affiliateProfile ? affiliateProfile.name : profile.name;
+            const avatarUrl = affiliateProfile ? (affiliateProfile.avatarUrl || '') : '';
+            const username = affiliateProfile ? (affiliateProfile.username || '') : '';
+
+            const activePage = localStorage.getItem('bbActivePage') || 'permissions';
+            const presenceData = {
+                id: profile.id,
+                name: displayName,
+                avatarUrl: avatarUrl,
+                username: username,
+                x: lastMouseX,
+                y: lastMouseY,
+                page: activePage,
+                typing: myPresence.typing,
+                ts: Date.now()
+            };
+
+            try {
+                const resp = await fetch(`${API_BASE}/db?${DB_PARAMS}&key=${profile.sessionId}`);
+                const session = await resp.json();
+                if (!session) return;
+
+                // Update total member count
+                const totalCollabs = session.collaborators ? session.collaborators.split(',').filter(Boolean).length : 0;
+                lastSessionMemberCount = 1 + totalCollabs;
+
+                let mem = {};
+                if (session.memory) {
+                    try { mem = JSON.parse(decodeURIComponent(escape(atob(session.memory)))); } catch (e) { mem = {}; }
+                }
+
+                if (!mem.presences) mem.presences = {};
+                mem.presences[profile.id] = presenceData;
+
+                // Store persistent member metadata
+                if (!mem.members) mem.members = {};
+                mem.members[profile.id] = {
+                    name: displayName,
+                    avatarUrl: avatarUrl,
+                    username: username
+                };
+
+                // Clean stale presences (older than 15s)
+                const now = Date.now();
+                Object.keys(mem.presences).forEach(k => {
+                    if (now - mem.presences[k].ts > 15000) delete mem.presences[k];
+                });
+
+                const memB64 = btoa(unescape(encodeURIComponent(JSON.stringify(mem))));
+                await fetch(`${API_BASE}/db?${DB_PARAMS}&key=${profile.sessionId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ memory: memB64 })
+                });
+            } catch (e) {}
+        }
+
+        function handleMemoryUpdate(mem) {
+            if (!mem.presences) return;
+            const profile = getActiveProfile();
+            if (!profile) return;
+            const myPage = localStorage.getItem('bbActivePage') || 'permissions';
+
+            // Clean old remote cursors
+            const now = Date.now();
+            Object.entries(mem.presences).forEach(([id, presence]) => {
+                if (id === profile.id) return; // Skip self
+                if (now - presence.ts > 15000) return; // Stale
+
+                if (presence.page === myPage) {
+                    showRemoteCursor(id, presence);
+                } else {
+                    hideRemoteCursor(id);
+                }
+            });
+
+            // Store persistent members data
+            if (mem.members) lastMembersData = mem.members;
+
+            // Update collaborator bubbles
+            updateCollaboratorBubbles(mem.presences, profile.id);
+        }
+
+        const CURSOR_COLORS = ['#6366f1', '#ec4899', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#06b6d4', '#84cc16'];
+
+        function showRemoteCursor(id, presence) {
+            let el = remoteCursorEls[id];
+            if (!el) {
+                el = document.createElement('div');
+                el.className = 'RemoteCursor';
+                const colorIdx = Object.keys(remoteCursorEls).length % CURSOR_COLORS.length;
+                el.style.setProperty('--cursor-color', CURSOR_COLORS[colorIdx]);
+                el.innerHTML = `
+                    <div class="cursor-pointer"></div>
+                    <div class="cursor-label">${escapeHtml(presence.name || 'User')}</div>
+                `;
+                document.body.appendChild(el);
+                remoteCursorEls[id] = el;
+            }
+
+            el.style.left = presence.x + 'px';
+            el.style.top = presence.y + 'px';
+            el.style.display = '';
+
+            // Show typing indicator
+            if (presence.typing) {
+                let typingEl = el.querySelector('.RemoteTypingIndicator');
+                if (!typingEl) {
+                    typingEl = document.createElement('div');
+                    typingEl.className = 'RemoteTypingIndicator';
+                    el.appendChild(typingEl);
+                }
+                typingEl.textContent = 'typing in ' + (presence.typing || '...');
+                typingEl.style.display = '';
+            } else {
+                const typingEl = el.querySelector('.RemoteTypingIndicator');
+                if (typingEl) typingEl.style.display = 'none';
+            }
+        }
+
+        function hideRemoteCursor(id) {
+            if (remoteCursorEls[id]) remoteCursorEls[id].style.display = 'none';
+        }
+
+        function clearRemoteCursors() {
+            Object.values(remoteCursorEls).forEach(el => el.remove());
+            remoteCursorEls = {};
+            document.getElementById('collaboratorBubbles').innerHTML = '';
+            document.getElementById('syncCollabCount').textContent = '';
+            lastPresenceData = {};
+            lastMembersData = {};
+        }
+
+        function updateCollaboratorBubbles(presences, myId) {
+            const bubblesEl = document.getElementById('collaboratorBubbles');
+            const countEl = document.getElementById('syncCollabCount');
+            const now = Date.now();
+            const allActive = Object.entries(presences).filter(([, p]) => now - p.ts < 15000);
+            const others = allActive.filter(([id]) => id !== myId);
+
+            // Store all presence data for the popover (including self)
+            lastPresenceData = {};
+            allActive.forEach(([id, p]) => { lastPresenceData[id] = p; });
+
+            // Update count: connected / total members
+            const connectedCount = allActive.length;
+            if (lastSessionMemberCount > 1) {
+                countEl.textContent = connectedCount + '/' + lastSessionMemberCount;
+            } else {
+                countEl.textContent = '';
+            }
+
+            if (others.length === 0) {
+                bubblesEl.innerHTML = '';
+                return;
+            }
+
+            bubblesEl.innerHTML = others.map(([id, p], i) => {
+                const color = CURSOR_COLORS[i % CURSOR_COLORS.length];
+                if (p.avatarUrl) {
+                    return `<div class="CollaboratorBubble" style="background:none;border-color:${color};overflow:hidden;padding:0;"><img src="${escapeHtml(p.avatarUrl)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.textContent='${(p.name || 'U')[0].toUpperCase()}';this.parentElement.style.background='${color}';"></div>`;
+                }
+                const initial = (p.name || 'U')[0].toUpperCase();
+                return `<div class="CollaboratorBubble" style="background:${color};">${initial}</div>`;
+            }).join('');
+        }
+
+        let activeCollabPopover = null;
+        let collabPopoverTimer = null;
+
+        function showCollabPopover() {
+            clearTimeout(collabPopoverTimer);
+            if (activeCollabPopover) return;
+
+            const wrapper = document.getElementById('syncIndicatorWrapper');
+            const allMembers = Object.entries(lastMembersData);
+            if (allMembers.length === 0) return;
+
+            const profile = getActiveProfile();
+            const myId = profile ? profile.id : null;
+            const now = Date.now();
+
+            // Build set of currently online IDs
+            const onlineIds = new Set();
+            Object.entries(lastPresenceData).forEach(([id]) => onlineIds.add(id));
+
+            const popover = document.createElement('div');
+            popover.className = 'CollabPopover';
+
+            // Sort: online first, then by name
+            const sorted = allMembers.sort(([aId, a], [bId, b]) => {
+                const aOnline = onlineIds.has(aId) ? 0 : 1;
+                const bOnline = onlineIds.has(bId) ? 0 : 1;
+                if (aOnline !== bOnline) return aOnline - bOnline;
+                return (a.name || '').localeCompare(b.name || '');
+            });
+
+            let html = '<div class="collab-title">Collaborators</div>';
+            sorted.forEach(([id, m]) => {
+                const isMe = id === myId;
+                const isOnline = onlineIds.has(id);
+                const name = escapeHtml(m.name || 'Unknown');
+                const uname = m.username ? escapeHtml(m.username) : '';
+                const avatarHtml = m.avatarUrl
+                    ? `<img src="${escapeHtml(m.avatarUrl)}" onerror="this.parentElement.innerHTML='<span class=\\'material-symbols-outlined\\' style=\\'font-size:16px;color:rgba(99,102,241,0.6);\\'>person</span>';">`
+                    : `<span class="material-symbols-outlined" style="font-size:16px;color:rgba(99,102,241,0.6);">person</span>`;
+                const profileLink = uname
+                    ? `<a href="https://www.roblox.com/users/profile?username=${encodeURIComponent(m.username)}" target="_blank" rel="noopener">@${uname}</a>`
+                    : 'No username';
+
+                html += `
+                    <div class="collab-item"${!isOnline ? ' style="opacity:0.5;"' : ''}>
+                        <div class="collab-avatar">${avatarHtml}</div>
+                        <div class="collab-info">
+                            <div class="collab-name">${name}${isMe ? ' <span style="font-size:10px;opacity:0.5;font-weight:400;">(you)</span>' : ''}</div>
+                            <div class="collab-username">${profileLink}</div>
+                        </div>
+                        <div class="collab-status ${isOnline ? 'online' : 'offline'}" title="${isOnline ? 'Online' : 'Offline'}"></div>
+                    </div>
+                `;
+            });
+
+            popover.innerHTML = html;
+            document.body.appendChild(popover);
+
+            // Position below the wrapper
+            const rect = wrapper.getBoundingClientRect();
+            let top = rect.bottom + 8;
+            let left = rect.left;
+
+            const pw = popover.offsetWidth;
+            const ph = popover.offsetHeight;
+            if (left + pw > window.innerWidth - 12) left = window.innerWidth - pw - 12;
+            if (left < 12) left = 12;
+            if (top + ph > window.innerHeight - 12) top = rect.top - ph - 8;
+
+            popover.style.top = top + 'px';
+            popover.style.left = left + 'px';
+
+            // Keep popover open when hovering over it
+            popover.addEventListener('mouseenter', () => clearTimeout(collabPopoverTimer));
+            popover.addEventListener('mouseleave', () => hideCollabPopover());
+
+            activeCollabPopover = popover;
+        }
+
+        function hideCollabPopover() {
+            collabPopoverTimer = setTimeout(() => {
+                if (activeCollabPopover) {
+                    activeCollabPopover.remove();
+                    activeCollabPopover = null;
+                }
+            }, 150);
+        }
+
+        // Track typing for presence
+        document.addEventListener('input', (e) => {
+            const tag = e.target.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
+                const label = e.target.closest('.form-group')?.querySelector('label')?.textContent || e.target.placeholder || 'a field';
+                myPresence.typing = label;
+                clearTimeout(myPresence._typingTimer);
+                myPresence._typingTimer = setTimeout(() => { myPresence.typing = null; }, 3000);
+            }
+        });
+
+        // ===== PROFILE-AWARE SAVE WRAPPER =====
+        // Override all save functions to also save to current profile
+        const _originalSetItem = localStorage.setItem.bind(localStorage);
+        const profileDataKeysSet = new Set(PROFILE_DATA_KEYS);
+
+        localStorage.setItem = function(key, value) {
+            _originalSetItem(key, value);
+            if (profileDataKeysSet.has(key)) {
+                // Debounced save to profile
+                clearTimeout(localStorage._profileSaveTimer);
+                localStorage._profileSaveTimer = setTimeout(() => saveCurrentDataToProfile(), 1000);
+            }
+        };
+
+        // ===== UTILITY =====
+        function simpleHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const ch = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + ch;
+                hash |= 0;
+            }
+            return hash.toString(36);
+        }
+
+        function debounce(fn, delay) {
+            let timer;
+            return function(...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => fn.apply(this, args), delay);
+            };
+        }
+
         // ===== PAGE SWITCHING =====
         function switchPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -2468,6 +5549,9 @@
             if (pageId === 'hours') renderHoursRecordGrid();
             if (pageId === 'finance') renderFinanceRecordGrid();
             if (pageId === 'partnerships') renderPartnerGrid();
+            if (pageId === 'inventory') renderInventoryGrid();
+            if (pageId === 'stocks') renderStocksGrid();
+            if (pageId === 'orders') renderOrderGrid();
 
             localStorage.setItem('bbActivePage', pageId);
         }
@@ -3136,7 +6220,11 @@
         function openModal(id) {
             document.getElementById(id + 'Modal').classList.add('open');
             if (id === 'labelManager') renderLabelEditor();
-            if (id === 'businessLabels') renderBusinessLabelEditor();
+            if (id === 'businessLabels') {
+                document.getElementById('businessListView').style.display = '';
+                document.getElementById('businessEditView').style.display = 'none';
+                renderBusinessDetailGrid();
+            }
             if (id === 'rangeCustomizer') {
                 editingRanges = JSON.parse(JSON.stringify(levelRanges));
                 renderRangeEditor();
@@ -3670,20 +6758,20 @@
         }
 
         function addBusinessLabel() {
-            businessLabels.push({ id: Date.now(), name: 'New Business', color: '#6366f1' });
+            businessLabels.push({ id: Date.now(), name: 'New Business', color: '#6366f1', logo: null, ownerName: '', ownerProfile: '', description: '', type: '' });
             saveBusinessLabels();
-            renderBusinessLabelEditor();
+            renderBusinessDetailGrid();
+            openBusinessEdit(businessLabels.length - 1);
         }
 
         function removeBusinessLabel(id) {
             businessLabels = businessLabels.filter(l => l.id !== id);
-            // Clear from employees
             employees.forEach(emp => {
                 if (emp.businessLabelId === id) emp.businessLabelId = null;
             });
             saveEmployees();
             saveBusinessLabels();
-            renderBusinessLabelEditor();
+            renderBusinessDetailGrid();
             renderStaffGrid();
         }
 
@@ -3696,35 +6784,125 @@
             }
         }
 
-        function renderBusinessLabelEditor() {
-            const list = document.getElementById('businessLabelEditorList');
-            list.innerHTML = '';
-            if (businessLabels.length === 0) {
-                list.innerHTML = '<div class="EmptyState" style="padding: 20px;"><span class="material-symbols-outlined" style="font-size: 32px; margin-bottom: 8px;">store</span><div>No businesses yet. Add one to get started.</div></div>';
-                return;
-            }
-            businessLabels.forEach(label => {
-                const row = document.createElement('div');
-                row.className = 'LabelEditorRow';
-                const colorInput = document.createElement('input');
-                colorInput.type = 'color';
-                colorInput.value = label.color;
-                colorInput.addEventListener('input', () => updateBusinessLabel(label.id, 'color', colorInput.value));
-                const nameInput = document.createElement('input');
-                nameInput.type = 'text';
-                nameInput.value = label.name;
-                nameInput.placeholder = 'Business name';
-                nameInput.addEventListener('change', () => updateBusinessLabel(label.id, 'name', nameInput.value));
-                const removeBtn = document.createElement('button');
-                removeBtn.className = 'RemoveJobBtn';
-                removeBtn.title = 'Remove business';
-                removeBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 18px;">close</span>';
-                removeBtn.addEventListener('click', () => removeBusinessLabel(label.id));
-                row.appendChild(colorInput);
-                row.appendChild(nameInput);
-                row.appendChild(removeBtn);
-                list.appendChild(row);
+        function renderBusinessDetailGrid() {
+            const grid = document.getElementById('businessDetailGrid');
+            let html = '';
+            businessLabels.forEach((biz, idx) => {
+                html += `
+                    <div class="BusinessDetailCard">
+                        <div class="bdc-banner" style="background:${biz.color || '#6366f1'};"></div>
+                        <div class="bdc-body">
+                            <div class="bdc-header">
+                                ${biz.logo ? `<img class="bdc-logo" src="${biz.logo}" onerror="this.style.display='none'">` : `<div class="bdc-logo-placeholder"><span class="material-symbols-outlined" style="font-size:18px;">store</span></div>`}
+                                <div>
+                                    <div class="bdc-name">${escapeHtml(biz.name)}</div>
+                                    ${biz.type ? `<div style="font-size:11px;color:rgba(0,0,0,0.4);margin-top:1px;">${escapeHtml(biz.type)}</div>` : ''}
+                                </div>
+                            </div>
+                            ${biz.ownerName ? `<div class="bdc-owner"><span class="material-symbols-outlined" style="font-size:14px;">person</span> ${escapeHtml(biz.ownerName)}</div>` : ''}
+                            ${biz.description ? `<div class="bdc-desc">${escapeHtml(biz.description)}</div>` : ''}
+                            <div class="bdc-actions">
+                                <button class="GTextBtn" onclick="openBusinessEdit(${idx})" style="padding:3px 8px;font-size:11px;">
+                                    <span class="material-symbols-outlined" style="font-size:14px;">edit</span> Edit
+                                </button>
+                                <button class="GTextBtn danger" onclick="removeBusinessLabel(${biz.id})" style="padding:3px 8px;font-size:11px;">
+                                    <span class="material-symbols-outlined" style="font-size:14px;">delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
             });
+            html += `
+                <div class="AddBusinessDetailCard" onclick="addBusinessLabel()">
+                    <span class="material-symbols-outlined" style="font-size:24px;">add_business</span>
+                    <span style="font-size:12px;font-weight:500;">Add Business</span>
+                </div>
+            `;
+            grid.innerHTML = html;
+        }
+
+        function openBusinessEdit(idx) {
+            const biz = businessLabels[idx];
+            if (!biz) return;
+            document.getElementById('businessListView').style.display = 'none';
+            document.getElementById('businessEditView').style.display = '';
+            document.getElementById('editBusinessId').value = idx;
+            document.getElementById('businessEditTitle').textContent = biz.name || 'Edit Business';
+            document.getElementById('businessNameInput').value = biz.name || '';
+            document.getElementById('businessColorInput').value = biz.color || '#6366f1';
+            document.getElementById('businessOwnerInput').value = biz.ownerName || '';
+            document.getElementById('businessOwnerProfileInput').value = biz.ownerProfile || '';
+            document.getElementById('businessDescInput').value = biz.description || '';
+            document.getElementById('businessTypeInput').value = biz.type || '';
+            document.getElementById('businessLogoUrlInput').value = biz.logo || '';
+            if (biz.logo) {
+                previewBusinessLogo(biz.logo);
+            } else {
+                resetBusinessLogoPreview();
+            }
+        }
+
+        function closeBusinessEdit() {
+            document.getElementById('businessListView').style.display = '';
+            document.getElementById('businessEditView').style.display = 'none';
+            renderBusinessDetailGrid();
+        }
+
+        function handleBusinessLogoFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('businessLogoUrlInput').value = e.target.result;
+                previewBusinessLogo(e.target.result);
+            };
+            reader.readAsDataURL(file);
+            input.value = '';
+        }
+
+        function previewBusinessLogo(url) {
+            const area = document.getElementById('businessLogoPreview');
+            if (url && url.trim()) {
+                area.innerHTML = `<img src="${url}" style="max-height:56px;border-radius:8px;object-fit:contain;" onerror="resetBusinessLogoPreview()">
+                    <button class="GTextBtn danger" onclick="clearBusinessLogo()" style="padding:3px 8px;font-size:11px;margin-top:4px;align-self:flex-start;">
+                        <span class="material-symbols-outlined" style="font-size:14px">close</span> Remove
+                    </button>`;
+                area.style.cursor = 'default';
+            } else {
+                resetBusinessLogoPreview();
+            }
+        }
+
+        function resetBusinessLogoPreview() {
+            const area = document.getElementById('businessLogoPreview');
+            area.innerHTML = `<span class="material-symbols-outlined" style="font-size: 20px;">image</span> Click to upload or enter URL`;
+            area.style.cursor = 'pointer';
+        }
+
+        function clearBusinessLogo() {
+            document.getElementById('businessLogoUrlInput').value = '';
+            resetBusinessLogoPreview();
+        }
+
+        function saveBusinessDetail() {
+            const idx = parseInt(document.getElementById('editBusinessId').value);
+            const biz = businessLabels[idx];
+            if (!biz) return;
+            biz.name = document.getElementById('businessNameInput').value.trim() || 'Unnamed';
+            biz.color = document.getElementById('businessColorInput').value;
+            biz.logo = document.getElementById('businessLogoUrlInput').value.trim() || null;
+            biz.ownerName = document.getElementById('businessOwnerInput').value.trim();
+            biz.ownerProfile = document.getElementById('businessOwnerProfileInput').value.trim();
+            biz.description = document.getElementById('businessDescInput').value.trim();
+            biz.type = document.getElementById('businessTypeInput').value.trim();
+            saveBusinessLabels();
+            renderStaffGrid();
+            closeBusinessEdit();
+        }
+
+        function renderBusinessLabelEditor() {
+            renderBusinessDetailGrid();
         }
 
         // ===== STAFF MANAGER =====
@@ -4249,6 +7427,7 @@
 
         function openNewFinanceRecordModal() {
             document.getElementById('financeRecordModalTitle').textContent = 'New Daily Record';
+            document.getElementById('financeRecordName').value = '';
             document.getElementById('financeRecordDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('financeRecordInGameDay').value = 'Monday';
             editingFinanceRecordId = null;
@@ -4259,6 +7438,7 @@
             const record = financeRecords.find(r => r.id === id);
             if (!record) return;
             document.getElementById('financeRecordModalTitle').textContent = 'Edit Daily Record';
+            document.getElementById('financeRecordName').value = record.name || '';
             document.getElementById('financeRecordDate').value = record.date;
             document.getElementById('financeRecordInGameDay').value = record.inGameDay;
             editingFinanceRecordId = id;
@@ -4266,14 +7446,15 @@
         }
 
         function saveFinanceRecord() {
+            const name = document.getElementById('financeRecordName').value.trim();
             const date = document.getElementById('financeRecordDate').value;
             const inGameDay = document.getElementById('financeRecordInGameDay').value;
             if (!date) return;
             if (editingFinanceRecordId !== null) {
                 const record = financeRecords.find(r => r.id === editingFinanceRecordId);
-                if (record) { record.date = date; record.inGameDay = inGameDay; }
+                if (record) { record.name = name; record.date = date; record.inGameDay = inGameDay; }
             } else {
-                financeRecords.push({ id: Date.now(), date, inGameDay, entries: [] });
+                financeRecords.push({ id: Date.now(), name, date, inGameDay, entries: [] });
             }
             saveFinanceRecords();
             closeModal('financeRecord');
@@ -4306,8 +7487,8 @@
                         <button class="StaffCardBtn" onclick="event.stopPropagation();openEditFinanceRecordModal(${record.id})" title="Edit"><span class="material-symbols-outlined" style="font-size:15px;">edit</span></button>
                         <button class="StaffCardBtn danger" onclick="event.stopPropagation();removeFinanceRecord(${record.id})" title="Delete"><span class="material-symbols-outlined" style="font-size:15px;color:rgba(239,68,68,0.7);">close</span></button>
                     </div>
-                    <div class="RecordCardTitle">${escapeHtml(record.inGameDay)}</div>
-                    <div class="RecordCardMeta"><span class="material-symbols-outlined" style="font-size:14px;">calendar_today</span> ${record.date}</div>
+                    <div class="RecordCardTitle">${escapeHtml(record.name || record.inGameDay)}</div>
+                    <div class="RecordCardMeta"><span class="material-symbols-outlined" style="font-size:14px;">calendar_today</span> ${record.date}${record.name ? ' · ' + escapeHtml(record.inGameDay) : ''}</div>
                     <div class="RecordCardStats">
                         <span>${record.entries.length} entr${record.entries.length !== 1 ? 'ies' : 'y'}</span>
                         <span style="color:rgba(22,163,74,0.9);">+$${totalIncome.toLocaleString()}</span>
@@ -4346,7 +7527,7 @@
             const record = financeRecords.find(r => r.id === activeFinanceId);
             if (!record) return;
 
-            document.getElementById('financeDetailTitle').textContent = record.inGameDay + ' — Daily Record';
+            document.getElementById('financeDetailTitle').textContent = (record.name || record.inGameDay) + ' — Daily Record';
             document.getElementById('financeDetailMeta').textContent = 'Date: ' + record.date;
 
             const totalIncome = record.entries.filter(e => e.type === 'income').reduce((s, e) => s + (e.amount || 0), 0);
@@ -4644,7 +7825,792 @@
             document.getElementById('convGameDays').value = totalMins > 0 ? Math.round(totalMins / 72 * 100) / 100 : '';
         }
 
+        // ===== INVENTORY ITEMS =====
+        let inventoryItems = [];
+        let inventories = [];
+
+        function loadInventoryItems() {
+            inventoryItems = JSON.parse(localStorage.getItem('bbInventoryItems') || '[]');
+            inventories = JSON.parse(localStorage.getItem('bbInventories') || '[]');
+            // Migrate old itemCharts to inventories
+            const oldCharts = localStorage.getItem('bbItemCharts');
+            if (oldCharts && inventories.length === 0) {
+                try {
+                    const charts = JSON.parse(oldCharts);
+                    charts.forEach(c => {
+                        inventories.push({
+                            id: Date.now() + Math.random(),
+                            name: c.name,
+                            items: (c.itemIds || []).map(itemId => ({ itemId, stock: null, lowStock: null }))
+                        });
+                    });
+                    saveInventories();
+                    localStorage.removeItem('bbItemCharts');
+                } catch(e) {}
+            }
+        }
+
+        function saveInventoryItems() {
+            localStorage.setItem('bbInventoryItems', JSON.stringify(inventoryItems));
+        }
+
+        function saveInventories() {
+            localStorage.setItem('bbInventories', JSON.stringify(inventories));
+        }
+
+        function getItemCategories() {
+            const cats = new Set();
+            inventoryItems.forEach(i => { if (i.category) cats.add(i.category); });
+            return [...cats].sort();
+        }
+
+        function renderInventoryGrid() {
+            const grid = document.getElementById('inventoryGrid');
+            const statsEl = document.getElementById('inventoryStats');
+
+            const totalItems = inventoryItems.length;
+            const categories = getItemCategories().length;
+
+            statsEl.innerHTML = `
+                <div class="InventoryStat"><span class="stat-label">Items</span><span class="stat-value">${totalItems}</span></div>
+                <div class="InventoryStat"><span class="stat-label">Categories</span><span class="stat-value">${categories}</span></div>
+            `;
+
+            let html = '';
+            inventoryItems.forEach((item, idx) => {
+                html += `
+                    <div class="ItemCard">
+                        <div class="ItemCardActions">
+                            <button class="StaffCardBtn" onclick="editItem(${idx})" title="Edit">
+                                <span class="material-symbols-outlined" style="font-size:16px">edit</span>
+                            </button>
+                            <button class="StaffCardBtn danger" onclick="deleteItem(${idx})" title="Delete">
+                                <span class="material-symbols-outlined" style="font-size:16px">delete</span>
+                            </button>
+                        </div>
+                        ${item.image ? `<img class="ItemCardImage" src="${item.image}" onerror="this.style.display='none'">` : ''}
+                        <div class="ItemCardBody">
+                            ${item.category ? `<div class="ItemCardCategory">${escapeHtml(item.category)}</div>` : ''}
+                            <div class="ItemCardName">${escapeHtml(item.name)}</div>
+                            <div class="ItemCardPrice">$${(item.price || 0).toLocaleString()}</div>
+                            ${item.notes ? `<div style="font-size:12px;color:rgba(0,0,0,0.4);font-style:italic">${escapeHtml(item.notes)}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            html += `
+                <div class="AddItemCard" onclick="openAddItemModal()">
+                    <span class="material-symbols-outlined" style="font-size: 36px;">add_shopping_cart</span>
+                    <span style="font-size: 13px; font-weight: 500;">Add Item</span>
+                </div>
+            `;
+            grid.innerHTML = html;
+        }
+
+        function openAddItemModal() {
+            document.getElementById('editItemId').value = '';
+            document.getElementById('addItemModalTitle').textContent = 'Add Item';
+            document.getElementById('saveItemBtnText').textContent = 'Add';
+            document.getElementById('itemNameInput').value = '';
+            document.getElementById('itemCategoryInput').value = '';
+            document.getElementById('itemPriceInput').value = '';
+            document.getElementById('itemNotesInput').value = '';
+            document.getElementById('itemImageUrlInput').value = '';
+            resetItemImagePreview();
+
+            const dl = document.getElementById('itemCategoryList');
+            dl.innerHTML = getItemCategories().map(c => `<option value="${c}">`).join('');
+            openModal('addItem');
+        }
+
+        function editItem(idx) {
+            const item = inventoryItems[idx];
+            if (!item) return;
+            document.getElementById('editItemId').value = idx;
+            document.getElementById('addItemModalTitle').textContent = 'Edit Item';
+            document.getElementById('saveItemBtnText').textContent = 'Save';
+            document.getElementById('itemNameInput').value = item.name || '';
+            document.getElementById('itemCategoryInput').value = item.category || '';
+            document.getElementById('itemPriceInput').value = item.price || '';
+            document.getElementById('itemNotesInput').value = item.notes || '';
+            document.getElementById('itemImageUrlInput').value = item.image || '';
+
+            if (item.image) {
+                showItemImagePreview(item.image);
+            } else {
+                resetItemImagePreview();
+            }
+
+            const dl = document.getElementById('itemCategoryList');
+            dl.innerHTML = getItemCategories().map(c => `<option value="${c}">`).join('');
+            openModal('addItem');
+        }
+
+        function handleItemImageFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('itemImageUrlInput').value = e.target.result;
+                showItemImagePreview(e.target.result);
+            };
+            reader.readAsDataURL(file);
+            input.value = '';
+        }
+
+        function previewItemImageUrl(url) {
+            if (url.trim()) {
+                showItemImagePreview(url.trim());
+            } else {
+                resetItemImagePreview();
+            }
+        }
+
+        function showItemImagePreview(src) {
+            const area = document.getElementById('itemImagePreviewArea');
+            area.innerHTML = `<img class="ItemImagePreview" src="${src}" onerror="resetItemImagePreview()">
+                <button class="GTextBtn danger" onclick="clearItemImage()" style="padding:4px 10px;font-size:11px;align-self:flex-start;margin-top:4px;">
+                    <span class="material-symbols-outlined" style="font-size:14px">close</span> Remove
+                </button>`;
+        }
+
+        function resetItemImagePreview() {
+            const area = document.getElementById('itemImagePreviewArea');
+            area.innerHTML = `<div class="ItemImagePreviewPlaceholder" onclick="document.getElementById('itemImageFileInput').click()">
+                <span class="material-symbols-outlined" style="font-size: 20px;">image</span>
+                Click to upload or enter URL below
+            </div>`;
+        }
+
+        function clearItemImage() {
+            document.getElementById('itemImageUrlInput').value = '';
+            resetItemImagePreview();
+        }
+
+        function saveItem() {
+            const name = document.getElementById('itemNameInput').value.trim();
+            if (!name) return;
+            const category = document.getElementById('itemCategoryInput').value.trim();
+            const price = parseFloat(document.getElementById('itemPriceInput').value) || 0;
+            const notes = document.getElementById('itemNotesInput').value.trim();
+            const image = document.getElementById('itemImageUrlInput').value.trim() || null;
+
+            const editId = document.getElementById('editItemId').value;
+            const item = { name, category, price, notes, image };
+
+            if (editId !== '') {
+                const oldItem = inventoryItems[parseInt(editId)];
+                item.id = oldItem.id || parseInt(editId);
+                inventoryItems[parseInt(editId)] = item;
+            } else {
+                item.id = Date.now();
+                inventoryItems.push(item);
+            }
+
+            saveInventoryItems();
+            renderInventoryGrid();
+            closeModal('addItem');
+        }
+
+        function deleteItem(idx) {
+            if (!confirm('Delete "' + inventoryItems[idx].name + '"?')) return;
+            const itemId = inventoryItems[idx].id;
+            inventoryItems.splice(idx, 1);
+            // Remove from inventories
+            inventories.forEach(inv => {
+                inv.items = (inv.items || []).filter(si => si.itemId !== itemId);
+            });
+            saveInventoryItems();
+            saveInventories();
+            renderInventoryGrid();
+        }
+
+        // ===== STOCKS / INVENTORIES =====
+        let activeStockIdx = null;
+
+        function renderStocksGrid() {
+            const grid = document.getElementById('stocksGrid');
+            let html = '';
+            inventories.forEach((inv, idx) => {
+                const items = (inv.items || []).map(si => {
+                    const item = inventoryItems.find(i => i.id === si.itemId);
+                    return item ? { ...item, stock: si.stock, lowStock: si.lowStock } : null;
+                }).filter(Boolean);
+                const totalValue = items.reduce((s, i) => s + (i.price || 0) * (i.stock != null ? i.stock : 0), 0);
+                const itemCount = items.length;
+                const lowStock = items.filter(i => i.stock != null && i.lowStock != null && i.stock <= i.lowStock).length;
+
+                html += `
+                    <div class="StockCard" onclick="openStockDetail(${idx})">
+                        <div class="StockCardActions">
+                            <button class="StaffCardBtn" onclick="event.stopPropagation();editStock(${idx})" title="Rename">
+                                <span class="material-symbols-outlined" style="font-size:16px">edit</span>
+                            </button>
+                            <button class="StaffCardBtn danger" onclick="event.stopPropagation();deleteStock(${idx})" title="Delete">
+                                <span class="material-symbols-outlined" style="font-size:16px">delete</span>
+                            </button>
+                        </div>
+                        <div class="StockCardName">${escapeHtml(inv.name)}</div>
+                        <div class="StockCardMeta">${itemCount} item${itemCount !== 1 ? 's' : ''}${lowStock > 0 ? ' · <span style="color:rgba(239,68,68,0.8)">' + lowStock + ' low</span>' : ''}</div>
+                        <div class="StockCardValue">$${totalValue.toLocaleString()}</div>
+                    </div>
+                `;
+            });
+            html += `
+                <div class="AddStockCard" onclick="createStock()">
+                    <span class="material-symbols-outlined" style="font-size: 28px;">add_business</span>
+                    <span style="font-size: 13px; font-weight: 500;">New Inventory</span>
+                </div>
+            `;
+            grid.innerHTML = html;
+        }
+
+        function createStock() {
+            const name = prompt('Inventory name (e.g. "Golhem Markets Bobba Shop"):');
+            if (!name || !name.trim()) return;
+            inventories.push({ id: Date.now(), name: name.trim(), items: [] });
+            saveInventories();
+            renderStocksGrid();
+        }
+
+        function editStock(idx) {
+            const name = prompt('Rename inventory:', inventories[idx].name);
+            if (!name || !name.trim()) return;
+            inventories[idx].name = name.trim();
+            saveInventories();
+            renderStocksGrid();
+        }
+
+        function deleteStock(idx) {
+            if (!confirm('Delete inventory "' + inventories[idx].name + '"?')) return;
+            inventories.splice(idx, 1);
+            saveInventories();
+            renderStocksGrid();
+        }
+
+        function openStockDetail(idx) {
+            activeStockIdx = idx;
+            document.getElementById('stocksListView').style.display = 'none';
+            document.getElementById('stockDetailView').style.display = '';
+            renderStockDetail();
+        }
+
+        function closeStockDetail() {
+            activeStockIdx = null;
+            document.getElementById('stocksListView').style.display = '';
+            document.getElementById('stockDetailView').style.display = 'none';
+            renderStocksGrid();
+        }
+
+        function renderStockDetail() {
+            const inv = inventories[activeStockIdx];
+            if (!inv) return;
+            document.getElementById('stockDetailTitle').textContent = inv.name;
+
+            const searchQuery = (document.getElementById('stockSearchInput')?.value || '').trim().toLowerCase();
+
+            const items = (inv.items || []).map((si, i) => {
+                const item = inventoryItems.find(it => it.id === si.itemId);
+                return item ? { ...item, stock: si.stock, lowStock: si.lowStock, _idx: i } : null;
+            }).filter(Boolean).filter(item => {
+                if (!searchQuery) return true;
+                return (item.name || '').toLowerCase().includes(searchQuery) ||
+                       (item.category || '').toLowerCase().includes(searchQuery);
+            });
+
+            const totalValue = items.reduce((s, i) => s + (i.price || 0) * (i.stock != null ? i.stock : 0), 0);
+            const lowStock = items.filter(i => i.stock != null && i.lowStock != null && i.stock <= i.lowStock).length;
+
+            document.getElementById('stockDetailStats').innerHTML = `
+                <div class="InventoryStat"><span class="stat-label">Items</span><span class="stat-value">${items.length}</span></div>
+                <div class="InventoryStat"><span class="stat-label">Total Value</span><span class="stat-value">$${totalValue.toLocaleString()}</span></div>
+                ${lowStock > 0 ? `<div class="InventoryStat"><span class="stat-label">Low Stock</span><span class="stat-value" style="color:rgba(239,68,68,0.8)">${lowStock}</span></div>` : ''}
+            `;
+
+            const listEl = document.getElementById('stockDetailItems');
+            if (items.length === 0) {
+                listEl.innerHTML = '<div class="EmptyState" style="padding:20px;"><span class="material-symbols-outlined" style="font-size:32px;margin-bottom:8px;">inventory_2</span><div>No items in this inventory yet. Add items from your catalog!</div></div>';
+                return;
+            }
+
+            listEl.innerHTML = items.map(item => {
+                const isLow = item.stock != null && item.lowStock != null && item.stock <= item.lowStock;
+                const value = (item.price || 0) * (item.stock != null ? item.stock : 0);
+                return `
+                    <div class="StockItemRow">
+                        ${item.image ? `<img src="${item.image}" onerror="this.style.display='none'">` : `<span class="material-symbols-outlined" style="font-size:24px;color:rgba(0,0,0,0.2);width:36px;text-align:center;">inventory_2</span>`}
+                        <span class="si-name">${escapeHtml(item.name)}${item.category ? ' <span style="color:rgba(99,102,241,0.6);font-size:11px;">(' + escapeHtml(item.category) + ')</span>' : ''}</span>
+                        <span class="si-price">$${(item.price || 0).toLocaleString()}</span>
+                        <div class="si-stock ${isLow ? 'low' : ''}">
+                            <input type="number" value="${item.stock != null ? item.stock : ''}" placeholder="∞" min="0" onchange="updateStockQty(${item._idx},'stock',this.value)">
+                        </div>
+                        <span class="si-value">$${value.toLocaleString()}</span>
+                        <button class="si-remove" onclick="removeItemFromStock(${item._idx})" title="Remove from inventory">
+                            <span class="material-symbols-outlined" style="font-size:18px">close</span>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateStockQty(itemIdx, field, value) {
+            const inv = inventories[activeStockIdx];
+            if (!inv || !inv.items[itemIdx]) return;
+            inv.items[itemIdx][field] = value.trim() !== '' ? parseInt(value) : null;
+            saveInventories();
+            renderStockDetail();
+        }
+
+        function openAddItemToStock() {
+            const inv = inventories[activeStockIdx];
+            if (!inv) return;
+            const existingIds = new Set((inv.items || []).map(si => si.itemId));
+            const available = inventoryItems.filter(i => !existingIds.has(i.id));
+
+            if (available.length === 0) {
+                alert('All catalog items are already in this inventory.');
+                return;
+            }
+
+            const overlay = document.createElement('div');
+            overlay.className = 'ModalOverlay open';
+            overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+
+            let itemsHtml = available.map(item => `
+                <label style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,0.2);border-radius:10px;cursor:pointer;">
+                    <input type="checkbox" value="${item.id}" style="accent-color:#6366f1;">
+                    ${item.image ? `<img src="${item.image}" style="width:32px;height:32px;border-radius:6px;object-fit:cover;" onerror="this.style.display='none'">` : ''}
+                    <span style="flex:1;font-size:14px;">${escapeHtml(item.name)}</span>
+                    <span style="font-size:13px;color:rgba(0,0,0,0.5);">$${(item.price || 0).toLocaleString()}</span>
+                </label>
+            `).join('');
+
+            overlay.innerHTML = `
+                <div class="ModalContent" style="max-width:420px;">
+                    <div class="ModalTitle">
+                        <span>Add Items to Inventory</span>
+                        <button class="ModalClose" onclick="this.closest('.ModalOverlay').remove()">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;">
+                        ${itemsHtml}
+                    </div>
+                    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
+                        <button class="GTextBtn" onclick="this.closest('.ModalOverlay').remove()">Cancel</button>
+                        <button class="GTextBtn primary" id="confirmAddToStockBtn">
+                            <span class="material-symbols-outlined">check</span> Add Selected
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+
+            document.getElementById('confirmAddToStockBtn').onclick = () => {
+                const checked = overlay.querySelectorAll('input[type="checkbox"]:checked');
+                checked.forEach(cb => {
+                    inv.items.push({ itemId: parseInt(cb.value), stock: null, lowStock: null });
+                });
+                saveInventories();
+                renderStockDetail();
+                overlay.remove();
+            };
+        }
+
+        function removeItemFromStock(itemIdx) {
+            const inv = inventories[activeStockIdx];
+            if (!inv) return;
+            inv.items.splice(itemIdx, 1);
+            saveInventories();
+            renderStockDetail();
+        }
+
+        // ===== ORDERS =====
+        let orders = [];
+
+        function loadOrders() {
+            orders = JSON.parse(localStorage.getItem('bbOrders') || '[]');
+        }
+
+        function saveOrders() {
+            localStorage.setItem('bbOrders', JSON.stringify(orders));
+        }
+
+        function getNextOrderId() {
+            if (orders.length === 0) return 1;
+            return Math.max(...orders.map(o => o.id || 0)) + 1;
+        }
+
+        function renderOrderGrid() {
+            const grid = document.getElementById('orderGrid');
+            const statusFilter = document.getElementById('orderStatusFilter').value;
+            const businessFilter = document.getElementById('orderBusinessFilter').value;
+
+            // Populate business filter dropdown
+            const bizSelect = document.getElementById('orderBusinessFilter');
+            const currentBizVal = bizSelect.value;
+            bizSelect.innerHTML = '<option value="all">All Businesses</option><option value="none">No Business</option>';
+            businessLabels.forEach(bl => {
+                const opt = document.createElement('option');
+                opt.value = bl.id;
+                opt.textContent = bl.name;
+                bizSelect.appendChild(opt);
+            });
+            bizSelect.value = currentBizVal || 'all';
+
+            let filtered = orders;
+            if (statusFilter !== 'all') filtered = filtered.filter(o => o.status === statusFilter);
+            if (bizSelect.value !== 'all') {
+                if (bizSelect.value === 'none') {
+                    filtered = filtered.filter(o => !o.businessId);
+                } else {
+                    filtered = filtered.filter(o => o.businessId === parseInt(bizSelect.value));
+                }
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: rgba(0,0,0,0.35);">
+                        <span class="material-symbols-outlined" style="font-size: 40px; display: block; margin-bottom: 8px;">receipt_long</span>
+                        No orders yet. Create one to get started.
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach((order, idx) => {
+                const realIdx = orders.indexOf(order);
+                const itemCount = (order.items || []).reduce((s, li) => s + (li.qty || 0), 0);
+                const biz = order.businessId ? businessLabels.find(b => b.id === order.businessId) : null;
+                html += `
+                    <div class="OrderCard" onclick="openOrderDetail(${realIdx})">
+                        <div class="OrderCardActions">
+                            <button class="StaffCardBtn danger" onclick="event.stopPropagation();deleteOrder(${realIdx})" title="Delete">
+                                <span class="material-symbols-outlined" style="font-size:16px">delete</span>
+                            </button>
+                        </div>
+                        <div class="OrderCardHeader">
+                            <div class="OrderCardId">Order #${order.id}</div>
+                            <div class="OrderStatusBadge ${order.status}">${order.status}</div>
+                        </div>
+                        ${biz ? `<span class="OrderBusinessBadge" style="background:${biz.color}22;color:${biz.color};">${escapeHtml(biz.name)}</span>` : ''}
+                        <div class="OrderCardMeta">${order.customer ? escapeHtml(order.customer) + ' · ' : ''}${itemCount} item${itemCount !== 1 ? 's' : ''} · ${order.payment === 'blockbux' ? 'Blockbux' : order.payment === 'card' ? 'Card' : 'Cash'}</div>
+                        ${order.discount > 0 ? `<div class="OrderCardMeta">Discount: ${order.discount}%</div>` : ''}
+                        <div class="OrderCardTotal">$${(order.total || 0).toLocaleString()}</div>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+        }
+
+        function openCreateOrderModal() {
+            document.getElementById('editOrderId').value = '';
+            document.getElementById('createOrderModalTitle').textContent = 'New Order';
+            document.getElementById('saveOrderBtnText').textContent = 'Create';
+            document.getElementById('orderCustomerInput').value = '';
+            document.getElementById('orderPaymentInput').value = 'cash';
+            document.getElementById('orderDiscountInput').value = '0';
+            document.getElementById('orderNotesInput').value = '';
+            document.getElementById('orderLineItems').innerHTML = '';
+            document.getElementById('orderPreviewSummary').style.display = 'none';
+
+            // Populate business dropdown
+            const bizSel = document.getElementById('orderBusinessInput');
+            bizSel.innerHTML = '<option value="">None</option>';
+            businessLabels.forEach(bl => {
+                const opt = document.createElement('option');
+                opt.value = bl.id;
+                opt.textContent = bl.name;
+                bizSel.appendChild(opt);
+            });
+            bizSel.value = '';
+
+            addOrderLineItem();
+            openModal('createOrder');
+        }
+
+        function addOrderLineItem() {
+            const container = document.getElementById('orderLineItems');
+            const row = document.createElement('div');
+            row.className = 'OrderLineItemRow';
+
+            let options = '<option value="">Select item...</option>';
+            inventoryItems.forEach((item, idx) => {
+                options += `<option value="${idx}">$${item.price} — ${item.name}</option>`;
+            });
+
+            row.innerHTML = `
+                <select onchange="updateOrderPreview()" style="flex:2">${options}</select>
+                <input type="number" value="1" min="1" step="1" onchange="updateOrderPreview()" style="max-width:70px" placeholder="Qty">
+                <button class="remove-line-btn" onclick="this.parentElement.remove();updateOrderPreview()">
+                    <span class="material-symbols-outlined" style="font-size:18px">close</span>
+                </button>
+            `;
+            container.appendChild(row);
+        }
+
+        function updateOrderPreview() {
+            const rows = document.querySelectorAll('#orderLineItems .OrderLineItemRow');
+            let subtotal = 0;
+            let lineCount = 0;
+            rows.forEach(row => {
+                const sel = row.querySelector('select');
+                const qty = parseInt(row.querySelector('input').value) || 0;
+                const itemIdx = sel.value;
+                if (itemIdx !== '' && qty > 0) {
+                    subtotal += (inventoryItems[parseInt(itemIdx)]?.price || 0) * qty;
+                    lineCount++;
+                }
+            });
+
+            const discount = parseFloat(document.getElementById('orderDiscountInput').value) || 0;
+            const total = Math.round(subtotal * (1 - discount / 100));
+
+            const summary = document.getElementById('orderPreviewSummary');
+            if (lineCount > 0) {
+                summary.style.display = '';
+                summary.innerHTML = `
+                    <div style="display:flex;justify-content:space-between"><span>Subtotal</span><span>$${subtotal.toLocaleString()}</span></div>
+                    ${discount > 0 ? `<div style="display:flex;justify-content:space-between;color:rgba(239,68,68,0.8)"><span>Discount (${discount}%)</span><span>-$${(subtotal - total).toLocaleString()}</span></div>` : ''}
+                    <div style="display:flex;justify-content:space-between;font-weight:700;font-size:16px;border-top:1px solid rgba(0,0,0,0.1);padding-top:6px;margin-top:4px"><span>Total</span><span>$${total.toLocaleString()}</span></div>
+                `;
+            } else {
+                summary.style.display = 'none';
+            }
+        }
+
+        function saveOrder() {
+            const customer = document.getElementById('orderCustomerInput').value.trim();
+            const payment = document.getElementById('orderPaymentInput').value;
+            const discount = parseFloat(document.getElementById('orderDiscountInput').value) || 0;
+            const notes = document.getElementById('orderNotesInput').value.trim();
+            const bizVal = document.getElementById('orderBusinessInput').value;
+            const businessId = bizVal ? parseInt(bizVal) : null;
+
+            const rows = document.querySelectorAll('#orderLineItems .OrderLineItemRow');
+            const items = [];
+            let subtotal = 0;
+            rows.forEach(row => {
+                const sel = row.querySelector('select');
+                const qty = parseInt(row.querySelector('input').value) || 0;
+                const itemIdx = sel.value;
+                if (itemIdx !== '' && qty > 0) {
+                    const inv = inventoryItems[parseInt(itemIdx)];
+                    items.push({ name: inv.name, price: inv.price, qty });
+                    subtotal += inv.price * qty;
+                }
+            });
+
+            if (items.length === 0) return;
+
+            const total = Math.round(subtotal * (1 - discount / 100));
+            const editId = document.getElementById('editOrderId').value;
+
+            if (editId !== '') {
+                const order = orders[parseInt(editId)];
+                order.customer = customer;
+                order.payment = payment;
+                order.discount = discount;
+                order.notes = notes;
+                order.items = items;
+                order.subtotal = subtotal;
+                order.total = total;
+                order.businessId = businessId;
+            } else {
+                orders.push({
+                    id: getNextOrderId(),
+                    customer,
+                    payment,
+                    discount,
+                    notes,
+                    items,
+                    subtotal,
+                    total,
+                    businessId,
+                    status: 'pending',
+                    date: new Date().toISOString()
+                });
+            }
+
+            saveOrders();
+            renderOrderGrid();
+            closeModal('createOrder');
+        }
+
+        function deleteOrder(idx) {
+            if (!confirm('Delete Order #' + orders[idx].id + '?')) return;
+            orders.splice(idx, 1);
+            saveOrders();
+            renderOrderGrid();
+        }
+
+        function openOrderDetail(idx) {
+            const order = orders[idx];
+            if (!order) return;
+
+            document.getElementById('ordersListView').style.display = 'none';
+            document.getElementById('orderDetailView').style.display = '';
+            document.getElementById('orderDetailTitle').textContent = 'Order #' + order.id;
+
+            const biz = order.businessId ? businessLabels.find(b => b.id === order.businessId) : null;
+            const summaryEl = document.getElementById('orderDetailSummary');
+            summaryEl.innerHTML = `
+                <div style="display:flex;justify-content:space-between"><span>Customer</span><span>${order.customer || 'N/A'}</span></div>
+                ${biz ? `<div style="display:flex;justify-content:space-between;align-items:center"><span>Business</span><span class="OrderBusinessBadge" style="background:${biz.color}22;color:${biz.color};">${escapeHtml(biz.name)}</span></div>` : ''}
+                <div style="display:flex;justify-content:space-between"><span>Payment</span><span>${order.payment === 'blockbux' ? 'Blockbux' : order.payment === 'card' ? 'Card' : 'Cash'}</span></div>
+                <div style="display:flex;justify-content:space-between"><span>Date</span><span>${new Date(order.date).toLocaleDateString()}</span></div>
+                ${order.discount > 0 ? `<div style="display:flex;justify-content:space-between"><span>Discount</span><span>${order.discount}%</span></div>` : ''}
+                <div style="display:flex;justify-content:space-between"><span>Subtotal</span><span>$${(order.subtotal || 0).toLocaleString()}</span></div>
+                <div style="display:flex;justify-content:space-between;font-weight:700;font-size:16px"><span>Total</span><span>$${(order.total || 0).toLocaleString()}</span></div>
+                ${order.notes ? `<div style="font-size:12px;color:rgba(0,0,0,0.5);font-style:italic;margin-top:4px">${order.notes}</div>` : ''}
+                <div style="display:flex;gap:8px;margin-top:8px">
+                    <button class="GTextBtn ${order.status === 'pending' ? 'primary' : ''}" onclick="setOrderStatus(${idx},'pending')">Pending</button>
+                    <button class="GTextBtn ${order.status === 'completed' ? 'primary' : ''}" onclick="setOrderStatus(${idx},'completed')">Completed</button>
+                    <button class="GTextBtn ${order.status === 'cancelled' ? 'danger' : ''}" onclick="setOrderStatus(${idx},'cancelled')">Cancelled</button>
+                </div>
+            `;
+
+            const itemsEl = document.getElementById('orderDetailItems');
+            itemsEl.innerHTML = (order.items || []).map(li => `
+                <div class="OrderItemRow">
+                    <span class="oir-name">${li.name}</span>
+                    <span class="oir-qty">×${li.qty}</span>
+                    <span class="oir-price">$${(li.price * li.qty).toLocaleString()}</span>
+                </div>
+            `).join('');
+        }
+
+        function closeOrderDetail() {
+            document.getElementById('ordersListView').style.display = '';
+            document.getElementById('orderDetailView').style.display = 'none';
+        }
+
+        function setOrderStatus(idx, status) {
+            orders[idx].status = status;
+            saveOrders();
+            openOrderDetail(idx);
+        }
+
+        // ===== HELP SYSTEM =====
+        const helpContent = {
+            permissions: {
+                title: 'Permission Tree',
+                text: 'Define what each role/level can do in your Bloxburg business. Toggle permissions on or off per role to set clear boundaries.',
+                example: 'Example: Level 3 (Manager) can access the register and manage employees, but only Level 5 (Owner) can change business settings.'
+            },
+            salary: {
+                title: 'Job Titles & Wages',
+                text: 'Create job positions and set salary ranges. Use the budget to see how wages compare — each job is labeled as average, underpaid, or overpaid.',
+                example: 'Example: Set a $50,000 budget. "Cashier" at $8/hr might be average, while "Janitor" at $4/hr shows as underpaid.'
+            },
+            staff: {
+                title: 'Staff Manager',
+                text: 'Track your employee roster. Assign each employee a job title and associate them with a business. Use the filter to view staff per business.',
+                example: 'Example: Add "Player123" as a Cashier under "Golhem Markets" business.'
+            },
+            hours: {
+                title: 'Hours Tracker',
+                text: 'Create workday records to log employee clock-in and clock-out times. The system automatically calculates hours worked and pay.',
+                example: 'Example: Create a "Monday Shift" record, add employees with their clock-in/out times, and see total pay calculated.'
+            },
+            finance: {
+                title: 'Income & Expenses',
+                text: 'Track daily income and expenses. Create a record for each business day and log individual transactions as income or expense.',
+                example: 'Example: Day record "Dec 15" — Income: $500 from sales, Expense: $120 for supplies. Net profit: $380.'
+            },
+            partnerships: {
+                title: 'Partnerships',
+                text: 'Manage business partnerships. Track partner contact info, investment amounts, shared revenue, and transaction history.',
+                example: 'Example: Partner with "CoolBuilder99" who invested $10,000 for a 30% revenue share in your café.'
+            },
+            items: {
+                title: 'Items Catalog',
+                text: 'This is your product catalog — define items with names, prices, categories, and images. Items created here can be added to inventories in the Stocks tab.',
+                example: 'Example: Create "Bloxy Cola" ($5, category: Drinks) and "Burger" ($12, category: Food). Then add them to a store inventory in Stocks.'
+            },
+            stocks: {
+                title: 'Stocks / Inventories',
+                text: 'Create named inventories for each store or business. Add items from your catalog and set stock levels. Total value is calculated per inventory based on price × stock.',
+                example: 'Example: Create "Golhem Markets Bobba Shop" inventory → add Bobba Tea (stock: 50) and Cookies (stock: 30). Total value shows automatically.'
+            },
+            orders: {
+                title: 'Orders',
+                text: 'Create and manage customer orders. Track items ordered, total price, discounts, payment method, status, and assign orders to a business.',
+                example: 'Example: New order from "BuilderKing" — 3x Burger ($36), 10% discount, paid via Bloxbux, status: Pending.'
+            },
+            converters: {
+                title: 'Converters',
+                text: 'Quick tools to convert between Bloxburg currencies and values. Useful for pricing and calculating costs.',
+                example: 'Example: Convert $1,000 Bloxburg dollars to Blockbux, or calculate the real-money equivalent.'
+            },
+            sharedProfiles: {
+                title: 'Shared Profiles (Experimental)',
+                text: 'Shared profiles let you sync your business data to the cloud and collaborate with managers in real-time. Create profiles in Settings first, then create a shared session here and select which profile to use. The owner gets a Roblox-safe code word to share — collaborators join by entering it. Use the merge button (⇄) to copy a profile\'s data into the shared session.',
+                example: 'Example: Create a shared profile for "Golhem Markets", pick your profile, get the code "dolphin", and tell your managers to join. They\'ll see live updates as you edit.'
+            }
+        };
+
+        let activeHelpPopover = null;
+
+        function toggleHelp(btn, pageId) {
+            // Close existing popover
+            if (activeHelpPopover) {
+                activeHelpPopover.remove();
+                if (activeHelpPopover._btn === btn) {
+                    activeHelpPopover = null;
+                    return;
+                }
+                activeHelpPopover = null;
+            }
+
+            const info = helpContent[pageId];
+            if (!info) return;
+
+            const popover = document.createElement('div');
+            popover.className = 'HelpPopover';
+            popover._btn = btn;
+            popover.innerHTML = `
+                <div style="font-weight:600;font-size:14px;margin-bottom:6px;">${info.title}</div>
+                <div style="font-size:13px;color:rgba(0,0,0,0.6);line-height:1.5;">${info.text}</div>
+                <div style="margin-top:8px;padding:8px 10px;background:rgba(99,102,241,0.08);border-radius:8px;font-size:12px;color:rgba(99,102,241,0.8);line-height:1.4;">
+                    <strong>💡</strong> ${info.example}
+                </div>
+            `;
+
+            document.body.appendChild(popover);
+
+            // Position fixed relative to button
+            const rect = btn.getBoundingClientRect();
+            let top = rect.bottom + 8;
+            let left = rect.left;
+
+            // Keep within viewport
+            const pw = popover.offsetWidth;
+            const ph = popover.offsetHeight;
+            if (left + pw > window.innerWidth - 12) left = window.innerWidth - pw - 12;
+            if (left < 12) left = 12;
+            if (top + ph > window.innerHeight - 12) top = rect.top - ph - 8;
+
+            popover.style.top = top + 'px';
+            popover.style.left = left + 'px';
+
+            activeHelpPopover = popover;
+
+            // Close on outside click
+            const closeHandler = (e) => {
+                if (!popover.contains(e.target) && e.target !== btn) {
+                    popover.remove();
+                    activeHelpPopover = null;
+                    document.removeEventListener('click', closeHandler);
+                }
+            };
+            setTimeout(() => document.addEventListener('click', closeHandler), 0);
+        }
+
         // ===== INIT =====
+        loadProfiles();
         loadLabels();
         loadBusinessLabels();
         initPermissions();
@@ -4656,6 +8622,8 @@
         loadWorkdayRecords();
         loadFinanceRecords();
         loadPartnerships();
+        loadInventoryItems();
+        loadOrders();
         renderLevelDropdown();
 
         // Restore config fields
@@ -4678,6 +8646,12 @@
         const labelsBtn = document.getElementById('labelsTopBtn');
         if (labelsBtn && document.getElementById('page-permissions').classList.contains('active')) {
             labelsBtn.style.display = '';
+        }
+
+        // Start sync if active profile is shared
+        const initProfile = getActiveProfile();
+        if (initProfile && initProfile.type === 'shared' && initProfile.sessionId) {
+            startSync();
         }
     </script>
 </body>
