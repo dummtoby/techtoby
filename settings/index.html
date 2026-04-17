@@ -471,6 +471,87 @@
             opacity: 0.4;
         }
 
+        /* Update Cards */
+        .UpdateCard {
+            background: rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 14px;
+            padding: 20px;
+            backdrop-filter: blur(6px);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: background 0.2s ease;
+        }
+        .UpdateCard:hover {
+            background: rgba(255,255,255,0.4);
+        }
+        .UpdateCardHeader {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .UpdateCardAvatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255,255,255,0.6);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            flex-shrink: 0;
+        }
+        .UpdateCardMeta {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+        .UpdateCardTitle {
+            font-size: 15px;
+            font-weight: 600;
+            color: rgba(0,0,0,0.85);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .UpdateCardInfo {
+            font-size: 11px;
+            color: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .UpdateCardBody {
+            font-size: 13px;
+            color: rgba(0,0,0,0.65);
+            line-height: 1.6;
+            white-space: pre-line;
+            padding: 10px 14px;
+            background: rgba(0,0,0,0.03);
+            border-radius: 10px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .UpdateCardSha {
+            font-size: 11px;
+            color: rgba(99,102,241,0.6);
+            font-family: 'Consolas', 'Courier New', monospace;
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        .UpdateCardSha:hover {
+            color: rgba(99,102,241,0.9);
+        }
+        .UpdatesError {
+            text-align: center;
+            padding: 30px 20px;
+            color: rgba(239,68,68,0.7);
+            font-size: 14px;
+        }
+        .UpdatesError .material-symbols-outlined {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
         /* Data size display */
         .DataSizeInfo {
             font-size: 12px;
@@ -519,6 +600,10 @@
             <div class="SidebarTab" data-page="data" onclick="switchPage('data')">
                 <span class="material-symbols-outlined" style="font-size: 18px;">database</span>
                 Import / Export Data
+            </div>
+            <div class="SidebarTab" data-page="updates" onclick="switchPage('updates')">
+                <span class="material-symbols-outlined" style="font-size: 18px;">update</span>
+                Updates
             </div>
         </div>
 
@@ -606,6 +691,25 @@
                             Clear All Data
                         </button>
                     </div>
+                </div>
+            </div>
+
+            <!-- Updates Page -->
+            <div class="page" id="page-updates">
+                <div class="ContentTitle">Updates</div>
+                <div class="ContentDesc">See what's new in each version. Commits are fetched from the <a href="https://github.com/dummtoby/techtoby" target="_blank" style="color: rgba(99,102,241,0.85); text-decoration: none; font-weight: 500;">GitHub repository</a>.</div>
+
+                <div id="updatesContainer" style="display:flex;flex-direction:column;gap:6px;">
+                    <div class="EmptyState" id="updatesLoading">
+                        <span class="material-symbols-outlined">hourglass_top</span>
+                        <div>Loading updates...</div>
+                    </div>
+                </div>
+                <div id="updatesLoadMore" style="display: none; text-align: center; padding: 8px;">
+                    <button class="GTextBtn" onclick="loadMoreCommits()">
+                        <span class="material-symbols-outlined">expand_more</span>
+                        Load More
+                    </button>
                 </div>
             </div>
         </div>
@@ -707,6 +811,7 @@
                 if (!t.classList.contains('active')) t.classList.add('inactive');
             });
             if (pageId === 'data') updateDataSizeInfo();
+            if (pageId === 'updates' && !commitsLoaded) fetchCommits();
         }
 
         // ===== TOAST =====
@@ -1190,6 +1295,86 @@
             renderProfiles();
             updateDataSizeInfo();
             showToast('All data cleared', 'delete_forever');
+        }
+
+        // ===== UPDATES =====
+        const COMMITS_API = 'https://api.github.com/repos/dummtoby/techtoby/commits?sha=main&per_page=20';
+        let commitsLoaded = false;
+        let commitsPage = 1;
+        let allCommitsEnd = false;
+
+        async function fetchCommits(page = 1) {
+            const container = document.getElementById('updatesContainer');
+            const loadMoreBtn = document.getElementById('updatesLoadMore');
+            if (page === 1) {
+                container.innerHTML = '<div class="EmptyState" id="updatesLoading"><span class="material-symbols-outlined">hourglass_top</span><div>Loading updates...</div></div>';
+            }
+            try {
+                const res = await fetch(COMMITS_API + '&page=' + page);
+                if (!res.ok) throw new Error('GitHub API returned ' + res.status);
+                const commits = await res.json();
+                if (page === 1) container.innerHTML = '';
+                if (commits.length === 0) {
+                    allCommitsEnd = true;
+                    loadMoreBtn.style.display = 'none';
+                    if (page === 1) {
+                        container.innerHTML = '<div class="EmptyState"><span class="material-symbols-outlined">inbox</span><div>No commits found.</div></div>';
+                    }
+                    return;
+                }
+                commits.forEach(c => container.appendChild(createCommitCard(c)));
+                commitsLoaded = true;
+                commitsPage = page;
+                loadMoreBtn.style.display = commits.length < 20 ? 'none' : 'block';
+                if (commits.length < 20) allCommitsEnd = true;
+            } catch (err) {
+                if (page === 1) {
+                    container.innerHTML = '<div class="UpdatesError"><span class="material-symbols-outlined">cloud_off</span><div>Failed to load updates.<br><span style="font-size:12px;opacity:0.7;">' + escapeHtml(err.message) + '</span></div></div>';
+                } else {
+                    showToast('Failed to load more commits', 'error');
+                }
+            }
+        }
+
+        function loadMoreCommits() {
+            if (!allCommitsEnd) fetchCommits(commitsPage + 1);
+        }
+
+        function createCommitCard(commit) {
+            const card = document.createElement('div');
+            card.className = 'UpdateCard';
+
+            const message = commit.commit.message || '';
+            const firstLine = message.split('\n')[0];
+            const body = message.includes('\n') ? message.substring(message.indexOf('\n') + 1).trim() : '';
+            const date = new Date(commit.commit.committer.date);
+            const dateStr = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            const authorName = commit.commit.author.name;
+            const avatarUrl = commit.author ? commit.author.avatar_url : '';
+            const sha = commit.sha.substring(0, 7);
+            const commitUrl = commit.html_url;
+
+            let html = '<div class="UpdateCardHeader">';
+            if (avatarUrl) {
+                html += '<img class="UpdateCardAvatar" src="' + escapeHtml(avatarUrl) + '" alt="">';
+            }
+            html += '<div class="UpdateCardMeta">';
+            html += '<div class="UpdateCardTitle">' + escapeHtml(firstLine) + '</div>';
+            html += '<div class="UpdateCardInfo">';
+            html += '<span>' + escapeHtml(authorName) + '</span>';
+            html += '<span>·</span>';
+            html += '<span>' + dateStr + ' at ' + timeStr + '</span>';
+            html += '<span>·</span>';
+            html += '<a class="UpdateCardSha" href="' + escapeHtml(commitUrl) + '" target="_blank">' + sha + '</a>';
+            html += '</div></div></div>';
+
+            if (body) {
+                html += '<div class="UpdateCardBody">' + escapeHtml(body) + '</div>';
+            }
+
+            card.innerHTML = html;
+            return card;
         }
 
         // ===== INIT =====

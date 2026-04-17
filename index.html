@@ -445,6 +445,165 @@
             background: rgba(255, 255, 255, 0.6);
             transform: scale(1.1);
         }
+
+        /* Guide Modal */
+        .GuideOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 5000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+        .GuideOverlay.show {
+            display: flex;
+            opacity: 1;
+        }
+        .GuideCard {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: 22px;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18),
+              inset 0 1px 1px rgba(255, 255, 255, 0.7);
+            max-width: 520px;
+            width: 90%;
+            overflow: hidden;
+            transform: scale(0.92) translateY(20px);
+            transition: transform 0.35s ease;
+            color: #000;
+        }
+        .GuideOverlay.show .GuideCard {
+            transform: scale(1) translateY(0);
+        }
+        .GuideImage {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            object-position: top right;
+            display: block;
+        }
+        .GuideVideo {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            object-position: top right;
+            display: block;
+            background: #000;
+        }
+        .GuideIframe {
+            width: 100%;
+            height: 200px;
+            border: none;
+            display: block;
+        }
+        .GuideImagePlaceholder {
+            width: 100%;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(168,85,247,0.12));
+            font-size: 64px;
+            color: rgba(99,102,241,0.5);
+        }
+        .GuideBody {
+            padding: 28px 28px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .GuideStepLabel {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(99,102,241,0.7);
+        }
+        .GuideTitle {
+            font-size: 22px;
+            font-weight: 700;
+            color: rgba(0,0,0,0.88);
+        }
+        .GuideDesc {
+            font-size: 14px;
+            color: rgba(0,0,0,0.6);
+            line-height: 1.65;
+        }
+        .GuideFooter {
+            padding: 0 28px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .GuideDots {
+            display: flex;
+            gap: 7px;
+        }
+        .GuideDot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.15);
+            transition: all 0.25s ease;
+        }
+        .GuideDot.active {
+            background: rgba(99,102,241,0.7);
+            transform: scale(1.25);
+        }
+        .GuideActions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .GuideBtn {
+            padding: 9px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.45);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(8px);
+            color: #000;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06), inset 0 1px 1px rgba(255,255,255,0.5);
+        }
+        .GuideBtn:hover {
+            background: rgba(255,255,255,0.45);
+            transform: scale(1.04);
+        }
+        .GuideBtn.primary {
+            background: rgba(99,102,241,0.25);
+            border-color: rgba(99,102,241,0.4);
+        }
+        .GuideBtn.primary:hover {
+            background: rgba(99,102,241,0.4);
+        }
+        .GuideDismiss {
+            padding: 16px 28px 0;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .GuideDismissBtn {
+            background: none;
+            border: none;
+            font-size: 12px;
+            color: rgba(0,0,0,0.35);
+            cursor: pointer;
+            padding: 4px 0;
+            transition: color 0.2s;
+        }
+        .GuideDismissBtn:hover {
+            color: rgba(0,0,0,0.6);
+        }
     </style>
 </head>
 <body>
@@ -494,6 +653,28 @@
     <a href="https://www.roblox.com/games/185655149/" target="_blank">
         <img src="media/100002.png" alt="Welcome to Bloxburg" class="bloxburg-logo" style="pointer-events: auto; cursor: pointer; transition: transform 0.2s;">
     </a>
+
+    <!-- Get Started Guide -->
+    <div class="GuideOverlay" id="guideOverlay">
+        <div class="GuideCard">
+            <div id="guideImageArea"></div>
+            <div class="GuideDismiss">
+                <button class="GuideDismissBtn" id="guideDismissBtn">Don't show this again</button>
+            </div>
+            <div class="GuideBody">
+                <div class="GuideStepLabel" id="guideStepLabel">Step 1</div>
+                <div class="GuideTitle" id="guideTitle"></div>
+                <div class="GuideDesc" id="guideDesc"></div>
+            </div>
+            <div class="GuideFooter">
+                <div class="GuideDots" id="guideDots"></div>
+                <div class="GuideActions">
+                    <button class="GuideBtn" id="guidePrevBtn">Back</button>
+                    <button class="GuideBtn primary" id="guideNextBtn">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         // Load Apps dynamically from manifest.json
@@ -1117,6 +1298,110 @@
                 draggedItem = null;
             }
         });
+
+        // ===== GET STARTED GUIDE =====
+        const GUIDE_DISMISSED_KEY = 'ttcGuideDismissed';
+
+        (async function initGuide() {
+            if (localStorage.getItem(GUIDE_DISMISSED_KEY) === 'true') return;
+            if (sessionStorage.getItem(GUIDE_DISMISSED_KEY) === 'true') return;
+            try {
+                const res = await fetch('data/guide.json');
+                if (!res.ok) return;
+                const guide = await res.json();
+                const steps = guide.steps;
+                if (!steps || steps.length === 0) return;
+
+                let currentStep = 0;
+                const overlay = document.getElementById('guideOverlay');
+                const imageArea = document.getElementById('guideImageArea');
+                const stepLabel = document.getElementById('guideStepLabel');
+                const titleEl = document.getElementById('guideTitle');
+                const descEl = document.getElementById('guideDesc');
+                const dotsEl = document.getElementById('guideDots');
+                const prevBtn = document.getElementById('guidePrevBtn');
+                const nextBtn = document.getElementById('guideNextBtn');
+                const dismissBtn = document.getElementById('guideDismissBtn');
+
+                // Build dots
+                steps.forEach((_, i) => {
+                    const dot = document.createElement('div');
+                    dot.className = 'GuideDot';
+                    dot.addEventListener('click', () => { currentStep = i; renderStep(); });
+                    dotsEl.appendChild(dot);
+                });
+
+                function renderStep() {
+                    const step = steps[currentStep];
+                    stepLabel.textContent = step.label || ('Step ' + (currentStep + 1) + ' of ' + steps.length);
+                    titleEl.textContent = step.title || '';
+                    descEl.textContent = step.description || '';
+
+                    // Video, image, or icon
+                    if (step.video) {
+                        const url = step.video;
+                        let ytId = null;
+                        const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([\w-]{11})/);
+                        if (ytMatch) ytId = ytMatch[1];
+                        if (ytId) {
+                            imageArea.innerHTML = '<iframe class="GuideIframe" src="https://www.youtube.com/embed/' + ytId + '?autoplay=1&loop=1&mute=1&playlist=' + ytId + '&controls=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                        } else {
+                            imageArea.innerHTML = '<video class="GuideVideo" src="' + url + '" autoplay loop muted playsinline></video>';
+                        }
+                    } else if (step.image) {
+                        imageArea.innerHTML = '<img class="GuideImage" src="' + step.image + '" alt="">';
+                    } else if (step.icon) {
+                        imageArea.innerHTML = '<div class="GuideImagePlaceholder">' + step.icon + '</div>';
+                    } else {
+                        imageArea.innerHTML = '';
+                    }
+
+                    // Dots
+                    dotsEl.querySelectorAll('.GuideDot').forEach((d, i) => {
+                        d.classList.toggle('active', i === currentStep);
+                    });
+
+                    // Buttons
+                    prevBtn.style.display = currentStep === 0 ? 'none' : 'inline-block';
+                    if (currentStep === steps.length - 1) {
+                        nextBtn.textContent = 'Get Started';
+                    } else {
+                        nextBtn.textContent = 'Next';
+                    }
+                }
+
+                prevBtn.addEventListener('click', () => {
+                    if (currentStep > 0) { currentStep--; renderStep(); }
+                });
+
+                nextBtn.addEventListener('click', () => {
+                    if (currentStep < steps.length - 1) { currentStep++; renderStep(); }
+                    else {
+                        sessionStorage.setItem(GUIDE_DISMISSED_KEY, 'true');
+                        closeGuide();
+                    }
+                });
+
+                dismissBtn.addEventListener('click', () => {
+                    localStorage.setItem(GUIDE_DISMISSED_KEY, 'true');
+                    closeGuide();
+                });
+
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) closeGuide();
+                });
+
+                function closeGuide() {
+                    overlay.classList.remove('show');
+                }
+
+                renderStep();
+                // Small delay so the page loads first
+                setTimeout(() => overlay.classList.add('show'), 400);
+            } catch (e) {
+                // guide.json not found or empty — silently skip
+            }
+        })();
 
     </script>
 </body>

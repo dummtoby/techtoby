@@ -43,12 +43,22 @@
             "icon": "media/100004.png"
         },
         {
+            "name": "bbwhiteboard",
+            "long_name": "Bloxburg Whiteboard",
+            "version": "1.0",
+            "description": "Create handwritten whiteboard decals for your Bloxburg builds!",
+            "author": "dummtoby",
+            "path": "bbwhiteboard/",
+            "icon": "media/100007.png"
+        },
+        {
             "name": "settings",
             "long_name": "Settings",
             "version": "1.0",
             "description": "Manage profiles, import/export data, and configure site settings.",
             "author": "dummtoby",
-            "path": "settings/"
+            "path": "settings/",
+            "icon": "media/100008.png"
         }
     ]
 }

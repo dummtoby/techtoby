@@ -1,0 +1,2079 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloxburg Whiteboard</title>
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='6' y='10' width='52' height='38' rx='3' fill='%23fff' stroke='%236366f1' stroke-width='3'/%3E%3Crect x='10' y='46' width='8' height='8' rx='1' fill='%236366f1'/%3E%3Crect x='46' y='46' width='8' height='8' rx='1' fill='%236366f1'/%3E%3Cline x1='14' y1='20' x2='36' y2='20' stroke='%236366f1' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='14' y1='27' x2='44' y2='27' stroke='%23a5b4fc' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='14' y1='34' x2='30' y2='34' stroke='%23a5b4fc' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='44' cy='36' r='5' fill='none' stroke='%23ef4444' stroke-width='1.5'/%3E%3Cpath d='M42 34 Q44 38 46 34' fill='none' stroke='%23ef4444' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background: #DCDCDC url('https://cdn.ecxogames.ca/ecxogames/assets/794037.png') no-repeat center center / cover;
+            color: black;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .gridOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            background-image: radial-gradient(circle, rgba(99, 102, 241, 0.15) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+        }
+
+        /* Themed Buttons */
+        .GTextBtn {
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: black;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .GTextBtn:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+        }
+
+        .GTextBtn .material-symbols-outlined { font-size: 18px; }
+
+        .GTextBtn.primary {
+            background: rgba(99, 102, 241, 0.3);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        .GTextBtn.primary:hover { background: rgba(99, 102, 241, 0.45); }
+
+        .GTextBtn.danger {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+
+        .GTextBtn.danger:hover { background: rgba(239, 68, 68, 0.35); }
+
+        .GTextBtn.active {
+            background: rgba(99, 102, 241, 0.35);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+        }
+
+        /* Layout */
+        .AppLayout {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100vh;
+            z-index: 10;
+            position: relative;
+        }
+
+        /* Top Toolbar */
+        .Toolbar {
+            margin: 16px 16px 0;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            z-index: 20;
+        }
+
+        .ToolbarDivider {
+            width: 1px;
+            height: 24px;
+            background: rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+
+        .ToolbarGroup {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .ToolBtn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            color: rgba(0, 0, 0, 0.65);
+            position: relative;
+        }
+
+        .ToolBtn:hover {
+            background: rgba(255, 255, 255, 0.35);
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .ToolBtn.active {
+            background: rgba(99, 102, 241, 0.3);
+            border-color: rgba(99, 102, 241, 0.5);
+            color: rgba(99, 102, 241, 0.9);
+        }
+
+        .ToolBtn .material-symbols-outlined { font-size: 20px; }
+
+        .ColorSwatch {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            transition: transform 0.15s;
+        }
+
+        .ColorSwatch:hover { transform: scale(1.15); }
+
+        input[type="color"] {
+            opacity: 0;
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            pointer-events: none;
+        }
+
+        .BrushSizeSlider {
+            width: 60px;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(0, 0, 0, 0.12);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .BrushSizeSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(99, 102, 241, 0.8);
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .ToolbarSpacer { flex: 1; }
+
+        /* Board Container */
+        .BoardContainer {
+            flex: 1;
+            margin: 12px 16px 16px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+            overflow: hidden;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Whiteboard Canvas */
+        .WhiteboardArea {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: white;
+            overflow: hidden;
+        }
+
+        .DrawCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+        }
+
+        .DrawCanvas.active {
+            cursor: crosshair;
+        }
+
+        .DrawCanvas.erasing {
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='10' cy='10' r='8' fill='none' stroke='%23999' stroke-width='2'/%3E%3C/svg%3E") 10 10, auto;
+        }
+
+        /* Whiteboard Elements */
+        .WBElement {
+            position: absolute;
+            cursor: default;
+            min-width: 30px;
+            min-height: 20px;
+            z-index: 10;
+        }
+
+        .WBElement.selected {
+            outline: 2px solid rgba(99, 102, 241, 0.7);
+            outline-offset: 3px;
+        }
+
+        .WBElement.dragging {
+            opacity: 0.8;
+            z-index: 100;
+        }
+
+        .WBElement .ResizeHandle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: rgba(99, 102, 241, 0.8);
+            border: 1px solid white;
+            border-radius: 2px;
+            cursor: nwse-resize;
+            display: none;
+            z-index: 15;
+        }
+
+        .WBElement.selected .ResizeHandle { display: block; }
+        .WBElement .ResizeHandle.se { right: -5px; bottom: -5px; }
+
+        .DragHandle {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            width: 20px;
+            height: 20px;
+            background: rgba(99, 102, 241, 0.8);
+            border: 1px solid white;
+            border-radius: 4px;
+            cursor: grab;
+            display: none;
+            z-index: 15;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .DragHandle:active { cursor: grabbing; }
+
+        .DragHandle .material-symbols-outlined {
+            font-size: 14px;
+        }
+
+        .WBElement.selected .DragHandle { display: flex; }
+
+        .WBTextBlock {
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            padding: 6px 10px;
+            outline: none;
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.4;
+            min-width: 60px;
+            min-height: 28px;
+        }
+
+        .WBTextBlock * {
+            font-family: inherit;
+        }
+
+        .WBTextBlock div, .WBTextBlock p, .WBTextBlock br {
+            font-family: inherit;
+        }
+
+        .WBTextBlock:focus {
+            background: rgba(99, 102, 241, 0.04);
+            border-radius: 4px;
+        }
+
+        /* Bucket List */
+        .WBChecklist {
+            font-family: 'Caveat', cursive;
+            font-size: 18px;
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 140px;
+        }
+
+        .WBChecklistTitle {
+            font-weight: 700;
+            font-size: 20px;
+            border: none;
+            outline: none;
+            background: none;
+            font-family: 'Caveat', cursive;
+            width: 100%;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.15);
+            padding-bottom: 4px;
+            margin-bottom: 4px;
+        }
+
+        .WBCheckItem {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .WBCheckItem input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #6366f1;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .WBCheckItem span {
+            outline: none;
+            flex: 1;
+            min-width: 40px;
+        }
+
+        .WBCheckItem span[data-checked="true"] {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        .WBCheckItem .RemoveItemBtn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: rgba(239, 68, 68, 0.5);
+            font-size: 14px;
+            padding: 0;
+            display: none;
+        }
+
+        .WBCheckItem:hover .RemoveItemBtn { display: block; }
+
+        .AddCheckItemBtn {
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            background: none;
+            border: 1px dashed rgba(0, 0, 0, 0.15);
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 2px 6px;
+            color: rgba(0, 0, 0, 0.35);
+            text-align: left;
+            transition: all 0.15s;
+        }
+
+        .AddCheckItemBtn:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            color: rgba(99, 102, 241, 0.6);
+        }
+
+        /* Table */
+        .WBTable {
+            border-collapse: collapse;
+            font-family: 'Caveat', cursive;
+            font-size: 17px;
+        }
+
+        .WBTable td {
+            border: 1.5px solid rgba(0, 0, 0, 0.2);
+            padding: 4px 8px;
+            min-width: 60px;
+            min-height: 24px;
+            outline: none;
+        }
+
+        .WBTable td:focus {
+            background: rgba(99, 102, 241, 0.06);
+        }
+
+        .WBTableActions {
+            position: absolute;
+            top: -28px;
+            left: 0;
+            display: none;
+            gap: 2px;
+        }
+
+        .WBElement.selected .WBTableActions { display: flex; }
+
+        .WBTableActionBtn {
+            width: 24px;
+            height: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .WBTableActionBtn:hover {
+            background: rgba(255, 255, 255, 0.9);
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        /* Modal */
+        .ModalOverlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .ModalOverlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .ModalContent {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 18px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+            padding: 28px;
+            min-width: 400px;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .ModalTitle {
+            font-size: 18px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ModalClose {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: rgba(0, 0, 0, 0.5);
+            padding: 4px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .ModalClose:hover {
+            background: rgba(0, 0, 0, 0.06);
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.7);
+        }
+
+        .form-group input,
+        .form-group select {
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: black;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+            backdrop-filter: blur(4px);
+            transition: all 0.2s ease;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            background: rgba(255, 255, 255, 0.5);
+            border-color: rgba(99, 102, 241, 0.6);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .SavedBoardItem {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .SavedBoardItem span {
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .SavedBoardActions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .EmptyState {
+            text-align: center;
+            padding: 30px 20px;
+            color: rgba(0, 0, 0, 0.4);
+            font-size: 14px;
+        }
+
+        .EmptyState .material-symbols-outlined {
+            font-size: 40px;
+            margin-bottom: 10px;
+            opacity: 0.4;
+        }
+
+        .FontSizeInput {
+            width: 50px;
+            height: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.7);
+            outline: none;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .FontSizeInput:focus {
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+        }
+
+        /* Selection box */
+        .SelectionBox {
+            position: absolute;
+            border: 2px dashed rgba(99, 102, 241, 0.6);
+            background: rgba(99, 102, 241, 0.05);
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        /* Context Menu */
+        .ContextMenu {
+            position: fixed;
+            display: none;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            z-index: 500;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12),
+              inset 0 1px 1px rgba(255, 255, 255, 0.6);
+            overflow: hidden;
+            padding: 4px;
+        }
+
+        .ContextMenu button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 200px;
+            padding: 8px 12px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 13px;
+            color: #000;
+            font-family: 'Roboto', sans-serif;
+            transition: background 0.15s ease;
+        }
+
+        .ContextMenu button:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .ContextMenu button .material-symbols-outlined {
+            font-size: 18px;
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .ContextMenu button .shortcut {
+            margin-left: auto;
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.35);
+            font-weight: 500;
+        }
+
+        .ContextMenu button:disabled {
+            opacity: 0.35;
+            cursor: default;
+        }
+
+        .ContextMenu button:disabled:hover {
+            background: transparent;
+        }
+
+        .ContextMenuDivider {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.08);
+            margin: 4px 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="gridOverlay"></div>
+
+    <div class="AppLayout">
+        <!-- Toolbar -->
+        <div class="Toolbar">
+            <!-- Tool modes -->
+            <div class="ToolbarGroup">
+                <button class="ToolBtn active" data-tool="select" onclick="setTool('select')" title="Select / Move">
+                    <span class="material-symbols-outlined">near_me</span>
+                </button>
+                <button class="ToolBtn" data-tool="draw" onclick="setTool('draw')" title="Draw">
+                    <span class="material-symbols-outlined">draw</span>
+                </button>
+                <button class="ToolBtn" data-tool="erase" onclick="setTool('erase')" title="Eraser">
+                    <span class="material-symbols-outlined">ink_eraser</span>
+                </button>
+            </div>
+
+            <div class="ToolbarDivider"></div>
+
+            <!-- Add elements -->
+            <div class="ToolbarGroup">
+                <button class="ToolBtn" onclick="addTextBlock()" title="Add Text">
+                    <span class="material-symbols-outlined">title</span>
+                </button>
+                <button class="ToolBtn" onclick="addChecklist()" title="Add Bucket List">
+                    <span class="material-symbols-outlined">checklist</span>
+                </button>
+                <button class="ToolBtn" onclick="addTable()" title="Add Table">
+                    <span class="material-symbols-outlined">table_chart</span>
+                </button>
+            </div>
+
+            <div class="ToolbarDivider"></div>
+
+            <!-- Text formatting -->
+            <div class="ToolbarGroup">
+                <button class="ToolBtn" id="boldBtn" onclick="formatText('bold')" title="Bold">
+                    <span class="material-symbols-outlined">format_bold</span>
+                </button>
+                <button class="ToolBtn" id="italicBtn" onclick="formatText('italic')" title="Italic">
+                    <span class="material-symbols-outlined">format_italic</span>
+                </button>
+                <button class="ToolBtn" id="underlineBtn" onclick="formatText('underline')" title="Underline">
+                    <span class="material-symbols-outlined">format_underlined</span>
+                </button>
+                <input type="number" class="FontSizeInput" id="fontSizeInput" value="20" min="10" max="72" step="1" onchange="changeFontSize(this.value)" title="Font Size">
+            </div>
+
+            <div class="ToolbarDivider"></div>
+
+            <!-- Color -->
+            <div class="ToolbarGroup">
+                <div style="position: relative;">
+                    <div class="ColorSwatch" id="colorSwatch" style="background: #000000;" onclick="document.getElementById('colorPicker').click()" title="Color"></div>
+                    <input type="color" id="colorPicker" value="#000000" onchange="setColor(this.value)">
+                </div>
+                <input type="range" class="BrushSizeSlider" id="brushSize" value="3" min="1" max="20" title="Brush Size">
+            </div>
+
+            <div class="ToolbarDivider"></div>
+
+            <!-- Board actions -->
+            <div class="ToolbarGroup">
+                <button class="ToolBtn" onclick="deleteSelected()" title="Delete Selected">
+                    <span class="material-symbols-outlined">delete</span>
+                </button>
+                <button class="ToolBtn" onclick="clearBoard()" title="Clear Board">
+                    <span class="material-symbols-outlined">delete_sweep</span>
+                </button>
+            </div>
+
+            <div class="ToolbarSpacer"></div>
+
+            <!-- File actions -->
+            <div class="ToolbarGroup">
+                <button class="GTextBtn" onclick="openModal('saveLoad')" style="padding: 6px 12px;">
+                    <span class="material-symbols-outlined">folder_open</span> Boards
+                </button>
+                <button class="GTextBtn primary" onclick="exportAsPNG()" style="padding: 6px 12px;">
+                    <span class="material-symbols-outlined">image</span> Export PNG
+                </button>
+                <button class="GTextBtn" onclick="window.location.href='../'" style="padding: 6px 12px;">
+                    <span class="material-symbols-outlined">home</span> Home
+                </button>
+            </div>
+        </div>
+
+        <!-- Board -->
+        <div class="BoardContainer">
+            <div class="WhiteboardArea" id="whiteboardArea">
+                <canvas class="DrawCanvas" id="drawCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save/Load Modal -->
+
+    <!-- Context Menu -->
+    <div id="contextMenu" class="ContextMenu">
+        <button id="ctxCut"><span class="material-symbols-outlined">content_cut</span> Cut<span class="shortcut">Ctrl+X</span></button>
+        <button id="ctxCopy"><span class="material-symbols-outlined">content_copy</span> Copy<span class="shortcut">Ctrl+C</span></button>
+        <button id="ctxPaste"><span class="material-symbols-outlined">content_paste</span> Paste<span class="shortcut">Ctrl+V</span></button>
+        <button id="ctxDuplicate"><span class="material-symbols-outlined">content_copy</span> Duplicate</button>
+        <div class="ContextMenuDivider"></div>
+        <button id="ctxDelete"><span class="material-symbols-outlined">delete</span> Delete<span class="shortcut">Del</span></button>
+        <button id="ctxSelectAll"><span class="material-symbols-outlined">select_all</span> Select All<span class="shortcut">Ctrl+A</span></button>
+        <button id="ctxDeselect"><span class="material-symbols-outlined">deselect</span> Deselect</button>
+        <div class="ContextMenuDivider"></div>
+        <button id="ctxCopyData"><span class="material-symbols-outlined">data_object</span> Copy Data (JSON)</button>
+        <button id="ctxPasteData"><span class="material-symbols-outlined">data_array</span> Paste Data (JSON)</button>
+        <div class="ContextMenuDivider"></div>
+        <button id="ctxExport"><span class="material-symbols-outlined">image</span> Export as PNG</button>
+    </div>
+
+    <div class="ModalOverlay" id="saveLoadModal" onclick="if(event.target===this)closeModal('saveLoad')">
+        <div class="ModalContent">
+            <div class="ModalTitle">
+                <span>Whiteboards</span>
+                <button class="ModalClose" onclick="closeModal('saveLoad')">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="form-group">
+                <label>Save Current Board</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="boardNameInput" placeholder="Board name..." style="flex: 1;">
+                    <button class="GTextBtn primary" onclick="saveBoard()" style="height: 38px;">Save</button>
+                </div>
+            </div>
+            <div style="font-size: 14px; font-weight: 600; color: rgba(0,0,0,0.7); border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 6px;">Saved Boards</div>
+            <div id="savedBoardsList"></div>
+        </div>
+    </div>
+
+    <script>
+        // ===== STATE =====
+        let currentTool = 'select';
+        let currentColor = '#000000';
+        let elements = [];
+        let selectedElementId = null;
+        let selectedElementIds = new Set();
+        let selectedStrokeIndices = new Set();
+        let nextId = 1;
+
+        const board = document.getElementById('whiteboardArea');
+        const drawCanvas = document.getElementById('drawCanvas');
+        const ctx = drawCanvas.getContext('2d');
+
+        // ===== CANVAS SETUP =====
+        function resizeCanvas() {
+            const rect = board.getBoundingClientRect();
+            drawCanvas.width = rect.width;
+            drawCanvas.height = rect.height;
+            redrawCanvas();
+        }
+
+        let drawingStrokes = [];
+
+        function redrawCanvas() {
+            ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+            drawingStrokes.forEach((stroke, idx) => {
+                if (stroke.points.length < 2) return;
+                // Draw selection highlight behind selected strokes
+                if (selectedStrokeIndices.has(idx)) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'rgba(99, 102, 241, 0.35)';
+                    ctx.lineWidth = stroke.size + 8;
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
+                    ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+                    for (let i = 1; i < stroke.points.length; i++) {
+                        ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
+                    }
+                    ctx.stroke();
+                }
+                ctx.beginPath();
+                ctx.strokeStyle = stroke.color;
+                ctx.lineWidth = stroke.size;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+                for (let i = 1; i < stroke.points.length; i++) {
+                    ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
+                }
+                ctx.stroke();
+            });
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // ===== TOOLS =====
+        function setTool(tool) {
+            currentTool = tool;
+            document.querySelectorAll('.ToolBtn[data-tool]').forEach(b => {
+                b.classList.toggle('active', b.dataset.tool === tool);
+            });
+            drawCanvas.classList.remove('active', 'erasing');
+            if (tool === 'draw') drawCanvas.classList.add('active');
+            if (tool === 'erase') drawCanvas.classList.add('erasing');
+
+            // Canvas pointer events
+            if (tool === 'draw' || tool === 'erase') {
+                drawCanvas.style.pointerEvents = 'auto';
+                deselectAll();
+            } else if (tool === 'select') {
+                drawCanvas.style.pointerEvents = 'none';
+            }
+        }
+
+        function setColor(color) {
+            currentColor = color;
+            document.getElementById('colorSwatch').style.background = color;
+        }
+
+        // ===== DRAWING =====
+        let isDrawing = false;
+        let currentStroke = null;
+
+        drawCanvas.addEventListener('pointerdown', (e) => {
+            if (currentTool === 'draw') {
+                isDrawing = true;
+                const rect = drawCanvas.getBoundingClientRect();
+                currentStroke = {
+                    color: currentColor,
+                    size: parseInt(document.getElementById('brushSize').value),
+                    points: [{ x: e.clientX - rect.left, y: e.clientY - rect.top }]
+                };
+                drawCanvas.setPointerCapture(e.pointerId);
+            } else if (currentTool === 'erase') {
+                isDrawing = true;
+                eraseAt(e);
+                drawCanvas.setPointerCapture(e.pointerId);
+            }
+        });
+
+        drawCanvas.addEventListener('pointermove', (e) => {
+            if (!isDrawing) return;
+            const rect = drawCanvas.getBoundingClientRect();
+            if (currentTool === 'draw' && currentStroke) {
+                currentStroke.points.push({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+                // Draw live
+                ctx.beginPath();
+                ctx.strokeStyle = currentStroke.color;
+                ctx.lineWidth = currentStroke.size;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                const pts = currentStroke.points;
+                if (pts.length >= 2) {
+                    ctx.moveTo(pts[pts.length - 2].x, pts[pts.length - 2].y);
+                    ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
+                }
+                ctx.stroke();
+            } else if (currentTool === 'erase') {
+                eraseAt(e);
+            }
+        });
+
+        drawCanvas.addEventListener('pointerup', () => {
+            if (isDrawing && currentTool === 'draw' && currentStroke) {
+                drawingStrokes.push(currentStroke);
+                currentStroke = null;
+            }
+            isDrawing = false;
+        });
+
+        function eraseAt(e) {
+            const rect = drawCanvas.getBoundingClientRect();
+            const ex = e.clientX - rect.left;
+            const ey = e.clientY - rect.top;
+            const eraseRadius = parseInt(document.getElementById('brushSize').value) * 2;
+            drawingStrokes = drawingStrokes.filter(stroke => {
+                return !stroke.points.some(p => Math.hypot(p.x - ex, p.y - ey) < eraseRadius);
+            });
+            redrawCanvas();
+        }
+
+        // ===== ELEMENT MANAGEMENT =====
+        function createElement(type, x, y, content) {
+            const id = nextId++;
+            const el = { id, type, x, y, content, color: currentColor, fontSize: parseInt(document.getElementById('fontSizeInput').value) };
+            elements.push(el);
+            renderElement(el);
+            selectElement(id);
+            return el;
+        }
+
+        function renderElement(el) {
+            const existing = document.getElementById('wb-el-' + el.id);
+            if (existing) existing.remove();
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'WBElement';
+            wrapper.id = 'wb-el-' + el.id;
+            wrapper.style.left = el.x + 'px';
+            wrapper.style.top = el.y + 'px';
+            if (el.width) wrapper.style.width = el.width + 'px';
+
+            // Resize handle
+            const resizeHandle = document.createElement('div');
+            resizeHandle.className = 'ResizeHandle se';
+            resizeHandle.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                startResize(el.id, e);
+            });
+            wrapper.appendChild(resizeHandle);
+
+            // Drag handle
+            const dragHandle = document.createElement('div');
+            dragHandle.className = 'DragHandle';
+            dragHandle.innerHTML = '<span class="material-symbols-outlined">drag_indicator</span>';
+            dragHandle.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                selectElement(el.id);
+                startDrag(el.id, e);
+            });
+            wrapper.appendChild(dragHandle);
+
+            if (el.type === 'text') {
+                const block = document.createElement('div');
+                block.className = 'WBTextBlock';
+                block.contentEditable = 'true';
+                block.innerHTML = el.content || 'Type here...';
+                block.style.color = el.color || '#000';
+                block.style.fontSize = (el.fontSize || 20) + 'px';
+                block.addEventListener('input', () => {
+                    el.content = block.innerHTML;
+                });
+                block.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        document.execCommand('insertLineBreak');
+                    }
+                });
+                block.addEventListener('focus', () => selectElement(el.id));
+                block.addEventListener('pointerdown', (e) => e.stopPropagation());
+                wrapper.appendChild(block);
+            } else if (el.type === 'checklist') {
+                const container = document.createElement('div');
+                container.className = 'WBChecklist';
+                container.style.color = el.color || '#000';
+                container.style.fontSize = (el.fontSize || 18) + 'px';
+
+                const titleInput = document.createElement('input');
+                titleInput.className = 'WBChecklistTitle';
+                titleInput.value = el.content.title || 'Bucket List';
+                titleInput.style.color = el.color || '#000';
+                titleInput.style.fontSize = (el.fontSize ? el.fontSize + 2 : 20) + 'px';
+                titleInput.addEventListener('input', () => { el.content.title = titleInput.value; });
+                titleInput.addEventListener('pointerdown', (e) => e.stopPropagation());
+                container.appendChild(titleInput);
+
+                const itemsDiv = document.createElement('div');
+                itemsDiv.style.display = 'flex';
+                itemsDiv.style.flexDirection = 'column';
+                itemsDiv.style.gap = '4px';
+
+                function renderItems() {
+                    itemsDiv.innerHTML = '';
+                    el.content.items.forEach((item, i) => {
+                        const row = document.createElement('div');
+                        row.className = 'WBCheckItem';
+
+                        const cb = document.createElement('input');
+                        cb.type = 'checkbox';
+                        cb.checked = item.checked;
+                        cb.addEventListener('change', () => {
+                            item.checked = cb.checked;
+                            textSpan.dataset.checked = item.checked;
+                        });
+                        cb.addEventListener('pointerdown', (e) => e.stopPropagation());
+
+                        const textSpan = document.createElement('span');
+                        textSpan.contentEditable = 'true';
+                        textSpan.textContent = item.text;
+                        textSpan.dataset.checked = item.checked;
+                        textSpan.addEventListener('input', () => { item.text = textSpan.textContent; });
+                        textSpan.addEventListener('pointerdown', (e) => e.stopPropagation());
+                        textSpan.addEventListener('keydown', (e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                el.content.items.splice(i + 1, 0, { text: '', checked: false });
+                                renderItems();
+                                const nextRow = itemsDiv.children[i + 1];
+                                if (nextRow) nextRow.querySelector('span[contenteditable]').focus();
+                            }
+                        });
+
+                        const removeBtn = document.createElement('button');
+                        removeBtn.className = 'RemoveItemBtn';
+                        removeBtn.innerHTML = '✕';
+                        removeBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            el.content.items.splice(i, 1);
+                            renderItems();
+                        });
+                        removeBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+
+                        row.appendChild(cb);
+                        row.appendChild(textSpan);
+                        row.appendChild(removeBtn);
+                        itemsDiv.appendChild(row);
+                    });
+                }
+                renderItems();
+                container.appendChild(itemsDiv);
+
+                const addBtn = document.createElement('button');
+                addBtn.className = 'AddCheckItemBtn';
+                addBtn.textContent = '+ Add item';
+                addBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    el.content.items.push({ text: 'New item', checked: false });
+                    renderItems();
+                    const lastRow = itemsDiv.lastChild;
+                    if (lastRow) lastRow.querySelector('span[contenteditable]').focus();
+                });
+                addBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+                container.appendChild(addBtn);
+
+                wrapper.appendChild(container);
+            } else if (el.type === 'table') {
+                const tableWrap = document.createElement('div');
+                tableWrap.style.position = 'relative';
+
+                // Table actions
+                const actions = document.createElement('div');
+                actions.className = 'WBTableActions';
+                [
+                    { icon: 'add_column_right', title: 'Add Column', fn: () => addTableCol(el) },
+                    { icon: 'add_row_below', title: 'Add Row', fn: () => addTableRow(el) },
+                    { icon: 'remove', title: 'Remove Last Column', fn: () => removeTableCol(el) },
+                    { icon: 'playlist_remove', title: 'Remove Last Row', fn: () => removeTableRow(el) }
+                ].forEach(a => {
+                    const btn = document.createElement('button');
+                    btn.className = 'WBTableActionBtn';
+                    btn.title = a.title;
+                    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;">' + a.icon + '</span>';
+                    btn.addEventListener('click', (e) => { e.stopPropagation(); a.fn(); });
+                    btn.addEventListener('pointerdown', (e) => e.stopPropagation());
+                    actions.appendChild(btn);
+                });
+                tableWrap.appendChild(actions);
+
+                const table = document.createElement('table');
+                table.className = 'WBTable';
+                table.style.color = el.color || '#000';
+                table.style.fontSize = (el.fontSize || 17) + 'px';
+
+                el.content.rows.forEach((row, ri) => {
+                    const tr = document.createElement('tr');
+                    row.forEach((cell, ci) => {
+                        const td = document.createElement('td');
+                        td.contentEditable = 'true';
+                        td.textContent = cell;
+                        td.addEventListener('input', () => { el.content.rows[ri][ci] = td.textContent; });
+                        td.addEventListener('pointerdown', (e) => e.stopPropagation());
+                        tr.appendChild(td);
+                    });
+                    table.appendChild(tr);
+                });
+                tableWrap.appendChild(table);
+                wrapper.appendChild(tableWrap);
+            }
+
+            // Drag handling
+            wrapper.addEventListener('pointerdown', (e) => {
+                if (currentTool !== 'select') return;
+                e.stopPropagation();
+                selectElement(el.id);
+                startDrag(el.id, e);
+            });
+
+            board.appendChild(wrapper);
+        }
+
+        // ===== ADD ELEMENTS =====
+        function addTextBlock() {
+            setTool('select');
+            createElement('text', 80 + Math.random() * 200, 80 + Math.random() * 100, 'Type here...');
+        }
+
+        function addChecklist() {
+            setTool('select');
+            createElement('checklist', 80 + Math.random() * 200, 80 + Math.random() * 100, {
+                title: 'Bucket List',
+                items: [
+                    { text: 'First item', checked: false },
+                    { text: 'Second item', checked: false }
+                ]
+            });
+        }
+
+        function addTable() {
+            setTool('select');
+            createElement('table', 80 + Math.random() * 200, 80 + Math.random() * 100, {
+                rows: [
+                    ['Header 1', 'Header 2', 'Header 3'],
+                    ['', '', ''],
+                    ['', '', '']
+                ]
+            });
+        }
+
+        function addTableRow(el) {
+            const cols = el.content.rows[0] ? el.content.rows[0].length : 3;
+            el.content.rows.push(new Array(cols).fill(''));
+            renderElement(el);
+            selectElement(el.id);
+        }
+
+        function addTableCol(el) {
+            el.content.rows.forEach(row => row.push(''));
+            renderElement(el);
+            selectElement(el.id);
+        }
+
+        function removeTableRow(el) {
+            if (el.content.rows.length <= 1) return;
+            el.content.rows.pop();
+            renderElement(el);
+            selectElement(el.id);
+        }
+
+        function removeTableCol(el) {
+            if (!el.content.rows[0] || el.content.rows[0].length <= 1) return;
+            el.content.rows.forEach(row => row.pop());
+            renderElement(el);
+            selectElement(el.id);
+        }
+
+        // ===== SELECTION =====
+        function selectElement(id, addToSelection = false) {
+            if (!addToSelection) {
+                deselectAll();
+            }
+            selectedElementId = id;
+            selectedElementIds.add(id);
+            const dom = document.getElementById('wb-el-' + id);
+            if (dom) dom.classList.add('selected');
+
+            const el = elements.find(e => e.id === id);
+            if (el) {
+                document.getElementById('fontSizeInput').value = el.fontSize || 20;
+            }
+        }
+
+        function deselectAll() {
+            selectedElementId = null;
+            selectedElementIds.clear();
+            selectedStrokeIndices.clear();
+            document.querySelectorAll('.WBElement.selected').forEach(e => e.classList.remove('selected'));
+            redrawCanvas();
+        }
+
+        // ===== STROKE HIT TESTING =====
+        function hitTestStroke(stroke, x, y, threshold) {
+            const t = threshold || (stroke.size / 2 + 6);
+            return stroke.points.some(p => Math.hypot(p.x - x, p.y - y) < t);
+        }
+
+        function getStrokeBounds(stroke) {
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            stroke.points.forEach(p => {
+                if (p.x < minX) minX = p.x;
+                if (p.y < minY) minY = p.y;
+                if (p.x > maxX) maxX = p.x;
+                if (p.y > maxY) maxY = p.y;
+            });
+            const pad = stroke.size / 2;
+            return { x1: minX - pad, y1: minY - pad, x2: maxX + pad, y2: maxY + pad };
+        }
+
+        function selectStroke(idx, addToSelection = false) {
+            if (!addToSelection) {
+                deselectAll();
+            }
+            selectedStrokeIndices.add(idx);
+            redrawCanvas();
+        }
+
+        // ===== RECTANGLE SELECT =====
+        let rectSelectState = null;
+        let rectSelectBox = null;
+        let strokeDragState = null;
+
+        board.addEventListener('pointerdown', (e) => {
+            if (currentTool !== 'select') return;
+            // Only handle clicks on the board background or canvas
+            if (e.target !== board && e.target !== drawCanvas) return;
+
+            const boardRect = board.getBoundingClientRect();
+            const mx = e.clientX - boardRect.left;
+            const my = e.clientY - boardRect.top;
+
+            // Check if clicking on an existing selected stroke to drag it
+            for (const idx of selectedStrokeIndices) {
+                if (drawingStrokes[idx] && hitTestStroke(drawingStrokes[idx], mx, my)) {
+                    startStrokeDrag(e, boardRect);
+                    return;
+                }
+            }
+
+            // Check if clicking on any stroke to select it
+            for (let i = drawingStrokes.length - 1; i >= 0; i--) {
+                if (hitTestStroke(drawingStrokes[i], mx, my)) {
+                    selectStroke(i);
+                    startStrokeDrag(e, boardRect);
+                    return;
+                }
+            }
+
+            // No stroke hit — start rectangle select
+            deselectAll();
+            rectSelectState = {
+                startX: mx,
+                startY: my,
+                boardLeft: boardRect.left,
+                boardTop: boardRect.top
+            };
+
+            rectSelectBox = document.createElement('div');
+            rectSelectBox.className = 'SelectionBox';
+            rectSelectBox.style.left = rectSelectState.startX + 'px';
+            rectSelectBox.style.top = rectSelectState.startY + 'px';
+            rectSelectBox.style.width = '0px';
+            rectSelectBox.style.height = '0px';
+            board.appendChild(rectSelectBox);
+
+            document.addEventListener('pointermove', onRectSelectMove);
+            document.addEventListener('pointerup', onRectSelectEnd);
+        });
+
+        function startStrokeDrag(e, boardRect) {
+            const mx = e.clientX - boardRect.left;
+            const my = e.clientY - boardRect.top;
+            strokeDragState = {
+                startX: mx,
+                startY: my,
+                boardLeft: boardRect.left,
+                boardTop: boardRect.top
+            };
+            document.addEventListener('pointermove', onStrokeDragMove);
+            document.addEventListener('pointerup', onStrokeDragEnd);
+        }
+
+        function onStrokeDragMove(e) {
+            if (!strokeDragState) return;
+            const mx = e.clientX - strokeDragState.boardLeft;
+            const my = e.clientY - strokeDragState.boardTop;
+            const dx = mx - strokeDragState.startX;
+            const dy = my - strokeDragState.startY;
+            strokeDragState.startX = mx;
+            strokeDragState.startY = my;
+            selectedStrokeIndices.forEach(idx => {
+                const stroke = drawingStrokes[idx];
+                if (!stroke) return;
+                stroke.points.forEach(p => { p.x += dx; p.y += dy; });
+            });
+            redrawCanvas();
+        }
+
+        function onStrokeDragEnd() {
+            strokeDragState = null;
+            document.removeEventListener('pointermove', onStrokeDragMove);
+            document.removeEventListener('pointerup', onStrokeDragEnd);
+        }
+
+        function onRectSelectMove(e) {
+            if (!rectSelectState || !rectSelectBox) return;
+            const curX = e.clientX - rectSelectState.boardLeft;
+            const curY = e.clientY - rectSelectState.boardTop;
+            const x = Math.min(rectSelectState.startX, curX);
+            const y = Math.min(rectSelectState.startY, curY);
+            const w = Math.abs(curX - rectSelectState.startX);
+            const h = Math.abs(curY - rectSelectState.startY);
+            rectSelectBox.style.left = x + 'px';
+            rectSelectBox.style.top = y + 'px';
+            rectSelectBox.style.width = w + 'px';
+            rectSelectBox.style.height = h + 'px';
+        }
+
+        function onRectSelectEnd(e) {
+            document.removeEventListener('pointermove', onRectSelectMove);
+            document.removeEventListener('pointerup', onRectSelectEnd);
+            if (!rectSelectState || !rectSelectBox) return;
+
+            const curX = e.clientX - rectSelectState.boardLeft;
+            const curY = e.clientY - rectSelectState.boardTop;
+            const selX1 = Math.min(rectSelectState.startX, curX);
+            const selY1 = Math.min(rectSelectState.startY, curY);
+            const selX2 = Math.max(rectSelectState.startX, curX);
+            const selY2 = Math.max(rectSelectState.startY, curY);
+
+            rectSelectBox.remove();
+            rectSelectBox = null;
+            rectSelectState = null;
+
+            // Only select if drag was meaningful (> 5px)
+            if (selX2 - selX1 < 5 && selY2 - selY1 < 5) return;
+
+            // Select elements in box
+            elements.forEach(el => {
+                const dom = document.getElementById('wb-el-' + el.id);
+                if (!dom) return;
+                const elX1 = el.x;
+                const elY1 = el.y;
+                const elX2 = el.x + dom.offsetWidth;
+                const elY2 = el.y + dom.offsetHeight;
+                if (elX1 < selX2 && elX2 > selX1 && elY1 < selY2 && elY2 > selY1) {
+                    selectElement(el.id, true);
+                }
+            });
+
+            // Select strokes in box
+            drawingStrokes.forEach((stroke, idx) => {
+                const b = getStrokeBounds(stroke);
+                if (b.x1 < selX2 && b.x2 > selX1 && b.y1 < selY2 && b.y2 > selY1) {
+                    selectedStrokeIndices.add(idx);
+                }
+            });
+            redrawCanvas();
+        }
+
+        // ===== DRAG =====
+        let dragState = null;
+
+        function startDrag(id, e) {
+            const el = elements.find(e => e.id === id);
+            const dom = document.getElementById('wb-el-' + id);
+            if (!el || !dom) return;
+
+            const boardRect = board.getBoundingClientRect();
+
+            // If dragging an element that's part of a multi-selection, drag all selected
+            // If dragging an unselected element, select only it
+            if (!selectedElementIds.has(id)) {
+                selectElement(id);
+            }
+
+            const dragIds = selectedElementIds.size > 1 ? [...selectedElementIds] : [id];
+            const offsets = {};
+            dragIds.forEach(did => {
+                const dEl = elements.find(e => e.id === did);
+                const dDom = document.getElementById('wb-el-' + did);
+                if (dEl && dDom) {
+                    dDom.classList.add('dragging');
+                    offsets[did] = {
+                        dx: dEl.x - (e.clientX - boardRect.left),
+                        dy: dEl.y - (e.clientY - boardRect.top)
+                    };
+                }
+            });
+
+            dragState = {
+                ids: dragIds,
+                offsets,
+                boardX: boardRect.left,
+                boardY: boardRect.top
+            };
+            document.addEventListener('pointermove', onDragMove);
+            document.addEventListener('pointerup', onDragEnd);
+        }
+
+        function onDragMove(e) {
+            if (!dragState) return;
+            dragState.ids.forEach(id => {
+                const el = elements.find(e => e.id === id);
+                const dom = document.getElementById('wb-el-' + id);
+                if (!el || !dom) return;
+                const off = dragState.offsets[id];
+                el.x = (e.clientX - dragState.boardX) + off.dx;
+                el.y = (e.clientY - dragState.boardY) + off.dy;
+                dom.style.left = el.x + 'px';
+                dom.style.top = el.y + 'px';
+            });
+        }
+
+        function onDragEnd() {
+            if (dragState) {
+                dragState.ids.forEach(id => {
+                    const dom = document.getElementById('wb-el-' + id);
+                    if (dom) dom.classList.remove('dragging');
+                });
+            }
+            dragState = null;
+            document.removeEventListener('pointermove', onDragMove);
+            document.removeEventListener('pointerup', onDragEnd);
+        }
+
+        // ===== RESIZE =====
+        let resizeState = null;
+
+        function startResize(id, e) {
+            const el = elements.find(e => e.id === id);
+            const dom = document.getElementById('wb-el-' + id);
+            if (!el || !dom) return;
+            resizeState = {
+                id,
+                startX: e.clientX,
+                startY: e.clientY,
+                startW: dom.offsetWidth,
+                startH: dom.offsetHeight
+            };
+            document.addEventListener('pointermove', onResizeMove);
+            document.addEventListener('pointerup', onResizeEnd);
+        }
+
+        function onResizeMove(e) {
+            if (!resizeState) return;
+            const dom = document.getElementById('wb-el-' + resizeState.id);
+            const el = elements.find(e => e.id === resizeState.id);
+            if (!dom || !el) return;
+            const w = Math.max(60, resizeState.startW + (e.clientX - resizeState.startX));
+            dom.style.width = w + 'px';
+            el.width = w;
+        }
+
+        function onResizeEnd() {
+            resizeState = null;
+            document.removeEventListener('pointermove', onResizeMove);
+            document.removeEventListener('pointerup', onResizeEnd);
+        }
+
+        // ===== TEXT FORMATTING =====
+        function formatText(command) {
+            document.execCommand(command, false, null);
+        }
+
+        function changeFontSize(size) {
+            if (selectedElementId !== null) {
+                const el = elements.find(e => e.id === selectedElementId);
+                if (el) {
+                    el.fontSize = parseInt(size) || 20;
+                    renderElement(el);
+                    selectElement(el.id);
+                }
+            }
+        }
+
+        // ===== DELETE =====
+        function deleteSelected() {
+            const hasElements = selectedElementIds.size > 0 || selectedElementId !== null;
+            const hasStrokes = selectedStrokeIndices.size > 0;
+            if (!hasElements && !hasStrokes) return;
+
+            // Delete elements
+            const idsToDelete = selectedElementIds.size > 0 ? [...selectedElementIds] : (selectedElementId !== null ? [selectedElementId] : []);
+            idsToDelete.forEach(id => {
+                const dom = document.getElementById('wb-el-' + id);
+                if (dom) dom.remove();
+                elements = elements.filter(e => e.id !== id);
+            });
+
+            // Delete strokes (remove from highest index first to preserve indices)
+            if (hasStrokes) {
+                const sortedIndices = [...selectedStrokeIndices].sort((a, b) => b - a);
+                sortedIndices.forEach(idx => { drawingStrokes.splice(idx, 1); });
+                redrawCanvas();
+            }
+
+            selectedElementId = null;
+            selectedElementIds.clear();
+            selectedStrokeIndices.clear();
+        }
+
+        function clearBoard() {
+            if (!confirm('Clear the entire whiteboard?')) return;
+            elements.forEach(el => {
+                const dom = document.getElementById('wb-el-' + el.id);
+                if (dom) dom.remove();
+            });
+            elements = [];
+            drawingStrokes = [];
+            selectedElementId = null;
+            nextId = 1;
+            redrawCanvas();
+        }
+
+        // Keyboard shortcut
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Delete' || e.key === 'Backspace') {
+                if (document.activeElement.contentEditable === 'true' || document.activeElement.tagName === 'INPUT') return;
+                deleteSelected();
+            }
+            if (e.ctrlKey && e.key === 'z') {
+                if (drawingStrokes.length > 0) {
+                    drawingStrokes.pop();
+                    redrawCanvas();
+                }
+            }
+        });
+
+        // ===== SAVE / LOAD =====
+        function collectBoardData() {
+            return {
+                elements: elements.map(el => ({
+                    id: el.id,
+                    type: el.type,
+                    x: el.x,
+                    y: el.y,
+                    width: el.width,
+                    color: el.color,
+                    fontSize: el.fontSize,
+                    content: JSON.parse(JSON.stringify(el.content))
+                })),
+                strokes: JSON.parse(JSON.stringify(drawingStrokes)),
+                nextId
+            };
+        }
+
+        function loadBoardData(data) {
+            // Clear current
+            elements.forEach(el => {
+                const dom = document.getElementById('wb-el-' + el.id);
+                if (dom) dom.remove();
+            });
+            elements = [];
+            selectedElementId = null;
+
+            if (data.strokes) drawingStrokes = data.strokes;
+            else drawingStrokes = [];
+            redrawCanvas();
+
+            if (data.nextId) nextId = data.nextId;
+
+            if (data.elements) {
+                data.elements.forEach(elData => {
+                    const el = {
+                        id: elData.id,
+                        type: elData.type,
+                        x: elData.x,
+                        y: elData.y,
+                        width: elData.width,
+                        color: elData.color,
+                        fontSize: elData.fontSize,
+                        content: elData.content
+                    };
+                    elements.push(el);
+                    renderElement(el);
+                });
+            }
+        }
+
+        function saveBoard() {
+            const nameInput = document.getElementById('boardNameInput');
+            const name = nameInput.value.trim();
+            if (!name) { nameInput.focus(); return; }
+            const boards = JSON.parse(localStorage.getItem('bbWhiteboards') || '{}');
+            boards[name] = collectBoardData();
+            localStorage.setItem('bbWhiteboards', JSON.stringify(boards));
+            nameInput.value = '';
+            renderBoardsList();
+        }
+
+        function loadBoard(name) {
+            const boards = JSON.parse(localStorage.getItem('bbWhiteboards') || '{}');
+            if (boards[name]) {
+                loadBoardData(boards[name]);
+                closeModal('saveLoad');
+            }
+        }
+
+        function deleteBoard(name) {
+            if (!confirm('Delete whiteboard "' + name + '"?')) return;
+            const boards = JSON.parse(localStorage.getItem('bbWhiteboards') || '{}');
+            delete boards[name];
+            localStorage.setItem('bbWhiteboards', JSON.stringify(boards));
+            renderBoardsList();
+        }
+
+        function renderBoardsList() {
+            const list = document.getElementById('savedBoardsList');
+            const boards = JSON.parse(localStorage.getItem('bbWhiteboards') || '{}');
+            const keys = Object.keys(boards);
+            if (keys.length === 0) {
+                list.innerHTML = '<div class="EmptyState"><span class="material-symbols-outlined">dashboard</span><div>No saved boards yet.</div></div>';
+                return;
+            }
+            list.innerHTML = '';
+            keys.forEach(name => {
+                const item = document.createElement('div');
+                item.className = 'SavedBoardItem';
+                const span = document.createElement('span');
+                span.textContent = name;
+                const actions = document.createElement('div');
+                actions.className = 'SavedBoardActions';
+
+                const loadBtn = document.createElement('button');
+                loadBtn.className = 'GTextBtn';
+                loadBtn.style.cssText = 'padding: 6px 10px;';
+                loadBtn.textContent = 'Load';
+                loadBtn.onclick = () => loadBoard(name);
+
+                const dlBtn = document.createElement('button');
+                dlBtn.className = 'GTextBtn';
+                dlBtn.style.cssText = 'padding: 6px; background: rgba(34,197,94,0.2); border-color: rgba(34,197,94,0.4); color: #22c55e;';
+                dlBtn.title = 'Export JSON';
+                dlBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;">download</span>';
+                dlBtn.onclick = () => {
+                    const data = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(boards[name]));
+                    const a = document.createElement('a');
+                    a.href = data;
+                    a.download = 'whiteboard_' + name.replace(/\s+/g, '_') + '.json';
+                    document.body.appendChild(a); a.click(); a.remove();
+                };
+
+                const delBtn = document.createElement('button');
+                delBtn.className = 'GTextBtn';
+                delBtn.style.cssText = 'padding: 6px; background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.4); color: #ef4444;';
+                delBtn.title = 'Delete';
+                delBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;">delete</span>';
+                delBtn.onclick = () => deleteBoard(name);
+
+                actions.appendChild(loadBtn);
+                actions.appendChild(dlBtn);
+                actions.appendChild(delBtn);
+                item.appendChild(span);
+                item.appendChild(actions);
+                list.appendChild(item);
+            });
+        }
+
+        // ===== EXPORT PNG =====
+        function exportAsPNG() {
+            deselectAll();
+            requestAnimationFrame(() => {
+                const area = document.getElementById('whiteboardArea');
+                const rect = area.getBoundingClientRect();
+                const exportCanvas = document.createElement('canvas');
+                exportCanvas.width = rect.width;
+                exportCanvas.height = rect.height;
+                const ectx = exportCanvas.getContext('2d');
+
+                // Draw strokes
+                drawingStrokes.forEach(stroke => {
+                    if (stroke.points.length < 2) return;
+                    ectx.beginPath();
+                    ectx.strokeStyle = stroke.color;
+                    ectx.lineWidth = stroke.size;
+                    ectx.lineCap = 'round';
+                    ectx.lineJoin = 'round';
+                    ectx.moveTo(stroke.points[0].x, stroke.points[0].y);
+                    for (let i = 1; i < stroke.points.length; i++) {
+                        ectx.lineTo(stroke.points[i].x, stroke.points[i].y);
+                    }
+                    ectx.stroke();
+                });
+
+                // Render each element directly to canvas
+                elements.forEach(el => {
+                    const dom = document.getElementById('wb-el-' + el.id);
+                    if (!dom) return;
+                    renderElementToCanvas(ectx, el, dom);
+                });
+
+                exportCanvas.toBlob((blob) => {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'whiteboard.png';
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    URL.revokeObjectURL(link.href);
+                }, 'image/png');
+            });
+        }
+
+        function renderElementToCanvas(ectx, el, dom) {
+            if (el.type === 'text') {
+                const block = dom.querySelector('.WBTextBlock');
+                if (!block) return;
+                ectx.save();
+                const fontSize = el.fontSize || 20;
+                const computedStyle = getComputedStyle(block);
+                const isBold = computedStyle.fontWeight >= 600 || block.querySelector('b, strong');
+                ectx.font = (isBold ? 'bold ' : '') + fontSize + 'px Caveat, cursive';
+                ectx.fillStyle = el.color || '#000';
+                ectx.textBaseline = 'top';
+                const lineHeight = fontSize * 1.4;
+                const text = block.innerText || '';
+                const lines = text.split('\n');
+                lines.forEach((line, i) => {
+                    ectx.fillText(line, el.x + 10, el.y + 6 + i * lineHeight);
+                });
+                ectx.restore();
+            } else if (el.type === 'checklist') {
+                ectx.save();
+                const fontSize = el.fontSize || 18;
+                const titleFontSize = (el.fontSize ? el.fontSize + 2 : 20);
+                const color = el.color || '#000';
+                let curY = el.y + 8;
+
+                // Title
+                ectx.font = 'bold ' + titleFontSize + 'px Caveat, cursive';
+                ectx.fillStyle = color;
+                ectx.textBaseline = 'top';
+                ectx.fillText(el.content.title || 'Bucket List', el.x + 10, curY);
+                curY += titleFontSize * 1.3;
+                // Underline
+                ectx.strokeStyle = 'rgba(0,0,0,0.15)';
+                ectx.lineWidth = 2;
+                ectx.beginPath();
+                ectx.moveTo(el.x + 10, curY);
+                ectx.lineTo(el.x + (el.width || 140), curY);
+                ectx.stroke();
+                curY += 8;
+
+                // Items
+                ectx.font = fontSize + 'px Caveat, cursive';
+                el.content.items.forEach(item => {
+                    // Checkbox
+                    ectx.strokeStyle = color;
+                    ectx.lineWidth = 1.5;
+                    ectx.strokeRect(el.x + 10, curY + 2, 14, 14);
+                    if (item.checked) {
+                        ectx.strokeStyle = '#6366f1';
+                        ectx.lineWidth = 2;
+                        ectx.beginPath();
+                        ectx.moveTo(el.x + 13, curY + 10);
+                        ectx.lineTo(el.x + 16, curY + 14);
+                        ectx.lineTo(el.x + 22, curY + 5);
+                        ectx.stroke();
+                    }
+                    // Text
+                    ectx.fillStyle = item.checked ? 'rgba(0,0,0,0.4)' : color;
+                    ectx.fillText(item.text, el.x + 30, curY);
+                    if (item.checked) {
+                        const tw = ectx.measureText(item.text).width;
+                        ectx.strokeStyle = 'rgba(0,0,0,0.4)';
+                        ectx.lineWidth = 1;
+                        ectx.beginPath();
+                        ectx.moveTo(el.x + 30, curY + fontSize * 0.55);
+                        ectx.lineTo(el.x + 30 + tw, curY + fontSize * 0.55);
+                        ectx.stroke();
+                    }
+                    curY += fontSize * 1.4;
+                });
+                ectx.restore();
+            } else if (el.type === 'table') {
+                ectx.save();
+                const fontSize = el.fontSize || 17;
+                ectx.font = fontSize + 'px Caveat, cursive';
+                ectx.textBaseline = 'top';
+                ectx.fillStyle = el.color || '#000';
+
+                const rows = el.content.rows;
+                const cellPadX = 8, cellPadY = 4;
+                // Measure column widths
+                const colWidths = [];
+                const rowHeight = fontSize * 1.4 + cellPadY * 2;
+                if (rows.length > 0) {
+                    rows[0].forEach((_, ci) => {
+                        let maxW = 60;
+                        rows.forEach(row => {
+                            const tw = ectx.measureText(row[ci] || '').width + cellPadX * 2;
+                            if (tw > maxW) maxW = tw;
+                        });
+                        colWidths.push(maxW);
+                    });
+                }
+
+                rows.forEach((row, ri) => {
+                    let cx = el.x;
+                    row.forEach((cell, ci) => {
+                        const w = colWidths[ci] || 60;
+                        const y = el.y + ri * rowHeight;
+                        // Cell border
+                        ectx.strokeStyle = 'rgba(0,0,0,0.2)';
+                        ectx.lineWidth = 1.5;
+                        ectx.strokeRect(cx, y, w, rowHeight);
+                        // Cell text
+                        ectx.fillStyle = el.color || '#000';
+                        ectx.fillText(cell || '', cx + cellPadX, y + cellPadY);
+                        cx += w;
+                    });
+                });
+                ectx.restore();
+            }
+        }
+
+        // ===== MODAL =====
+        function openModal(id) {
+            document.getElementById(id + 'Modal').classList.add('open');
+            if (id === 'saveLoad') renderBoardsList();
+        }
+
+        function closeModal(id) {
+            document.getElementById(id + 'Modal').classList.remove('open');
+        }
+
+        // ===== INIT =====
+        setTool('select');
+
+        // ===== CONTEXT MENU =====
+        const ctxMenu = document.getElementById('contextMenu');
+        let clipboard = null; // { elements: [...], strokes: [...] }
+        let ctxPos = { x: 0, y: 0 }; // board-relative position where context menu was opened
+
+        function hideContextMenu() {
+            ctxMenu.style.display = 'none';
+        }
+
+        document.addEventListener('click', hideContextMenu);
+        document.addEventListener('pointerdown', (e) => {
+            if (!ctxMenu.contains(e.target)) hideContextMenu();
+        });
+
+        board.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            const boardRect = board.getBoundingClientRect();
+            ctxPos = { x: e.clientX - boardRect.left, y: e.clientY - boardRect.top };
+
+            // Check if right-clicking on a stroke
+            let clickedStroke = false;
+            for (let i = drawingStrokes.length - 1; i >= 0; i--) {
+                if (hitTestStroke(drawingStrokes[i], ctxPos.x, ctxPos.y)) {
+                    if (!selectedStrokeIndices.has(i)) selectStroke(i);
+                    clickedStroke = true;
+                    break;
+                }
+            }
+
+            // Check if right-clicking on an element
+            if (!clickedStroke) {
+                let clickedEl = null;
+                for (let i = elements.length - 1; i >= 0; i--) {
+                    const dom = document.getElementById('wb-el-' + elements[i].id);
+                    if (dom && dom.contains(e.target)) {
+                        clickedEl = elements[i];
+                        break;
+                    }
+                }
+                if (clickedEl && !selectedElementIds.has(clickedEl.id)) {
+                    selectElement(clickedEl.id);
+                }
+            }
+
+            const hasSelection = selectedElementIds.size > 0 || selectedStrokeIndices.size > 0;
+            document.getElementById('ctxCut').disabled = !hasSelection;
+            document.getElementById('ctxCopy').disabled = !hasSelection;
+            document.getElementById('ctxDuplicate').disabled = !hasSelection;
+            document.getElementById('ctxDelete').disabled = !hasSelection;
+            document.getElementById('ctxDeselect').disabled = !hasSelection;
+            document.getElementById('ctxPaste').disabled = !clipboard;
+            document.getElementById('ctxCopyData').disabled = !hasSelection;
+
+            ctxMenu.style.display = 'block';
+            // Position, keeping within viewport
+            let mx = e.clientX, my = e.clientY;
+            const menuW = ctxMenu.offsetWidth, menuH = ctxMenu.offsetHeight;
+            if (mx + menuW > window.innerWidth) mx = window.innerWidth - menuW - 4;
+            if (my + menuH > window.innerHeight) my = window.innerHeight - menuH - 4;
+            ctxMenu.style.left = mx + 'px';
+            ctxMenu.style.top = my + 'px';
+        });
+
+        function getSelectedData() {
+            const selElements = elements.filter(e => selectedElementIds.has(e.id)).map(el => ({
+                id: el.id, type: el.type, x: el.x, y: el.y, width: el.width,
+                color: el.color, fontSize: el.fontSize,
+                content: JSON.parse(JSON.stringify(el.content))
+            }));
+            const selStrokes = [...selectedStrokeIndices].sort().map(idx => JSON.parse(JSON.stringify(drawingStrokes[idx])));
+            return { elements: selElements, strokes: selStrokes };
+        }
+
+        function pasteData(data, offsetX, offsetY) {
+            deselectAll();
+            if (data.elements && data.elements.length > 0) {
+                data.elements.forEach(elData => {
+                    const id = nextId++;
+                    const el = {
+                        id, type: elData.type,
+                        x: elData.x + offsetX, y: elData.y + offsetY,
+                        width: elData.width, color: elData.color,
+                        fontSize: elData.fontSize,
+                        content: JSON.parse(JSON.stringify(elData.content))
+                    };
+                    elements.push(el);
+                    renderElement(el);
+                    selectElement(id, true);
+                });
+            }
+            if (data.strokes && data.strokes.length > 0) {
+                data.strokes.forEach(stroke => {
+                    const newStroke = JSON.parse(JSON.stringify(stroke));
+                    newStroke.points.forEach(p => { p.x += offsetX; p.y += offsetY; });
+                    drawingStrokes.push(newStroke);
+                    selectedStrokeIndices.add(drawingStrokes.length - 1);
+                });
+                redrawCanvas();
+            }
+        }
+
+        // Cut
+        document.getElementById('ctxCut').addEventListener('click', () => {
+            clipboard = getSelectedData();
+            deleteSelected();
+            hideContextMenu();
+        });
+
+        // Copy
+        document.getElementById('ctxCopy').addEventListener('click', () => {
+            clipboard = getSelectedData();
+            hideContextMenu();
+        });
+
+        // Paste
+        document.getElementById('ctxPaste').addEventListener('click', () => {
+            if (!clipboard) return;
+            pasteData(clipboard, 20, 20);
+            hideContextMenu();
+        });
+
+        // Duplicate
+        document.getElementById('ctxDuplicate').addEventListener('click', () => {
+            const data = getSelectedData();
+            pasteData(data, 30, 30);
+            hideContextMenu();
+        });
+
+        // Delete
+        document.getElementById('ctxDelete').addEventListener('click', () => {
+            deleteSelected();
+            hideContextMenu();
+        });
+
+        // Select All
+        document.getElementById('ctxSelectAll').addEventListener('click', () => {
+            elements.forEach(el => selectElement(el.id, true));
+            drawingStrokes.forEach((_, idx) => selectedStrokeIndices.add(idx));
+            redrawCanvas();
+            hideContextMenu();
+        });
+
+        // Deselect
+        document.getElementById('ctxDeselect').addEventListener('click', () => {
+            deselectAll();
+            hideContextMenu();
+        });
+
+        // Copy Data (JSON)
+        document.getElementById('ctxCopyData').addEventListener('click', () => {
+            const data = getSelectedData();
+            navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+            hideContextMenu();
+        });
+
+        // Paste Data (JSON)
+        document.getElementById('ctxPasteData').addEventListener('click', async () => {
+            hideContextMenu();
+            try {
+                const text = await navigator.clipboard.readText();
+                const data = JSON.parse(text);
+                if (data && (data.elements || data.strokes)) {
+                    pasteData(data, 20, 20);
+                }
+            } catch (e) {
+                alert('Could not paste data. Make sure valid whiteboard JSON is in your clipboard.');
+            }
+        });
+
+        // Export
+        document.getElementById('ctxExport').addEventListener('click', () => {
+            hideContextMenu();
+            exportAsPNG();
+        });
+
+        // Keyboard shortcuts for clipboard
+        document.addEventListener('keydown', (e) => {
+            if (document.activeElement.contentEditable === 'true' || document.activeElement.tagName === 'INPUT') return;
+            if (e.ctrlKey && e.key === 'c') {
+                e.preventDefault();
+                clipboard = getSelectedData();
+            }
+            if (e.ctrlKey && e.key === 'x') {
+                e.preventDefault();
+                clipboard = getSelectedData();
+                deleteSelected();
+            }
+            if (e.ctrlKey && e.key === 'v') {
+                e.preventDefault();
+                if (clipboard) pasteData(clipboard, 20, 20);
+            }
+            if (e.ctrlKey && e.key === 'a') {
+                e.preventDefault();
+                elements.forEach(el => selectElement(el.id, true));
+                drawingStrokes.forEach((_, idx) => selectedStrokeIndices.add(idx));
+                redrawCanvas();
+            }
+        });
+    </script>
+</body>
+
+</html>
