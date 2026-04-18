@@ -218,6 +218,7 @@
 
         .page.active {
             display: flex;
+            gap: 4px;
         }
 
         /* ===== PERMISSION TREE MANAGER ===== */
@@ -1749,6 +1750,150 @@
             margin-top: 16px;
         }
 
+        .InventoryGrid.view-grid {
+            grid-template-columns: repeat(6, 1fr);
+        }
+
+        .InventoryGrid.view-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .InventoryGrid.view-rows .ItemCard {
+            flex-direction: row;
+            align-items: center;
+            overflow: visible;
+        }
+
+        .InventoryGrid.view-rows .ItemCardImage {
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            border-radius: 10px;
+            margin: 10px;
+            margin-right: 0;
+        }
+
+        .InventoryGrid.view-rows .ItemCardBody {
+            flex-direction: row;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            padding: 10px 14px;
+        }
+
+        .InventoryGrid.view-rows .ItemCardName { flex: 1; min-width: 0; }
+        .InventoryGrid.view-rows .ItemCardPrice { font-size: 13px; }
+        .InventoryGrid.view-rows .ItemCardActions {
+            position: static;
+            opacity: 0;
+            margin: 0 8px;
+        }
+
+        .InventoryGrid.view-rows .ItemCard:hover .ItemCardActions { opacity: 1; }
+
+        .InventoryGrid.view-rows .AddItemCard {
+            flex-direction: row;
+            min-height: auto;
+            padding: 12px 16px;
+            gap: 8px;
+        }
+
+        .InventoryGrid.view-rows .AddItemCard .material-symbols-outlined {
+            font-size: 20px !important;
+        }
+
+        .ItemCardTypeBadge {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            padding: 2px 6px;
+            border-radius: 5px;
+            align-self: flex-start;
+        }
+
+        .ItemCardTypeBadge.resell {
+            background: rgba(16, 185, 129, 0.12);
+            color: rgba(5, 120, 80, 0.8);
+        }
+
+        .ItemCardTypeBadge.rental {
+            background: rgba(245, 158, 11, 0.12);
+            color: rgba(180, 110, 0, 0.8);
+        }
+
+        .ItemCardPricing {
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.4);
+            line-height: 1.3;
+        }
+
+        .ViewToggleBar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .ViewToggleBtn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 4px 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.4);
+            transition: all 0.15s;
+        }
+
+        .ViewToggleBtn:hover { background: rgba(255, 255, 255, 0.35); }
+
+        .ViewToggleBtn.active {
+            background: rgba(99, 102, 241, 0.12);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: rgba(99, 102, 241, 0.8);
+        }
+
+        .CategoryGroup {
+            margin-bottom: 12px;
+        }
+
+        .CategoryGroupTitle {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(0, 0, 0, 0.4);
+            padding: 6px 0;
+            margin-bottom: 6px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .CategoryGroupTitle:hover { color: rgba(0, 0, 0, 0.6); }
+
+        .CategoryGroupTitle .cat-count {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 1px 6px;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.06);
+            color: rgba(0, 0, 0, 0.35);
+        }
+
+        .CategoryGroupContent.collapsed {
+            display: none;
+        }
+
         .ItemCard {
             background: rgba(255, 255, 255, 0.25);
             border: 1px solid rgba(255, 255, 255, 0.4);
@@ -1819,7 +1964,6 @@
         .ItemCardPrice {
             font-size: 14px;
             font-weight: 600;
-            color: rgba(0, 0, 0, 0.7);
         }
 
         .AddItemCard {
@@ -2057,13 +2201,42 @@
         }
 
         .StockItemRow .si-stock input {
-            width: 60px;
+            width: 64px;
             text-align: center;
+            padding: 6px 4px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(4px);
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Roboto', sans-serif;
+            color: rgba(0, 0, 0, 0.7);
+            outline: none;
+            transition: all 0.2s;
+            -moz-appearance: textfield;
+        }
+
+        .StockItemRow .si-stock input::-webkit-inner-spin-button,
+        .StockItemRow .si-stock input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .StockItemRow .si-stock input:focus {
+            background: rgba(255, 255, 255, 0.5);
+            border-color: rgba(99, 102, 241, 0.6);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
         }
 
         .StockItemRow .si-stock.low input {
-            border-color: rgba(239, 68, 68, 0.5);
+            border-color: rgba(239, 68, 68, 0.4);
+            background: rgba(239, 68, 68, 0.06);
             color: rgba(239, 68, 68, 0.8);
+        }
+
+        .StockItemRow .si-stock.low input:focus {
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
         }
 
         .StockItemRow .si-value {
@@ -3315,6 +3488,22 @@
                 </div>
                 <div class="ContentDesc">Define your product catalog. Create items here, then add them to inventories in the Stocks tab.</div>
                 <div class="InventoryStats" id="inventoryStats"></div>
+                <div class="ViewToggleBar">
+                    <button class="ViewToggleBtn active" id="viewRowBtn" onclick="setInventoryView('rows')" title="Row view">
+                        <span class="material-symbols-outlined" style="font-size:16px;">view_list</span>
+                    </button>
+                    <button class="ViewToggleBtn" id="viewGridBtn" onclick="setInventoryView('grid')" title="Grid view">
+                        <span class="material-symbols-outlined" style="font-size:16px;">grid_view</span>
+                    </button>
+                    <div style="flex:1;"></div>
+                    <select id="inventoryCategoryFilter" onchange="renderInventoryGrid()" style="padding:4px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.4);background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);font-size:12px;cursor:pointer;">
+                        <option value="all">All Categories</option>
+                    </select>
+                    <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:rgba(0,0,0,0.4);cursor:pointer;">
+                        <input type="checkbox" id="inventoryGroupByCategory" onchange="renderInventoryGrid()" style="accent-color:#6366f1;">
+                        Group
+                    </label>
+                </div>
                 <div class="InventoryGrid" id="inventoryGrid">
                     <div class="AddItemCard" onclick="openAddItemModal()">
                         <span class="material-symbols-outlined" style="font-size: 36px;">add_shopping_cart</span>
@@ -3342,7 +3531,10 @@
                     </div>
                     <div class="InventoryStats" id="stockDetailStats"></div>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; align-items: center;">
-                        <input type="text" id="stockSearchInput" placeholder="Search items..." oninput="renderStockDetail()" style="padding:6px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.4);background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);font-size:13px;flex:1;min-width:140px;max-width:260px;">
+                        <div style="position:relative;flex:1;min-width:140px;max-width:260px;">
+                            <span class="material-symbols-outlined" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:18px;color:rgba(0,0,0,0.25);pointer-events:none;">search</span>
+                            <input type="text" id="stockSearchInput" placeholder="Search items..." oninput="renderStockDetail()" style="width:100%;padding:7px 12px 7px 34px;border-radius:10px;border:1px solid rgba(255,255,255,0.5);background:rgba(255,255,255,0.25);backdrop-filter:blur(10px);font-size:13px;font-family:'Roboto',sans-serif;outline:none;transition:all 0.2s;box-sizing:border-box;" onfocus="this.style.background='rgba(255,255,255,0.5)';this.style.borderColor='rgba(99,102,241,0.6)';this.style.boxShadow='0 0 0 3px rgba(99,102,241,0.15)'" onblur="this.style.background='rgba(255,255,255,0.25)';this.style.borderColor='rgba(255,255,255,0.5)';this.style.boxShadow='none'">
+                        </div>
                         <button class="GTextBtn" onclick="openAddItemToStock()" style="padding: 4px 10px; font-size: 12px;">
                             <span class="material-symbols-outlined" style="font-size: 14px;">add</span>
                             Add Item
@@ -3911,10 +4103,73 @@
                         <input type="text" id="itemCategoryInput" placeholder="e.g. Drinks" list="itemCategoryList">
                         <datalist id="itemCategoryList"></datalist>
                     </div>
-                    <div class="form-group" style="max-width: 120px;">
-                        <label>Price ($)</label>
-                        <input type="number" id="itemPriceInput" placeholder="0" min="0" step="1">
+                    <div class="form-group" style="max-width: 130px;">
+                        <label>Type</label>
+                        <select id="itemTypeInput" onchange="updateItemTypeFields()">
+                            <option value="">Standard</option>
+                            <option value="resell">Resell</option>
+                            <option value="rental">Rental</option>
+                        </select>
                     </div>
+                </div>
+                <div class="InputRow">
+                    <div class="form-group" style="max-width:150px;">
+                        <label>Currency</label>
+                        <select id="itemCurrencyInput" onchange="updateItemCurrencyFields()">
+                            <option value="money">Money ($)</option>
+                            <option value="blockbux">Blockbux (B$)</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="itemStandardPriceFields">
+                    <div class="InputRow">
+                        <div class="form-group" style="flex:1;">
+                            <label id="itemPriceLabel">Price ($)</label>
+                            <input type="number" id="itemPriceInput" placeholder="0" min="0" step="1">
+                        </div>
+                        <div class="form-group" style="flex:1;display:none;" id="itemSecondaryPriceGroup">
+                            <label id="itemSecondaryPriceLabel">Secondary (B$)</label>
+                            <input type="number" id="itemSecondaryPriceInput" placeholder="0" min="0" step="1">
+                        </div>
+                    </div>
+                </div>
+                <div id="itemResellFields" style="display:none;">
+                    <div class="InputRow">
+                        <div class="form-group" style="flex:1;">
+                            <label id="itemResellCostLabel">Original Cost ($)</label>
+                            <input type="number" id="itemOriginalCostInput" placeholder="0" min="0" step="1" oninput="calcItemPricing()">
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label>Profit (%)</label>
+                            <input type="number" id="itemProfitPctInput" placeholder="0" min="0" step="1" oninput="calcItemPricing()">
+                        </div>
+                    </div>
+                    <div class="form-group" style="display:none;" id="itemResellSecondaryGroup">
+                        <label id="itemResellSecondaryLabel">Secondary (B$)</label>
+                        <input type="number" id="itemResellSecondaryInput" placeholder="0" min="0" step="1">
+                    </div>
+                    <div id="itemResellPreview" style="font-size:12px;color:rgba(0,0,0,0.45);padding:4px 0;"></div>
+                </div>
+                <div id="itemRentalFields" style="display:none;">
+                    <div class="InputRow">
+                        <div class="form-group" style="flex:1;">
+                            <label id="itemRentalCostLabel">Original Cost ($)</label>
+                            <input type="number" id="itemRentalCostInput" placeholder="0" min="0" step="1" oninput="calcItemPricing()">
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label>Profit (%)</label>
+                            <input type="number" id="itemRentalProfitInput" placeholder="0" min="0" step="1" oninput="calcItemPricing()">
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label>ROI (periods)</label>
+                            <input type="number" id="itemRoiInput" placeholder="1" min="1" step="1" oninput="calcItemPricing()">
+                        </div>
+                    </div>
+                    <div class="form-group" style="display:none;" id="itemRentalSecondaryGroup">
+                        <label id="itemRentalSecondaryLabel">Secondary (B$)</label>
+                        <input type="number" id="itemRentalSecondaryInput" placeholder="0" min="0" step="1">
+                    </div>
+                    <div id="itemRentalPreview" style="font-size:12px;color:rgba(0,0,0,0.45);padding:4px 0;"></div>
                 </div>
                 <div class="form-group">
                     <label>Notes</label>
@@ -5549,7 +5804,7 @@
             if (pageId === 'hours') renderHoursRecordGrid();
             if (pageId === 'finance') renderFinanceRecordGrid();
             if (pageId === 'partnerships') renderPartnerGrid();
-            if (pageId === 'inventory') renderInventoryGrid();
+            if (pageId === 'inventory') { renderInventoryGrid(); restoreInventoryView(); }
             if (pageId === 'stocks') renderStocksGrid();
             if (pageId === 'orders') renderOrderGrid();
 
@@ -7867,44 +8122,190 @@
         function renderInventoryGrid() {
             const grid = document.getElementById('inventoryGrid');
             const statsEl = document.getElementById('inventoryStats');
+            const categoryFilter = document.getElementById('inventoryCategoryFilter')?.value || 'all';
+            const groupByCategory = document.getElementById('inventoryGroupByCategory')?.checked || false;
 
             const totalItems = inventoryItems.length;
-            const categories = getItemCategories().length;
+            const categories = getItemCategories();
+
+            // Update category filter dropdown
+            const filterEl = document.getElementById('inventoryCategoryFilter');
+            if (filterEl) {
+                const currentVal = filterEl.value;
+                filterEl.innerHTML = '<option value="all">All Categories</option>' + categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+                filterEl.value = currentVal;
+            }
 
             statsEl.innerHTML = `
                 <div class="InventoryStat"><span class="stat-label">Items</span><span class="stat-value">${totalItems}</span></div>
-                <div class="InventoryStat"><span class="stat-label">Categories</span><span class="stat-value">${categories}</span></div>
+                <div class="InventoryStat"><span class="stat-label">Categories</span><span class="stat-value">${categories.length}</span></div>
             `;
 
-            let html = '';
-            inventoryItems.forEach((item, idx) => {
-                html += `
-                    <div class="ItemCard">
-                        <div class="ItemCardActions">
-                            <button class="StaffCardBtn" onclick="editItem(${idx})" title="Edit">
-                                <span class="material-symbols-outlined" style="font-size:16px">edit</span>
-                            </button>
-                            <button class="StaffCardBtn danger" onclick="deleteItem(${idx})" title="Delete">
-                                <span class="material-symbols-outlined" style="font-size:16px">delete</span>
-                            </button>
+            let filteredItems = inventoryItems.map((item, idx) => ({ ...item, _idx: idx }));
+            if (categoryFilter !== 'all') {
+                filteredItems = filteredItems.filter(i => i.category === categoryFilter);
+            }
+
+            if (groupByCategory) {
+                // Group items by category
+                const groups = {};
+                const uncategorized = [];
+                filteredItems.forEach(item => {
+                    const cat = item.category || '';
+                    if (!cat) { uncategorized.push(item); return; }
+                    if (!groups[cat]) groups[cat] = [];
+                    groups[cat].push(item);
+                });
+
+                let html = '';
+                const sortedCats = Object.keys(groups).sort();
+                sortedCats.forEach(cat => {
+                    html += `<div class="CategoryGroup">
+                        <div class="CategoryGroupTitle" onclick="this.nextElementSibling.classList.toggle('collapsed')">
+                            <span class="material-symbols-outlined" style="font-size:16px;">folder</span>
+                            ${escapeHtml(cat)}
+                            <span class="cat-count">${groups[cat].length}</span>
                         </div>
-                        ${item.image ? `<img class="ItemCardImage" src="${item.image}" onerror="this.style.display='none'">` : ''}
-                        <div class="ItemCardBody">
-                            ${item.category ? `<div class="ItemCardCategory">${escapeHtml(item.category)}</div>` : ''}
-                            <div class="ItemCardName">${escapeHtml(item.name)}</div>
-                            <div class="ItemCardPrice">$${(item.price || 0).toLocaleString()}</div>
-                            ${item.notes ? `<div style="font-size:12px;color:rgba(0,0,0,0.4);font-style:italic">${escapeHtml(item.notes)}</div>` : ''}
+                        <div class="CategoryGroupContent">
+                            ${groups[cat].map(item => buildItemCard(item)).join('')}
                         </div>
+                    </div>`;
+                });
+                if (uncategorized.length > 0) {
+                    html += `<div class="CategoryGroup">
+                        <div class="CategoryGroupTitle" onclick="this.nextElementSibling.classList.toggle('collapsed')">
+                            <span class="material-symbols-outlined" style="font-size:16px;">folder_off</span>
+                            Uncategorized
+                            <span class="cat-count">${uncategorized.length}</span>
+                        </div>
+                        <div class="CategoryGroupContent">
+                            ${uncategorized.map(item => buildItemCard(item)).join('')}
+                        </div>
+                    </div>`;
+                }
+                html += buildAddItemCard();
+                grid.innerHTML = html;
+            } else {
+                let html = filteredItems.map(item => buildItemCard(item)).join('');
+                html += buildAddItemCard();
+                grid.innerHTML = html;
+            }
+        }
+
+        function buildItemCard(item) {
+            const idx = item._idx;
+            const pricingHtml = getItemPricingHtml(item);
+            const typeBadge = item.itemType === 'resell'
+                ? '<div class="ItemCardTypeBadge resell">Resell</div>'
+                : item.itemType === 'rental'
+                ? '<div class="ItemCardTypeBadge rental">Rental</div>'
+                : '';
+            return `
+                <div class="ItemCard">
+                    <div class="ItemCardActions">
+                        <button class="StaffCardBtn" onclick="editItem(${idx})" title="Edit">
+                            <span class="material-symbols-outlined" style="font-size:16px">edit</span>
+                        </button>
+                        <button class="StaffCardBtn danger" onclick="deleteItem(${idx})" title="Delete">
+                            <span class="material-symbols-outlined" style="font-size:16px">delete</span>
+                        </button>
                     </div>
-                `;
-            });
-            html += `
-                <div class="AddItemCard" onclick="openAddItemModal()">
-                    <span class="material-symbols-outlined" style="font-size: 36px;">add_shopping_cart</span>
-                    <span style="font-size: 13px; font-weight: 500;">Add Item</span>
+                    ${item.image ? `<img class="ItemCardImage" src="${item.image}" onerror="this.style.display='none'">` : ''}
+                    <div class="ItemCardBody">
+                        ${item.category ? `<div class="ItemCardCategory">${escapeHtml(item.category)}</div>` : ''}
+                        ${typeBadge}
+                        <div class="ItemCardName">${escapeHtml(item.name)}</div>
+                        <div class="ItemCardPrice">${getItemDisplayPrice(item)}</div>
+                        ${getItemSecondaryPriceHtml(item)}
+                        ${pricingHtml}
+                        ${item.notes ? `<div style="font-size:12px;color:rgba(0,0,0,0.4);font-style:italic">${escapeHtml(item.notes)}</div>` : ''}
+                    </div>
                 </div>
             `;
-            grid.innerHTML = html;
+        }
+
+        function buildAddItemCard() {
+            return `<div class="AddItemCard" onclick="openAddItemModal()">
+                <span class="material-symbols-outlined" style="font-size: 36px;">add_shopping_cart</span>
+                <span style="font-size: 13px; font-weight: 500;">Add Item</span>
+            </div>`;
+        }
+
+        function formatCurrency(amount, currency) {
+            if (currency === 'blockbux') return `<span style="color:#8b5cf6;font-weight:600;">B$${amount.toLocaleString()}</span>`;
+            return `<span style="color:#16a34a;font-weight:600;">$${amount.toLocaleString()}</span>`;
+        }
+
+        function formatCurrencyPlain(amount, currency) {
+            if (currency === 'blockbux') return `B$${amount.toLocaleString()}`;
+            return `$${amount.toLocaleString()}`;
+        }
+
+        function getItemDisplayPrice(item) {
+            const cur = item.currency || 'money';
+            if (item.itemType === 'resell') {
+                const cost = item.originalCost || 0;
+                const pct = item.profitPct || 0;
+                const customerPrice = Math.round(cost + cost * pct / 100);
+                return formatCurrency(customerPrice, cur);
+            } else if (item.itemType === 'rental') {
+                const cost = item.originalCost || 0;
+                const pct = item.profitPct || 0;
+                const roi = item.roi || 1;
+                const customerPrice = Math.round((cost + cost * pct / 100) / roi);
+                return formatCurrency(customerPrice, cur) + `<span style="font-size:11px;color:rgba(0,0,0,0.35);">/period</span>`;
+            }
+            return formatCurrency(item.price || 0, cur);
+        }
+
+        function getItemSecondaryPriceHtml(item) {
+            if (item.currency === 'money' && item.secondaryPrice != null && item.secondaryPrice > 0) {
+                return `<div style="font-size:11px;">${formatCurrency(item.secondaryPrice, 'blockbux')}</div>`;
+            }
+            return '';
+        }
+
+        function getItemPricingHtml(item) {
+            const cur = item.currency || 'money';
+            const fmtC = (v) => formatCurrencyPlain(v, cur);
+            if (item.itemType === 'resell') {
+                const cost = item.originalCost || 0;
+                const pct = item.profitPct || 0;
+                const customerPrice = Math.round(cost + cost * pct / 100);
+                return `<div class="ItemCardPricing">Cost: ${fmtC(cost)} · Profit: ${pct}% · Sells: ${fmtC(customerPrice)}</div>`;
+            } else if (item.itemType === 'rental') {
+                const cost = item.originalCost || 0;
+                const pct = item.profitPct || 0;
+                const roi = item.roi || 1;
+                const totalReturn = Math.round(cost + cost * pct / 100);
+                const perPeriod = Math.round(totalReturn / roi);
+                return `<div class="ItemCardPricing">Cost: ${fmtC(cost)} · ${pct}% profit · ROI: ${roi} periods · ${fmtC(perPeriod)}/period</div>`;
+            }
+            return '';
+        }
+
+        let currentInventoryView = localStorage.getItem('bbInventoryView') || 'rows';
+
+        function setInventoryView(view) {
+            currentInventoryView = view;
+            localStorage.setItem('bbInventoryView', view);
+            const grid = document.getElementById('inventoryGrid');
+            const rowBtn = document.getElementById('viewRowBtn');
+            const gridBtn = document.getElementById('viewGridBtn');
+
+            rowBtn.classList.toggle('active', view === 'rows');
+            gridBtn.classList.toggle('active', view === 'grid');
+
+            grid.className = 'InventoryGrid';
+            if (view === 'rows') {
+                grid.classList.add('view-rows');
+            } else {
+                grid.classList.add('view-grid');
+            }
+        }
+
+        function restoreInventoryView() {
+            setInventoryView(currentInventoryView);
         }
 
         function openAddItemModal() {
@@ -7916,7 +8317,19 @@
             document.getElementById('itemPriceInput').value = '';
             document.getElementById('itemNotesInput').value = '';
             document.getElementById('itemImageUrlInput').value = '';
+            document.getElementById('itemTypeInput').value = '';
+            document.getElementById('itemCurrencyInput').value = 'money';
+            document.getElementById('itemOriginalCostInput').value = '';
+            document.getElementById('itemProfitPctInput').value = '';
+            document.getElementById('itemRentalCostInput').value = '';
+            document.getElementById('itemRentalProfitInput').value = '';
+            document.getElementById('itemRoiInput').value = '';
+            document.getElementById('itemSecondaryPriceInput').value = '';
+            document.getElementById('itemResellSecondaryInput').value = '';
+            document.getElementById('itemRentalSecondaryInput').value = '';
             resetItemImagePreview();
+            updateItemTypeFields();
+            updateItemCurrencyFields();
 
             const dl = document.getElementById('itemCategoryList');
             dl.innerHTML = getItemCategories().map(c => `<option value="${c}">`).join('');
@@ -7934,12 +8347,30 @@
             document.getElementById('itemPriceInput').value = item.price || '';
             document.getElementById('itemNotesInput').value = item.notes || '';
             document.getElementById('itemImageUrlInput').value = item.image || '';
+            document.getElementById('itemTypeInput').value = item.itemType || '';
+            document.getElementById('itemCurrencyInput').value = item.currency || 'money';
+
+            if (item.itemType === 'resell') {
+                document.getElementById('itemOriginalCostInput').value = item.originalCost || '';
+                document.getElementById('itemProfitPctInput').value = item.profitPct || '';
+                document.getElementById('itemResellSecondaryInput').value = item.secondaryPrice || '';
+            } else if (item.itemType === 'rental') {
+                document.getElementById('itemRentalCostInput').value = item.originalCost || '';
+                document.getElementById('itemRentalProfitInput').value = item.profitPct || '';
+                document.getElementById('itemRoiInput').value = item.roi || '';
+                document.getElementById('itemRentalSecondaryInput').value = item.secondaryPrice || '';
+            } else {
+                document.getElementById('itemSecondaryPriceInput').value = item.secondaryPrice || '';
+            }
 
             if (item.image) {
                 showItemImagePreview(item.image);
             } else {
                 resetItemImagePreview();
             }
+
+            updateItemTypeFields();
+            updateItemCurrencyFields();
 
             const dl = document.getElementById('itemCategoryList');
             dl.innerHTML = getItemCategories().map(c => `<option value="${c}">`).join('');
@@ -7991,12 +8422,36 @@
             const name = document.getElementById('itemNameInput').value.trim();
             if (!name) return;
             const category = document.getElementById('itemCategoryInput').value.trim();
-            const price = parseFloat(document.getElementById('itemPriceInput').value) || 0;
             const notes = document.getElementById('itemNotesInput').value.trim();
             const image = document.getElementById('itemImageUrlInput').value.trim() || null;
+            const itemType = document.getElementById('itemTypeInput').value || '';
+            const currency = document.getElementById('itemCurrencyInput').value || 'money';
+
+            const item = { name, category, notes, image, itemType, currency };
+
+            if (itemType === 'resell') {
+                item.originalCost = parseFloat(document.getElementById('itemOriginalCostInput').value) || 0;
+                item.profitPct = parseFloat(document.getElementById('itemProfitPctInput').value) || 0;
+                item.price = Math.round(item.originalCost + item.originalCost * item.profitPct / 100);
+                if (currency === 'money') {
+                    item.secondaryPrice = parseFloat(document.getElementById('itemResellSecondaryInput').value) || 0;
+                }
+            } else if (itemType === 'rental') {
+                item.originalCost = parseFloat(document.getElementById('itemRentalCostInput').value) || 0;
+                item.profitPct = parseFloat(document.getElementById('itemRentalProfitInput').value) || 0;
+                item.roi = parseInt(document.getElementById('itemRoiInput').value) || 1;
+                item.price = Math.round((item.originalCost + item.originalCost * item.profitPct / 100) / item.roi);
+                if (currency === 'money') {
+                    item.secondaryPrice = parseFloat(document.getElementById('itemRentalSecondaryInput').value) || 0;
+                }
+            } else {
+                item.price = parseFloat(document.getElementById('itemPriceInput').value) || 0;
+                if (currency === 'money') {
+                    item.secondaryPrice = parseFloat(document.getElementById('itemSecondaryPriceInput').value) || 0;
+                }
+            }
 
             const editId = document.getElementById('editItemId').value;
-            const item = { name, category, price, notes, image };
 
             if (editId !== '') {
                 const oldItem = inventoryItems[parseInt(editId)];
@@ -8010,6 +8465,57 @@
             saveInventoryItems();
             renderInventoryGrid();
             closeModal('addItem');
+        }
+
+        function updateItemTypeFields() {
+            const type = document.getElementById('itemTypeInput').value;
+            document.getElementById('itemStandardPriceFields').style.display = type === '' ? '' : 'none';
+            document.getElementById('itemResellFields').style.display = type === 'resell' ? '' : 'none';
+            document.getElementById('itemRentalFields').style.display = type === 'rental' ? '' : 'none';
+            updateItemCurrencyFields();
+            calcItemPricing();
+        }
+
+        function updateItemCurrencyFields() {
+            const currency = document.getElementById('itemCurrencyInput').value;
+            const type = document.getElementById('itemTypeInput').value;
+            const isMoney = currency === 'money';
+            const sym = isMoney ? '$' : 'B$';
+            const secSym = isMoney ? 'B$' : '$';
+
+            // Update labels
+            document.getElementById('itemPriceLabel').textContent = `Price (${sym})`;
+            document.getElementById('itemResellCostLabel').textContent = `Original Cost (${sym})`;
+            document.getElementById('itemRentalCostLabel').textContent = `Original Cost (${sym})`;
+
+            // Secondary price fields (only for money currency)
+            document.getElementById('itemSecondaryPriceGroup').style.display = isMoney && type === '' ? '' : 'none';
+            document.getElementById('itemSecondaryPriceLabel').textContent = `Secondary (${secSym})`;
+            document.getElementById('itemResellSecondaryGroup').style.display = isMoney && type === 'resell' ? '' : 'none';
+            document.getElementById('itemResellSecondaryLabel').textContent = `Secondary (${secSym})`;
+            document.getElementById('itemRentalSecondaryGroup').style.display = isMoney && type === 'rental' ? '' : 'none';
+            document.getElementById('itemRentalSecondaryLabel').textContent = `Secondary (${secSym})`;
+
+            calcItemPricing();
+        }
+
+        function calcItemPricing() {
+            const type = document.getElementById('itemTypeInput').value;
+            const currency = document.getElementById('itemCurrencyInput').value;
+            const sym = currency === 'blockbux' ? 'B$' : '$';
+            if (type === 'resell') {
+                const cost = parseFloat(document.getElementById('itemOriginalCostInput').value) || 0;
+                const pct = parseFloat(document.getElementById('itemProfitPctInput').value) || 0;
+                const customerPrice = Math.round(cost + cost * pct / 100);
+                document.getElementById('itemResellPreview').textContent = cost > 0 ? `Customer pays: ${sym}${customerPrice.toLocaleString()} (profit: ${sym}${(customerPrice - cost).toLocaleString()})` : '';
+            } else if (type === 'rental') {
+                const cost = parseFloat(document.getElementById('itemRentalCostInput').value) || 0;
+                const pct = parseFloat(document.getElementById('itemRentalProfitInput').value) || 0;
+                const roi = parseInt(document.getElementById('itemRoiInput').value) || 1;
+                const totalReturn = Math.round(cost + cost * pct / 100);
+                const perPeriod = Math.round(totalReturn / roi);
+                document.getElementById('itemRentalPreview').textContent = cost > 0 ? `Customer pays: ${sym}${perPeriod.toLocaleString()}/period · Total return: ${sym}${totalReturn.toLocaleString()} over ${roi} periods` : '';
+            }
         }
 
         function deleteItem(idx) {
@@ -8090,8 +8596,13 @@
 
         function openStockDetail(idx) {
             activeStockIdx = idx;
-            document.getElementById('stocksListView').style.display = 'none';
-            document.getElementById('stockDetailView').style.display = '';
+            document.getElementById('stocksListView').style.cssText = `display: none;`;
+            document.getElementById('stockDetailView').style.cssText = `
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                animation: fadeIn 0.3s ease;
+            `;
             renderStockDetail();
         }
 
@@ -8136,15 +8647,43 @@
             listEl.innerHTML = items.map(item => {
                 const isLow = item.stock != null && item.lowStock != null && item.stock <= item.lowStock;
                 const value = (item.price || 0) * (item.stock != null ? item.stock : 0);
+                const cur = item.currency || 'money';
+                const fmtC = (v) => formatCurrencyPlain(v, cur);
+
+                let priceHtml = '';
+                if (item.itemType === 'resell') {
+                    const cost = item.originalCost || 0;
+                    const customerPrice = item.price || 0;
+                    priceHtml = `<span class="si-price" style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;">
+                        <span style="font-size:11px;color:rgba(0,0,0,0.35);">Cost: ${fmtC(cost)}</span>
+                        <span>${formatCurrency(customerPrice, cur)}</span>
+                    </span>`;
+                } else if (item.itemType === 'rental') {
+                    const cost = item.originalCost || 0;
+                    const customerPrice = item.price || 0;
+                    priceHtml = `<span class="si-price" style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;">
+                        <span style="font-size:11px;color:rgba(0,0,0,0.35);">Cost: ${fmtC(cost)}</span>
+                        <span>${formatCurrency(customerPrice, cur)}/pd</span>
+                    </span>`;
+                } else {
+                    priceHtml = `<span class="si-price">${formatCurrency(item.price || 0, cur)}</span>`;
+                }
+
+                const typeBadge = item.itemType === 'resell'
+                    ? '<span style="font-size:9px;font-weight:700;text-transform:uppercase;padding:1px 5px;border-radius:4px;background:rgba(16,185,129,0.12);color:rgba(5,120,80,0.7);margin-left:4px;">R</span>'
+                    : item.itemType === 'rental'
+                    ? '<span style="font-size:9px;font-weight:700;text-transform:uppercase;padding:1px 5px;border-radius:4px;background:rgba(245,158,11,0.12);color:rgba(180,110,0,0.7);margin-left:4px;">L</span>'
+                    : '';
+
                 return `
                     <div class="StockItemRow">
                         ${item.image ? `<img src="${item.image}" onerror="this.style.display='none'">` : `<span class="material-symbols-outlined" style="font-size:24px;color:rgba(0,0,0,0.2);width:36px;text-align:center;">inventory_2</span>`}
-                        <span class="si-name">${escapeHtml(item.name)}${item.category ? ' <span style="color:rgba(99,102,241,0.6);font-size:11px;">(' + escapeHtml(item.category) + ')</span>' : ''}</span>
-                        <span class="si-price">$${(item.price || 0).toLocaleString()}</span>
+                        <span class="si-name">${escapeHtml(item.name)}${typeBadge}${item.category ? ' <span style="color:rgba(99,102,241,0.6);font-size:11px;">(' + escapeHtml(item.category) + ')</span>' : ''}</span>
+                        ${priceHtml}
                         <div class="si-stock ${isLow ? 'low' : ''}">
                             <input type="number" value="${item.stock != null ? item.stock : ''}" placeholder="∞" min="0" onchange="updateStockQty(${item._idx},'stock',this.value)">
                         </div>
-                        <span class="si-value">$${value.toLocaleString()}</span>
+                        <span class="si-value">${formatCurrency(value, cur)}</span>
                         <button class="si-remove" onclick="removeItemFromStock(${item._idx})" title="Remove from inventory">
                             <span class="material-symbols-outlined" style="font-size:18px">close</span>
                         </button>
@@ -8172,18 +8711,55 @@
                 return;
             }
 
-            const overlay = document.createElement('div');
-            overlay.className = 'ModalOverlay open';
-            overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+            // Group available items by category
+            const groups = {};
+            const uncategorized = [];
+            available.forEach(item => {
+                const cat = item.category || '';
+                if (!cat) { uncategorized.push(item); return; }
+                if (!groups[cat]) groups[cat] = [];
+                groups[cat].push(item);
+            });
 
-            let itemsHtml = available.map(item => `
-                <label style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,0.2);border-radius:10px;cursor:pointer;">
+            function buildItemLabel(item) {
+                return `<label class="stock-add-item-label" data-name="${escapeHtml(item.name.toLowerCase())}" style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,0.2);border-radius:10px;cursor:pointer;">
                     <input type="checkbox" value="${item.id}" style="accent-color:#6366f1;">
                     ${item.image ? `<img src="${item.image}" style="width:32px;height:32px;border-radius:6px;object-fit:cover;" onerror="this.style.display='none'">` : ''}
                     <span style="flex:1;font-size:14px;">${escapeHtml(item.name)}</span>
-                    <span style="font-size:13px;color:rgba(0,0,0,0.5);">$${(item.price || 0).toLocaleString()}</span>
-                </label>
-            `).join('');
+                    <span style="font-size:13px;color:rgba(0,0,0,0.5);">${getItemDisplayPrice(item)}</span>
+                </label>`;
+            }
+
+            let itemsHtml = '';
+            const sortedCats = Object.keys(groups).sort();
+            sortedCats.forEach(cat => {
+                itemsHtml += `<div class="stock-add-category-group">
+                    <div class="CategoryGroupTitle" onclick="this.nextElementSibling.classList.toggle('collapsed')" style="margin:0;padding:6px 0;">
+                        <span class="material-symbols-outlined" style="font-size:16px;">folder</span>
+                        ${escapeHtml(cat)}
+                        <span class="cat-count">${groups[cat].length}</span>
+                    </div>
+                    <div class="CategoryGroupContent" style="display:flex;flex-direction:column;gap:4px;">
+                        ${groups[cat].map(item => buildItemLabel(item)).join('')}
+                    </div>
+                </div>`;
+            });
+            if (uncategorized.length > 0) {
+                itemsHtml += `<div class="stock-add-category-group">
+                    <div class="CategoryGroupTitle" onclick="this.nextElementSibling.classList.toggle('collapsed')" style="margin:0;padding:6px 0;">
+                        <span class="material-symbols-outlined" style="font-size:16px;">folder_off</span>
+                        Uncategorized
+                        <span class="cat-count">${uncategorized.length}</span>
+                    </div>
+                    <div class="CategoryGroupContent" style="display:flex;flex-direction:column;gap:4px;">
+                        ${uncategorized.map(item => buildItemLabel(item)).join('')}
+                    </div>
+                </div>`;
+            }
+
+            const overlay = document.createElement('div');
+            overlay.className = 'ModalOverlay open';
+            overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
 
             overlay.innerHTML = `
                 <div class="ModalContent" style="max-width:420px;">
@@ -8193,7 +8769,11 @@
                             <span class="material-symbols-outlined">close</span>
                         </button>
                     </div>
-                    <div style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;">
+                    <div style="position:relative;margin-bottom:10px;">
+                        <span class="material-symbols-outlined" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:18px;color:rgba(0,0,0,0.25);pointer-events:none;">search</span>
+                        <input type="text" id="stockAddItemSearch" placeholder="Search items..." oninput="filterStockAddItems(this.value)" style="width:100%;padding:8px 12px 8px 34px;border-radius:10px;border:1px solid rgba(255,255,255,0.5);background:rgba(255,255,255,0.3);backdrop-filter:blur(4px);font-size:13px;font-family:'Roboto',sans-serif;outline:none;transition:all 0.2s;box-sizing:border-box;" onfocus="this.style.background='rgba(255,255,255,0.5)';this.style.borderColor='rgba(99,102,241,0.6)';this.style.boxShadow='0 0 0 3px rgba(99,102,241,0.15)'" onblur="this.style.background='rgba(255,255,255,0.3)';this.style.borderColor='rgba(255,255,255,0.5)';this.style.boxShadow='none'">
+                    </div>
+                    <div id="stockAddItemsList" style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;">
                         ${itemsHtml}
                     </div>
                     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
@@ -8216,6 +8796,20 @@
                 renderStockDetail();
                 overlay.remove();
             };
+        }
+
+        function filterStockAddItems(query) {
+            const q = query.toLowerCase().trim();
+            const labels = document.querySelectorAll('.stock-add-item-label');
+            labels.forEach(label => {
+                const name = label.dataset.name || '';
+                label.style.display = !q || name.includes(q) ? '' : 'none';
+            });
+            // Hide category groups with no visible items
+            document.querySelectorAll('.stock-add-category-group').forEach(group => {
+                const visibleLabels = group.querySelectorAll('.stock-add-item-label:not([style*="display: none"])');
+                group.style.display = visibleLabels.length > 0 ? '' : 'none';
+            });
         }
 
         function removeItemFromStock(itemIdx) {
@@ -8624,6 +9218,7 @@
         loadPartnerships();
         loadInventoryItems();
         loadOrders();
+        restoreInventoryView();
         renderLevelDropdown();
 
         // Restore config fields
