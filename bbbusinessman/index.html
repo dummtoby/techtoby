@@ -218,6 +218,7 @@
 
         .page.active {
             display: flex;
+            gap: 4px;
         }
 
         /* ===== PERMISSION TREE MANAGER ===== */
@@ -1749,6 +1750,116 @@
             margin-top: 16px;
         }
 
+        .InventoryGrid.view-grid {
+            grid-template-columns: repeat(6, 1fr);
+        }
+
+        .InventoryGrid.view-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .InventoryGrid.view-rows .ItemCard {
+            flex-direction: row;
+            align-items: center;
+            overflow: visible;
+        }
+
+        .InventoryGrid.view-rows .ItemCardImage {
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            border-radius: 10px;
+            margin: 10px;
+            margin-right: 0;
+        }
+
+        .InventoryGrid.view-rows .ItemCardBody {
+            flex-direction: row;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            padding: 10px 14px;
+        }
+
+        .InventoryGrid.view-rows .ItemCardName { flex: 1; min-width: 0; }
+        .InventoryGrid.view-rows .ItemCardPrice { font-size: 13px; }
+        .InventoryGrid.view-rows .ItemCardActions {
+            position: static;
+            opacity: 0;
+            margin: 0 8px;
+        }
+
+        .InventoryGrid.view-rows .ItemCard:hover .ItemCardActions { opacity: 1; }
+
+        .InventoryGrid.view-rows .AddItemCard {
+            flex-direction: row;
+            min-height: auto;
+            padding: 12px 16px;
+            gap: 8px;
+        }
+
+        .InventoryGrid.view-rows .AddItemCard .material-symbols-outlined {
+            font-size: 20px !important;
+        }
+
+        .ItemCardTypeBadge {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            padding: 2px 6px;
+            border-radius: 5px;
+            align-self: flex-start;
+        }
+
+        .ItemCardTypeBadge.resell {
+            background: rgba(16, 185, 129, 0.12);
+            color: rgba(5, 120, 80, 0.8);
+        }
+
+        .ItemCardTypeBadge.rental {
+            background: rgba(245, 158, 11, 0.12);
+            color: rgba(180, 110, 0, 0.8);
+        }
+
+        .ItemCardPricing {
+            font-size: 11px;
+            color: rgba(0, 0, 0, 0.4);
+            line-height: 1.3;
+        }
+
+        .ViewToggleBar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .ViewToggleBtn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 4px 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.4);
+            transition: all 0.15s;
+        }
+
+        .ViewToggleBtn:hover { background: rgba(255, 255, 255, 0.35); }
+
+        .ViewToggleBtn.active {
+            background: rgba(99, 102, 241, 0.12);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: rgba(99, 102, 241, 0.8);
+        }
+
         .ItemCard {
             background: rgba(255, 255, 255, 0.25);
             border: 1px solid rgba(255, 255, 255, 0.4);
@@ -1819,7 +1930,6 @@
         .ItemCardPrice {
             font-size: 14px;
             font-weight: 600;
-            color: rgba(0, 0, 0, 0.7);
         }
 
         .AddItemCard {
@@ -2057,13 +2167,42 @@
         }
 
         .StockItemRow .si-stock input {
-            width: 60px;
+            width: 64px;
             text-align: center;
+            padding: 6px 4px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(4px);
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Roboto', sans-serif;
+            color: rgba(0, 0, 0, 0.7);
+            outline: none;
+            transition: all 0.2s;
+            -moz-appearance: textfield;
+        }
+
+        .StockItemRow .si-stock input::-webkit-inner-spin-button,
+        .StockItemRow .si-stock input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .StockItemRow .si-stock input:focus {
+            background: rgba(255, 255, 255, 0.5);
+            border-color: rgba(99, 102, 241, 0.6);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
         }
 
         .StockItemRow .si-stock.low input {
-            border-color: rgba(239, 68, 68, 0.5);
+            border-color: rgba(239, 68, 68, 0.4);
+            background: rgba(239, 68, 68, 0.06);
             color: rgba(239, 68, 68, 0.8);
+        }
+
+        .StockItemRow .si-stock.low input:focus {
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
         }
 
         .StockItemRow .si-value {
@@ -2365,6 +2504,37 @@
         .OrderLineItemRow select,
         .OrderLineItemRow input {
             flex: 1;
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: black;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+            backdrop-filter: blur(4px);
+            transition: all 0.2s ease;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .OrderLineItemRow select:focus,
+        .OrderLineItemRow input:focus {
+            background: rgba(255, 255, 255, 0.5);
+            border-color: rgba(99, 102, 241, 0.6);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .OrderLineItemRow input::placeholder {
+            color: rgba(0, 0, 0, 0.35);
+        }
+
+        .OrderLineItemRow input[type="number"]::-webkit-inner-spin-button,
+        .OrderLineItemRow input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .OrderLineItemRow input[type="number"] {
+            -moz-appearance: textfield;
         }
 
         .OrderLineItemRow .remove-line-btn {
@@ -3014,10 +3184,6 @@
             <span class="material-symbols-outlined">label</span>
             Labels
         </button>
-        <button class="GTextBtn" onclick="openModal('businessLabels')" title="Business Labels">
-            <span class="material-symbols-outlined">store</span>
-            Businesses
-        </button>
         <button class="GTextBtn" onclick="openModal('presets')" title="Presets">
             <span class="material-symbols-outlined">bookmarks</span>
             Presets
@@ -3047,6 +3213,10 @@
                 <div class="SidebarTab" data-page="staff" onclick="switchPage('staff')">
                     <span class="material-symbols-outlined" style="font-size: 18px;">groups</span>
                     Staff Manager
+                </div>
+                <div class="SidebarTab" data-page="businesses" onclick="switchPage('businesses')">
+                    <span class="material-symbols-outlined" style="font-size: 18px;">store</span>
+                    Businesses
                 </div>
             </div>
             <div class="SidebarCategory">
@@ -3218,6 +3388,75 @@
                 </div>
             </div>
 
+            <!-- Businesses Page -->
+            <div class="page" id="page-businesses">
+                <div id="businessesListView">
+                    <div style="display:flex;align-items:center;gap:8px;position:relative;">
+                        <div class="ContentTitle">Businesses</div>
+                        <button class="HelpBtn" onclick="toggleHelp(this, 'businesses')">?</button>
+                    </div>
+                    <div class="ContentDesc">Create and manage your businesses. View income from orders, staff costs, and overview stats for each business.</div>
+                    <div class="BusinessDetailGrid" id="businessDetailGrid"></div>
+                </div>
+                <div id="businessDetailView" style="display:none;">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <button class="BackBtn" onclick="closeBusinessDetailView()">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                        </button>
+                        <div class="ContentTitle" id="businessDetailViewTitle">Business</div>
+                    </div>
+                    <div id="businessOverviewStats" style="display:flex;gap:12px;flex-wrap:wrap;margin:12px 0;"></div>
+                    <div id="businessEditView" style="display:none;">
+                        <div style="display:flex;flex-direction:column;gap:12px;">
+                            <div class="InputRow">
+                                <div class="form-group" style="flex:1;">
+                                    <label>Business Name</label>
+                                    <input type="text" id="businessNameInput" placeholder="e.g. Golhem Markets">
+                                </div>
+                                <div class="form-group" style="max-width:60px;">
+                                    <label>Color</label>
+                                    <input type="color" id="businessColorInput" value="#6366f1" style="width:100%;height:38px;border:none;padding:0;cursor:pointer;">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Logo</label>
+                                <div id="businessLogoPreview" class="ItemImagePreviewPlaceholder" onclick="document.getElementById('businessLogoFile').click()" style="height:60px;">
+                                    <span class="material-symbols-outlined" style="font-size:20px;">image</span>
+                                    Click to upload or enter URL
+                                </div>
+                                <input type="file" id="businessLogoFile" accept="image/*" style="display:none" onchange="handleBusinessLogoFile(this)">
+                                <input type="text" id="businessLogoUrlInput" placeholder="Or paste logo URL" oninput="previewBusinessLogo(this.value)" style="margin-top:4px;">
+                            </div>
+                            <div class="form-group">
+                                <label>Owner Name</label>
+                                <input type="text" id="businessOwnerInput" placeholder="e.g. Techtoby">
+                            </div>
+                            <div class="form-group">
+                                <label>Owner Profile URL</label>
+                                <input type="text" id="businessOwnerProfileInput" placeholder="e.g. roblox.com/users/...">
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="businessDescInput" placeholder="What does this business do?" rows="2" style="resize:vertical;"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Type / Category</label>
+                                <input type="text" id="businessTypeInput" placeholder="e.g. Restaurant, Shop, Café">
+                            </div>
+                        </div>
+                        <input type="hidden" id="editBusinessId" value="">
+                        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px;">
+                            <button class="GTextBtn" onclick="closeBusinessEdit()">Cancel</button>
+                            <button class="GTextBtn primary" onclick="saveBusinessDetail()">
+                                <span class="material-symbols-outlined">check</span>
+                                <span id="saveBusinessBtnText">Save</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="businessStatsContent"></div>
+                </div>
+            </div>
+
             <!-- Hours Tracker Page -->
             <div class="page" id="page-hours">
                 <div id="hoursListView">
@@ -3315,6 +3554,18 @@
                 </div>
                 <div class="ContentDesc">Define your product catalog. Create items here, then add them to inventories in the Stocks tab.</div>
                 <div class="InventoryStats" id="inventoryStats"></div>
+                <div class="ViewToggleBar">
+                    <button class="ViewToggleBtn active" id="viewRowBtn" onclick="setInventoryView('rows')" title="Row view">
+                        <span class="material-symbols-outlined" style="font-size:16px;">view_list</span>
+                    </button>
+                    <button class="ViewToggleBtn" id="viewGridBtn" onclick="setInventoryView('grid')" title="Grid view">
+                        <span class="material-symbols-outlined" style="font-size:16px;">grid_view</span>
+                    </button>
+                    <div style="flex:1;"></div>
+                    <select id="inventoryCategoryFilter" onchange="renderInventoryGrid()" style="padding:4px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.4);background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);font-size:12px;cursor:pointer;">
+                        <option value="all">All Categories</option>
+                    </select>
+                </div>
                 <div class="InventoryGrid" id="inventoryGrid">
                     <div class="AddItemCard" onclick="openAddItemModal()">
                         <span class="material-symbols-outlined" style="font-size: 36px;">add_shopping_cart</span>
@@ -3342,7 +3593,10 @@
                     </div>
                     <div class="InventoryStats" id="stockDetailStats"></div>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; align-items: center;">
-                        <input type="text" id="stockSearchInput" placeholder="Search items..." oninput="renderStockDetail()" style="padding:6px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.4);background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);font-size:13px;flex:1;min-width:140px;max-width:260px;">
+                        <div style="position:relative;flex:1;min-width:140px;max-width:260px;">
+                            <span class="material-symbols-outlined" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:18px;color:rgba(0,0,0,0.25);pointer-events:none;">search</span>
+                            <input type="text" id="stockSearchInput" placeholder="Search items..." oninput="renderStockDetail()" style="width:100%;padding:7px 12px 7px 34px;border-radius:10px;border:1px solid rgba(255,255,255,0.5);background:rgba(255,255,255,0.25);backdrop-filter:blur(10px);font-size:13px;font-family:'Roboto',sans-serif;outline:none;transition:all 0.2s;box-sizing:border-box;" onfocus="this.style.background='rgba(255,255,255,0.5)';this.style.borderColor='rgba(99,102,241,0.6)';this.style.boxShadow='0 0 0 3px rgba(99,102,241,0.15)'" onblur="this.style.background='rgba(255,255,255,0.25)';this.style.borderColor='rgba(255,255,255,0.5)';this.style.boxShadow='none'">
+                        </div>
                         <button class="GTextBtn" onclick="openAddItemToStock()" style="padding: 4px 10px; font-size: 12px;">
                             <span class="material-symbols-outlined" style="font-size: 14px;">add</span>
                             Add Item
@@ -3516,75 +3770,6 @@
                 </div>
             </div>
             <div id="presetsList" style="display: flex; flex-direction: column; gap: 8px;"></div>
-        </div>
-    </div>
-
-    <!-- Business Labels Modal -->
-    <div class="ModalOverlay" id="businessLabelsModal" onclick="if(event.target===this)closeModal('businessLabels')">
-        <div class="ModalContent" style="max-width: 480px;">
-            <div class="ModalTitle">
-                <span id="businessModalTitle">Manage Businesses</span>
-                <button class="ModalClose" onclick="closeModal('businessLabels')">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-            </div>
-            <div id="businessListView">
-                <div class="ContentDesc">Create and manage your businesses. Each business has a name, color, logo, and owner details.</div>
-                <div class="BusinessDetailGrid" id="businessDetailGrid"></div>
-            </div>
-            <div id="businessEditView" style="display:none;">
-                <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-                    <button class="BackBtn" onclick="closeBusinessEdit()" style="width:28px;height:28px;">
-                        <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
-                    </button>
-                    <span style="font-weight:600;font-size:15px;" id="businessEditTitle">Edit Business</span>
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <div class="InputRow">
-                        <div class="form-group" style="flex: 1;">
-                            <label>Business Name</label>
-                            <input type="text" id="businessNameInput" placeholder="e.g. Golhem Markets">
-                        </div>
-                        <div class="form-group" style="max-width: 60px;">
-                            <label>Color</label>
-                            <input type="color" id="businessColorInput" value="#6366f1" style="width:100%;height:38px;border:none;padding:0;cursor:pointer;">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Logo</label>
-                        <div id="businessLogoPreview" class="ItemImagePreviewPlaceholder" onclick="document.getElementById('businessLogoFile').click()" style="height:60px;">
-                            <span class="material-symbols-outlined" style="font-size: 20px;">image</span>
-                            Click to upload or enter URL
-                        </div>
-                        <input type="file" id="businessLogoFile" accept="image/*" style="display:none" onchange="handleBusinessLogoFile(this)">
-                        <input type="text" id="businessLogoUrlInput" placeholder="Or paste logo URL" oninput="previewBusinessLogo(this.value)" style="margin-top: 4px;">
-                    </div>
-                    <div class="form-group">
-                        <label>Owner Name</label>
-                        <input type="text" id="businessOwnerInput" placeholder="e.g. Techtoby">
-                    </div>
-                    <div class="form-group">
-                        <label>Owner Profile URL</label>
-                        <input type="text" id="businessOwnerProfileInput" placeholder="e.g. roblox.com/users/...">
-                    </div>
-                    <div class="form-group">
-                        <label>Description</label>
-                        <textarea id="businessDescInput" placeholder="What does this business do?" rows="2" style="resize:vertical;"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Type / Category</label>
-                        <input type="text" id="businessTypeInput" placeholder="e.g. Restaurant, Shop, Café">
-                    </div>
-                </div>
-                <input type="hidden" id="editBusinessId" value="">
-                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
-                    <button class="GTextBtn" onclick="closeBusinessEdit()">Cancel</button>
-                    <button class="GTextBtn primary" onclick="saveBusinessDetail()">
-                        <span class="material-symbols-outlined">check</span>
-                        <span id="saveBusinessBtnText">Save</span>
-                    </button>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -3911,10 +4096,73 @@
                         <input type="text" id="itemCategoryInput" placeholder="e.g. Drinks" list="itemCategoryList">
                         <datalist id="itemCategoryList"></datalist>
                     </div>
-                    <div class="form-group" style="max-width: 120px;">
-                        <label>Price ($)</label>
-                        <input type="number" id="itemPriceInput" placeholder="0" min="0" step="1">
+                    <div class="form-group" style="max-width: 130px;">
+                        <label>Type</label>
+                        <select id="itemTypeInput" onchange="updateItemTypeFields()">
+                            <option value="">Standard</option>
+                            <option value="resell">Resell</option>
+                            <option value="rental">Rental</option>
+                        </select>
                     </div>
+                </div>
+                <div class="InputRow">
+                    <div class="form-group" style="max-width:150px;">
+                        <label>Currency</label>
+                        <select id="itemCurrencyInput" onchange="updateItemCurrencyFields()">
+                            <option value="money">Money ($)</option>
+                            <option value="blockbux">Blockbux (B$)</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="itemStandardPriceFields">
+                    <div class="InputRow">
+                        <div class="form-group" style="flex:1;">
+                            <label id="itemPriceLabel">Price ($)</label>
+                            <input type="number" id="itemPriceInput" placeholder="0" min="0" step="1">
+                        </div>
+                        <div class="form-group" style="flex:1;display:none;" id="itemSecondaryPriceGroup">
+                            <label id="itemSecondaryPriceLabel">Secondary (B$)</label>
+                            <input type="number" id="itemSecondaryPriceInput" placeholder="0" min="0" step="1">
+                        </div>
+                    </div>
+                </div>
+                <div id="itemResellFields" style="display:none;">
+                    <div class="InputRow">
+                        <div class="form-group" style="flex:1;">
+                            <label id="itemResellCostLabel">Original Cost ($)</label>
+                            <input type="number" id="itemOriginalCostInput" placeholder="0" min="0" step="1" oninput="calcItemPricing()">
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label>Profit (%)</label>
+                            <input type="number" id="itemProfitPctInput" placeholder="0" min="0" step="1" oninput="calcItemPricing()">
+                        </div>
+                    </div>
+                    <div class="form-group" style="display:none;" id="itemResellSecondaryGroup">
+                        <label id="itemResellSecondaryLabel">Secondary (B$)</label>
+                        <input type="number" id="itemResellSecondaryInput" placeholder="0" min="0" step="1">
+                    </div>
+                    <div id="itemResellPreview" style="font-size:12px;color:rgba(0,0,0,0.45);padding:4px 0;"></div>
+                </div>
+                <div id="itemRentalFields" style="display:none;">
+                    <div class="InputRow">
+                        <div class="form-group" style="flex:1;">
+                            <label id="itemRentalCostLabel">Original Cost ($)</label>
+                            <input type="number" id="itemRentalCostInput" placeholder="0" min="0" step="1" oninput="calcItemPricing()">
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label>Profit (%)</label>
+                            <input type="number" id="itemRentalProfitInput" placeholder="0" min="0" step="1" oninput="calcItemPricing()">
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label>ROI (periods)</label>
+                            <input type="number" id="itemRoiInput" placeholder="1" min="1" step="1" oninput="calcItemPricing()">
+                        </div>
+                    </div>
+                    <div class="form-group" style="display:none;" id="itemRentalSecondaryGroup">
+                        <label id="itemRentalSecondaryLabel">Secondary (B$)</label>
+                        <input type="number" id="itemRentalSecondaryInput" placeholder="0" min="0" step="1">
+                    </div>
+                    <div id="itemRentalPreview" style="font-size:12px;color:rgba(0,0,0,0.45);padding:4px 0;"></div>
                 </div>
                 <div class="form-group">
                     <label>Notes</label>
@@ -4203,6 +4451,30 @@
         let remoteCursorEls = {};
         let myPresence = { x: 0, y: 0, page: '', typing: null };
 
+        function isSharedProfile() {
+            const profile = getActiveProfile?.();
+            return profile && profile.type === 'shared';
+        }
+
+        async function uploadToCDN(file) {
+            const id = Math.floor(100000 + Math.random() * 900000);
+            const ext = file.name.split('.').pop() || 'png';
+            const filename = `${id}.${ext}`;
+            const resp = await fetch(`${API_BASE}/cdn/techtoby/assets/${filename}`, {
+                method: 'POST',
+                body: file,
+                headers: { 'Content-Type': file.type || 'application/octet-stream' }
+            });
+            const result = await resp.json();
+            if (!result.success) throw new Error(result.message || 'Upload failed');
+            await fetch(`${API_BASE}/db?db=techtoby&table=assets`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, url: result.url })
+            });
+            return result.url;
+        }
+
         function loadProfiles() {
             // Read personal profiles from Settings app
             const settingsProfiles = (JSON.parse(localStorage.getItem(TTC_PROFILES_KEY) || '[]')).map(p => ({
@@ -4252,7 +4524,7 @@
             const data = {};
             PROFILE_DATA_KEYS.forEach(key => {
                 const val = localStorage.getItem(key);
-                if (val) data[key] = val;
+                if (val !== null) data[key] = val;
             });
 
             if (profile.type === 'shared') {
@@ -4262,8 +4534,7 @@
                 // Merge BB data into Settings profile data store
                 const existing = JSON.parse(localStorage.getItem(TTC_DATA_PREFIX + profile.id) || '{}');
                 PROFILE_DATA_KEYS.forEach(key => {
-                    if (data[key]) existing[key] = data[key];
-                    else delete existing[key];
+                    if (data[key] !== undefined) existing[key] = data[key];
                 });
                 localStorage.setItem(TTC_DATA_PREFIX + profile.id, JSON.stringify(existing));
             }
@@ -5069,7 +5340,7 @@
                 const data = {};
                 PROFILE_DATA_KEYS.forEach(key => {
                     const val = localStorage.getItem(key);
-                    if (val) data[key] = val;
+                    if (val !== null) data[key] = val;
                 });
                 const compressed = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
                 const hash = simpleHash(compressed);
@@ -5549,9 +5820,10 @@
             if (pageId === 'hours') renderHoursRecordGrid();
             if (pageId === 'finance') renderFinanceRecordGrid();
             if (pageId === 'partnerships') renderPartnerGrid();
-            if (pageId === 'inventory') renderInventoryGrid();
+            if (pageId === 'inventory') { renderInventoryGrid(); restoreInventoryView(); }
             if (pageId === 'stocks') renderStocksGrid();
             if (pageId === 'orders') renderOrderGrid();
+            if (pageId === 'businesses') renderBusinessDetailGrid();
 
             localStorage.setItem('bbActivePage', pageId);
         }
@@ -5702,6 +5974,7 @@
         }
 
         function loadPermissions() {
+            initPermissions();
             const saved = localStorage.getItem('bbBusinessPermissions');
             if (saved) {
                 const parsed = JSON.parse(saved);
@@ -5737,16 +6010,13 @@
         }
 
         function loadJobTitles() {
-            const saved = localStorage.getItem('bbBusinessJobs');
-            if (saved) {
-                jobTitles = JSON.parse(saved);
-                // Migrate old data
-                jobTitles.forEach(j => {
-                    if (!j.count) j.count = 1;
-                    if (!j.hoursPerDay) j.hoursPerDay = 24;
-                    if (j.disabled === undefined) j.disabled = false;
-                });
-            }
+            jobTitles = JSON.parse(localStorage.getItem('bbBusinessJobs') || '[]');
+            // Migrate old data
+            jobTitles.forEach(j => {
+                if (!j.count) j.count = 1;
+                if (!j.hoursPerDay) j.hoursPerDay = 24;
+                if (j.disabled === undefined) j.disabled = false;
+            });
         }
 
         function saveJobTitles() {
@@ -6206,10 +6476,8 @@
         let roleLabels = {};
 
         function loadLabels() {
-            const s1 = localStorage.getItem('bbPermLabels');
-            if (s1) permLabels = JSON.parse(s1);
-            const s2 = localStorage.getItem('bbRoleLabels');
-            if (s2) roleLabels = JSON.parse(s2);
+            permLabels = JSON.parse(localStorage.getItem('bbPermLabels') || '{}');
+            roleLabels = JSON.parse(localStorage.getItem('bbRoleLabels') || '{}');
         }
 
         function saveLabels() {
@@ -6220,11 +6488,6 @@
         function openModal(id) {
             document.getElementById(id + 'Modal').classList.add('open');
             if (id === 'labelManager') renderLabelEditor();
-            if (id === 'businessLabels') {
-                document.getElementById('businessListView').style.display = '';
-                document.getElementById('businessEditView').style.display = 'none';
-                renderBusinessDetailGrid();
-            }
             if (id === 'rangeCustomizer') {
                 editingRanges = JSON.parse(JSON.stringify(levelRanges));
                 renderRangeEditor();
@@ -6351,10 +6614,16 @@
 
         function loadCustomRanges() {
             const saved = localStorage.getItem('bbCustomRanges');
+            for (const k in levelRanges) delete levelRanges[k];
             if (saved) {
-                const parsed = JSON.parse(saved);
-                for (const k in levelRanges) delete levelRanges[k];
-                Object.assign(levelRanges, parsed);
+                Object.assign(levelRanges, JSON.parse(saved));
+            } else {
+                Object.assign(levelRanges, {
+                    1: { min: 50,  mid: 100,  max: 200,  label: 'Entry' },
+                    2: { min: 150, mid: 300,  max: 500,  label: 'Junior' },
+                    3: { min: 400, mid: 700,  max: 1000, label: 'Senior' },
+                    4: { min: 800, mid: 1200, max: 1800, label: 'Executive' }
+                });
             }
         }
 
@@ -6749,8 +7018,7 @@
         let businessLabels = [];
 
         function loadBusinessLabels() {
-            const saved = localStorage.getItem('bbBusinessLabels');
-            if (saved) businessLabels = JSON.parse(saved);
+            businessLabels = JSON.parse(localStorage.getItem('bbBusinessLabels') || '[]');
         }
 
         function saveBusinessLabels() {
@@ -6788,8 +7056,12 @@
             const grid = document.getElementById('businessDetailGrid');
             let html = '';
             businessLabels.forEach((biz, idx) => {
+                const bizOrders = orders.filter(o => o.businessId === biz.id && o.status === 'completed');
+                const totalIncome = bizOrders.reduce((s, o) => s + (o.total || 0), 0);
+                const staffCount = employees.filter(e => e.businessLabelId === biz.id).length;
+
                 html += `
-                    <div class="BusinessDetailCard">
+                    <div class="BusinessDetailCard" onclick="openBusinessDetailView(${idx})">
                         <div class="bdc-banner" style="background:${biz.color || '#6366f1'};"></div>
                         <div class="bdc-body">
                             <div class="bdc-header">
@@ -6799,13 +7071,16 @@
                                     ${biz.type ? `<div style="font-size:11px;color:rgba(0,0,0,0.4);margin-top:1px;">${escapeHtml(biz.type)}</div>` : ''}
                                 </div>
                             </div>
-                            ${biz.ownerName ? `<div class="bdc-owner"><span class="material-symbols-outlined" style="font-size:14px;">person</span> ${escapeHtml(biz.ownerName)}</div>` : ''}
-                            ${biz.description ? `<div class="bdc-desc">${escapeHtml(biz.description)}</div>` : ''}
+                            <div style="display:flex;gap:12px;margin-top:4px;font-size:12px;color:rgba(0,0,0,0.5);">
+                                <span><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;">groups</span> ${staffCount} staff</span>
+                                <span><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;">receipt_long</span> ${bizOrders.length} orders</span>
+                                <span style="color:rgba(16,185,129,0.8);font-weight:600;">$${totalIncome.toLocaleString()}</span>
+                            </div>
                             <div class="bdc-actions">
-                                <button class="GTextBtn" onclick="openBusinessEdit(${idx})" style="padding:3px 8px;font-size:11px;">
+                                <button class="GTextBtn" onclick="event.stopPropagation();openBusinessEdit(${idx})" style="padding:3px 8px;font-size:11px;">
                                     <span class="material-symbols-outlined" style="font-size:14px;">edit</span> Edit
                                 </button>
-                                <button class="GTextBtn danger" onclick="removeBusinessLabel(${biz.id})" style="padding:3px 8px;font-size:11px;">
+                                <button class="GTextBtn danger" onclick="event.stopPropagation();removeBusinessLabel(${biz.id})" style="padding:3px 8px;font-size:11px;">
                                     <span class="material-symbols-outlined" style="font-size:14px;">delete</span>
                                 </button>
                             </div>
@@ -6822,13 +7097,128 @@
             grid.innerHTML = html;
         }
 
+        let activeBusinessIdx = -1;
+
+        function openBusinessDetailView(idx) {
+            const biz = businessLabels[idx];
+            if (!biz) return;
+            activeBusinessIdx = idx;
+            document.getElementById('businessesListView').style.display = 'none';
+            document.getElementById('businessDetailView').style.display = '';
+            document.getElementById('businessEditView').style.display = 'none';
+            document.getElementById('businessDetailViewTitle').textContent = biz.name || 'Business';
+            renderBusinessOverview(idx);
+        }
+
+        function closeBusinessDetailView() {
+            document.getElementById('businessesListView').style.display = '';
+            document.getElementById('businessDetailView').style.display = 'none';
+            activeBusinessIdx = -1;
+            renderBusinessDetailGrid();
+        }
+
+        function renderBusinessOverview(idx) {
+            const biz = businessLabels[idx];
+            if (!biz) return;
+
+            const bizOrders = orders.filter(o => o.businessId === biz.id);
+            const completedOrders = bizOrders.filter(o => o.status === 'completed');
+            const pendingOrders = bizOrders.filter(o => o.status === 'pending');
+            const totalIncome = completedOrders.reduce((s, o) => s + (o.total || 0), 0);
+            const bizEmployees = employees.filter(e => e.businessLabelId === biz.id);
+            const staffCost = bizEmployees.reduce((s, emp) => {
+                if (emp.jobIndex !== null && emp.jobIndex !== undefined && emp.jobIndex < jobTitles.length) {
+                    return s + (jobTitles[emp.jobIndex].wage || 0);
+                }
+                return s;
+            }, 0);
+
+            const statsEl = document.getElementById('businessOverviewStats');
+            statsEl.innerHTML = `
+                <div class="InventoryStat"><span class="stat-label">Income</span><span class="stat-value" style="color:rgba(16,185,129,0.8);">$${totalIncome.toLocaleString()}</span></div>
+                <div class="InventoryStat"><span class="stat-label">Staff Cost</span><span class="stat-value" style="color:rgba(239,68,68,0.7);">$${staffCost.toLocaleString()}/pd</span></div>
+                <div class="InventoryStat"><span class="stat-label">Staff</span><span class="stat-value">${bizEmployees.length}</span></div>
+                <div class="InventoryStat"><span class="stat-label">Orders</span><span class="stat-value">${completedOrders.length}</span></div>
+                ${pendingOrders.length > 0 ? `<div class="InventoryStat"><span class="stat-label">Pending</span><span class="stat-value" style="color:rgba(245,158,11,0.8);">${pendingOrders.length}</span></div>` : ''}
+            `;
+
+            const contentEl = document.getElementById('businessStatsContent');
+            let html = '';
+
+            // Staff list
+            html += `<div class="SectionHeader" style="margin-top:16px;">Staff (${bizEmployees.length})</div>`;
+            if (bizEmployees.length === 0) {
+                html += '<div style="font-size:13px;color:rgba(0,0,0,0.4);padding:8px 0;">No employees assigned to this business.</div>';
+            } else {
+                html += '<div style="display:flex;flex-direction:column;gap:4px;">';
+                bizEmployees.forEach(emp => {
+                    const job = (emp.jobIndex !== null && emp.jobIndex !== undefined && emp.jobIndex < jobTitles.length) ? jobTitles[emp.jobIndex] : null;
+                    const wage = job ? job.wage || 0 : 0;
+                    html += `
+                        <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,0.2);border-radius:10px;border:1px solid rgba(255,255,255,0.3);">
+                            ${emp.avatarUrl ? `<img src="${emp.avatarUrl}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none'">` : `<span class="material-symbols-outlined" style="font-size:20px;color:rgba(0,0,0,0.2);">person</span>`}
+                            <span style="font-weight:500;font-size:13px;flex:1;">${escapeHtml(emp.name || emp.username || 'Unknown')}</span>
+                            ${job ? `<span style="font-size:11px;color:rgba(0,0,0,0.4);">${escapeHtml(job.title)}</span>` : ''}
+                            <span style="font-size:12px;color:rgba(239,68,68,0.7);font-weight:600;">$${wage.toLocaleString()}/pd</span>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+
+            // Recent orders
+            html += `<div class="SectionHeader" style="margin-top:16px;">Recent Orders (${completedOrders.length})</div>`;
+            const recentOrders = bizOrders.slice(-10).reverse();
+            if (recentOrders.length === 0) {
+                html += '<div style="font-size:13px;color:rgba(0,0,0,0.4);padding:8px 0;">No orders for this business yet.</div>';
+            } else {
+                html += '<div style="display:flex;flex-direction:column;gap:4px;">';
+                recentOrders.forEach(order => {
+                    const statusColors = { pending: 'rgba(245,158,11,0.7)', completed: 'rgba(16,185,129,0.7)', cancelled: 'rgba(239,68,68,0.7)' };
+                    const date = order.date ? new Date(order.date).toLocaleDateString() : '';
+                    html += `
+                        <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,0.2);border-radius:10px;border:1px solid rgba(255,255,255,0.3);">
+                            <span style="font-weight:500;font-size:13px;">Order #${order.id}</span>
+                            ${order.customer ? `<span style="font-size:12px;color:rgba(0,0,0,0.4);flex:1;">${escapeHtml(order.customer)}</span>` : '<span style="flex:1;"></span>'}
+                            <span style="font-size:11px;color:rgba(0,0,0,0.3);">${date}</span>
+                            <span style="font-size:11px;font-weight:600;color:${statusColors[order.status] || 'rgba(0,0,0,0.4)'};">${order.status}</span>
+                            <span style="font-size:13px;font-weight:600;color:rgba(16,185,129,0.8);">$${(order.total || 0).toLocaleString()}</span>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+
+            // Business info
+            html += `<div class="SectionHeader" style="margin-top:16px;">Details</div>`;
+            html += `<div style="display:flex;flex-direction:column;gap:6px;padding:8px 0;">`;
+            if (biz.ownerName) html += `<div style="font-size:13px;color:rgba(0,0,0,0.5);"><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;">person</span> Owner: <strong>${escapeHtml(biz.ownerName)}</strong></div>`;
+            if (biz.type) html += `<div style="font-size:13px;color:rgba(0,0,0,0.5);"><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;">category</span> Type: ${escapeHtml(biz.type)}</div>`;
+            if (biz.description) html += `<div style="font-size:13px;color:rgba(0,0,0,0.5);"><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;">description</span> ${escapeHtml(biz.description)}</div>`;
+            html += `</div>`;
+
+            html += `
+                <div style="display:flex;gap:8px;margin-top:12px;">
+                    <button class="GTextBtn" onclick="openBusinessEdit(${idx})" style="padding:6px 14px;">
+                        <span class="material-symbols-outlined" style="font-size:16px;">edit</span> Edit Business
+                    </button>
+                </div>
+            `;
+
+            contentEl.innerHTML = html;
+        }
+
         function openBusinessEdit(idx) {
             const biz = businessLabels[idx];
             if (!biz) return;
-            document.getElementById('businessListView').style.display = 'none';
+            if (activeBusinessIdx === -1) {
+                openBusinessDetailView(idx);
+            }
             document.getElementById('businessEditView').style.display = '';
+            document.getElementById('businessStatsContent').style.display = 'none';
+            document.getElementById('businessOverviewStats').style.display = 'none';
             document.getElementById('editBusinessId').value = idx;
-            document.getElementById('businessEditTitle').textContent = biz.name || 'Edit Business';
+            document.getElementById('businessDetailViewTitle').textContent = 'Edit ' + (biz.name || 'Business');
             document.getElementById('businessNameInput').value = biz.name || '';
             document.getElementById('businessColorInput').value = biz.color || '#6366f1';
             document.getElementById('businessOwnerInput').value = biz.ownerName || '';
@@ -6844,20 +7234,35 @@
         }
 
         function closeBusinessEdit() {
-            document.getElementById('businessListView').style.display = '';
             document.getElementById('businessEditView').style.display = 'none';
-            renderBusinessDetailGrid();
+            document.getElementById('businessStatsContent').style.display = '';
+            document.getElementById('businessOverviewStats').style.display = '';
+            if (activeBusinessIdx >= 0) {
+                const biz = businessLabels[activeBusinessIdx];
+                document.getElementById('businessDetailViewTitle').textContent = biz ? biz.name : 'Business';
+                renderBusinessOverview(activeBusinessIdx);
+            } else {
+                closeBusinessDetailView();
+            }
         }
 
-        function handleBusinessLogoFile(input) {
+        async function handleBusinessLogoFile(input) {
             const file = input.files[0];
             if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                document.getElementById('businessLogoUrlInput').value = e.target.result;
-                previewBusinessLogo(e.target.result);
-            };
-            reader.readAsDataURL(file);
+            if (isSharedProfile()) {
+                try {
+                    const url = await uploadToCDN(file);
+                    document.getElementById('businessLogoUrlInput').value = url;
+                    previewBusinessLogo(url);
+                } catch (e) { console.error('CDN upload failed:', e); }
+            } else {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('businessLogoUrlInput').value = e.target.result;
+                    previewBusinessLogo(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
             input.value = '';
         }
 
@@ -6911,8 +7316,7 @@
         let staffFilterBusinessId = null;
 
         function loadEmployees() {
-            const saved = localStorage.getItem('bbBusinessEmployees');
-            if (saved) employees = JSON.parse(saved);
+            employees = JSON.parse(localStorage.getItem('bbBusinessEmployees') || '[]');
         }
 
         function saveEmployees() {
@@ -6993,15 +7397,23 @@
             existing.replaceWith(placeholder);
         }
 
-        function handleEmployeeAvatarFile(event) {
+        async function handleEmployeeAvatarFile(event) {
             const file = event.target.files[0];
             if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                document.getElementById('employeeAvatarUrl').value = e.target.result;
-                previewEmployeeAvatar();
-            };
-            reader.readAsDataURL(file);
+            if (isSharedProfile()) {
+                try {
+                    const url = await uploadToCDN(file);
+                    document.getElementById('employeeAvatarUrl').value = url;
+                    previewEmployeeAvatar();
+                } catch (e) { console.error('CDN upload failed:', e); }
+            } else {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('employeeAvatarUrl').value = e.target.result;
+                    previewEmployeeAvatar();
+                };
+                reader.readAsDataURL(file);
+            }
             event.target.value = '';
         }
 
@@ -7187,8 +7599,7 @@
         let editingWorkdayId = null;
 
         function loadWorkdayRecords() {
-            const saved = localStorage.getItem('bbWorkdayRecords');
-            if (saved) workdayRecords = JSON.parse(saved);
+            workdayRecords = JSON.parse(localStorage.getItem('bbWorkdayRecords') || '[]');
         }
 
         function saveWorkdayRecords() {
@@ -7417,8 +7828,7 @@
         let editingFinanceRecordId = null;
 
         function loadFinanceRecords() {
-            const saved = localStorage.getItem('bbFinanceRecords');
-            if (saved) financeRecords = JSON.parse(saved);
+            financeRecords = JSON.parse(localStorage.getItem('bbFinanceRecords') || '[]');
         }
 
         function saveFinanceRecords() {
@@ -7599,8 +8009,7 @@
         let editingPartnerIndex = -1;
 
         function loadPartnerships() {
-            const saved = localStorage.getItem('bbPartnerships');
-            if (saved) partnerships = JSON.parse(saved);
+            partnerships = JSON.parse(localStorage.getItem('bbPartnerships') || '[]');
         }
 
         function savePartnerships() {
@@ -7867,44 +8276,148 @@
         function renderInventoryGrid() {
             const grid = document.getElementById('inventoryGrid');
             const statsEl = document.getElementById('inventoryStats');
+            const categoryFilter = document.getElementById('inventoryCategoryFilter')?.value || 'all';
 
             const totalItems = inventoryItems.length;
-            const categories = getItemCategories().length;
+            const categories = getItemCategories();
+
+            // Update category filter dropdown
+            const filterEl = document.getElementById('inventoryCategoryFilter');
+            if (filterEl) {
+                const currentVal = filterEl.value;
+                filterEl.innerHTML = '<option value="all">All Categories</option>' + categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+                filterEl.value = currentVal;
+            }
 
             statsEl.innerHTML = `
                 <div class="InventoryStat"><span class="stat-label">Items</span><span class="stat-value">${totalItems}</span></div>
-                <div class="InventoryStat"><span class="stat-label">Categories</span><span class="stat-value">${categories}</span></div>
+                <div class="InventoryStat"><span class="stat-label">Categories</span><span class="stat-value">${categories.length}</span></div>
             `;
 
-            let html = '';
-            inventoryItems.forEach((item, idx) => {
-                html += `
-                    <div class="ItemCard">
-                        <div class="ItemCardActions">
-                            <button class="StaffCardBtn" onclick="editItem(${idx})" title="Edit">
-                                <span class="material-symbols-outlined" style="font-size:16px">edit</span>
-                            </button>
-                            <button class="StaffCardBtn danger" onclick="deleteItem(${idx})" title="Delete">
-                                <span class="material-symbols-outlined" style="font-size:16px">delete</span>
-                            </button>
-                        </div>
-                        ${item.image ? `<img class="ItemCardImage" src="${item.image}" onerror="this.style.display='none'">` : ''}
-                        <div class="ItemCardBody">
-                            ${item.category ? `<div class="ItemCardCategory">${escapeHtml(item.category)}</div>` : ''}
-                            <div class="ItemCardName">${escapeHtml(item.name)}</div>
-                            <div class="ItemCardPrice">$${(item.price || 0).toLocaleString()}</div>
-                            ${item.notes ? `<div style="font-size:12px;color:rgba(0,0,0,0.4);font-style:italic">${escapeHtml(item.notes)}</div>` : ''}
-                        </div>
+            let filteredItems = inventoryItems.map((item, idx) => ({ ...item, _idx: idx }));
+            if (categoryFilter !== 'all') {
+                filteredItems = filteredItems.filter(i => i.category === categoryFilter);
+            }
+
+            let html = filteredItems.map(item => buildItemCard(item)).join('');
+            html += buildAddItemCard();
+            grid.innerHTML = html;
+        }
+
+        function buildItemCard(item) {
+            const idx = item._idx;
+            const pricingHtml = getItemPricingHtml(item);
+            const typeBadge = item.itemType === 'resell'
+                ? '<div class="ItemCardTypeBadge resell">Resell</div>'
+                : item.itemType === 'rental'
+                ? '<div class="ItemCardTypeBadge rental">Rental</div>'
+                : '';
+            return `
+                <div class="ItemCard">
+                    <div class="ItemCardActions">
+                        <button class="StaffCardBtn" onclick="editItem(${idx})" title="Edit">
+                            <span class="material-symbols-outlined" style="font-size:16px">edit</span>
+                        </button>
+                        <button class="StaffCardBtn danger" onclick="deleteItem(${idx})" title="Delete">
+                            <span class="material-symbols-outlined" style="font-size:16px">delete</span>
+                        </button>
                     </div>
-                `;
-            });
-            html += `
-                <div class="AddItemCard" onclick="openAddItemModal()">
-                    <span class="material-symbols-outlined" style="font-size: 36px;">add_shopping_cart</span>
-                    <span style="font-size: 13px; font-weight: 500;">Add Item</span>
+                    ${item.image ? `<img class="ItemCardImage" src="${item.image}" onerror="this.style.display='none'">` : ''}
+                    <div class="ItemCardBody">
+                        ${item.category ? `<div class="ItemCardCategory">${escapeHtml(item.category)}</div>` : ''}
+                        ${typeBadge}
+                        <div class="ItemCardName">${escapeHtml(item.name)}</div>
+                        <div class="ItemCardPrice">${getItemDisplayPrice(item)}</div>
+                        ${getItemSecondaryPriceHtml(item)}
+                        ${pricingHtml}
+                        ${item.notes ? `<div style="font-size:12px;color:rgba(0,0,0,0.4);font-style:italic">${escapeHtml(item.notes)}</div>` : ''}
+                    </div>
                 </div>
             `;
-            grid.innerHTML = html;
+        }
+
+        function buildAddItemCard() {
+            return `<div class="AddItemCard" onclick="openAddItemModal()">
+                <span class="material-symbols-outlined" style="font-size: 36px;">add_shopping_cart</span>
+                <span style="font-size: 13px; font-weight: 500;">Add Item</span>
+            </div>`;
+        }
+
+        function formatCurrency(amount, currency) {
+            if (currency === 'blockbux') return `<span style="color:#8b5cf6;font-weight:600;">B$${amount.toLocaleString()}</span>`;
+            return `<span style="color:#16a34a;font-weight:600;">$${amount.toLocaleString()}</span>`;
+        }
+
+        function formatCurrencyPlain(amount, currency) {
+            if (currency === 'blockbux') return `B$${amount.toLocaleString()}`;
+            return `$${amount.toLocaleString()}`;
+        }
+
+        function getItemDisplayPrice(item) {
+            const cur = item.currency || 'money';
+            if (item.itemType === 'resell') {
+                const cost = item.originalCost || 0;
+                const pct = item.profitPct || 0;
+                const customerPrice = Math.round(cost + cost * pct / 100);
+                return formatCurrency(customerPrice, cur);
+            } else if (item.itemType === 'rental') {
+                const cost = item.originalCost || 0;
+                const pct = item.profitPct || 0;
+                const roi = item.roi || 1;
+                const customerPrice = Math.round((cost + cost * pct / 100) / roi);
+                return formatCurrency(customerPrice, cur) + `<span style="font-size:11px;color:rgba(0,0,0,0.35);">/period</span>`;
+            }
+            return formatCurrency(item.price || 0, cur);
+        }
+
+        function getItemSecondaryPriceHtml(item) {
+            if (item.currency === 'money' && item.secondaryPrice != null && item.secondaryPrice > 0) {
+                return `<div style="font-size:11px;">${formatCurrency(item.secondaryPrice, 'blockbux')}</div>`;
+            }
+            return '';
+        }
+
+        function getItemPricingHtml(item) {
+            const cur = item.currency || 'money';
+            const fmtC = (v) => formatCurrencyPlain(v, cur);
+            if (item.itemType === 'resell') {
+                const cost = item.originalCost || 0;
+                const pct = item.profitPct || 0;
+                const customerPrice = Math.round(cost + cost * pct / 100);
+                return `<div class="ItemCardPricing">Cost: ${fmtC(cost)} · Profit: ${pct}% · Sells: ${fmtC(customerPrice)}</div>`;
+            } else if (item.itemType === 'rental') {
+                const cost = item.originalCost || 0;
+                const pct = item.profitPct || 0;
+                const roi = item.roi || 1;
+                const totalReturn = Math.round(cost + cost * pct / 100);
+                const perPeriod = Math.round(totalReturn / roi);
+                return `<div class="ItemCardPricing">Cost: ${fmtC(cost)} · ${pct}% profit · ROI: ${roi} periods · ${fmtC(perPeriod)}/period</div>`;
+            }
+            return '';
+        }
+
+        let currentInventoryView = localStorage.getItem('bbInventoryView') || 'rows';
+
+        function setInventoryView(view) {
+            currentInventoryView = view;
+            localStorage.setItem('bbInventoryView', view);
+            const grid = document.getElementById('inventoryGrid');
+            const rowBtn = document.getElementById('viewRowBtn');
+            const gridBtn = document.getElementById('viewGridBtn');
+
+            rowBtn.classList.toggle('active', view === 'rows');
+            gridBtn.classList.toggle('active', view === 'grid');
+
+            grid.className = 'InventoryGrid';
+            if (view === 'rows') {
+                grid.classList.add('view-rows');
+            } else {
+                grid.classList.add('view-grid');
+            }
+        }
+
+        function restoreInventoryView() {
+            setInventoryView(currentInventoryView);
         }
 
         function openAddItemModal() {
@@ -7916,7 +8429,19 @@
             document.getElementById('itemPriceInput').value = '';
             document.getElementById('itemNotesInput').value = '';
             document.getElementById('itemImageUrlInput').value = '';
+            document.getElementById('itemTypeInput').value = '';
+            document.getElementById('itemCurrencyInput').value = 'money';
+            document.getElementById('itemOriginalCostInput').value = '';
+            document.getElementById('itemProfitPctInput').value = '';
+            document.getElementById('itemRentalCostInput').value = '';
+            document.getElementById('itemRentalProfitInput').value = '';
+            document.getElementById('itemRoiInput').value = '';
+            document.getElementById('itemSecondaryPriceInput').value = '';
+            document.getElementById('itemResellSecondaryInput').value = '';
+            document.getElementById('itemRentalSecondaryInput').value = '';
             resetItemImagePreview();
+            updateItemTypeFields();
+            updateItemCurrencyFields();
 
             const dl = document.getElementById('itemCategoryList');
             dl.innerHTML = getItemCategories().map(c => `<option value="${c}">`).join('');
@@ -7934,6 +8459,21 @@
             document.getElementById('itemPriceInput').value = item.price || '';
             document.getElementById('itemNotesInput').value = item.notes || '';
             document.getElementById('itemImageUrlInput').value = item.image || '';
+            document.getElementById('itemTypeInput').value = item.itemType || '';
+            document.getElementById('itemCurrencyInput').value = item.currency || 'money';
+
+            if (item.itemType === 'resell') {
+                document.getElementById('itemOriginalCostInput').value = item.originalCost || '';
+                document.getElementById('itemProfitPctInput').value = item.profitPct || '';
+                document.getElementById('itemResellSecondaryInput').value = item.secondaryPrice || '';
+            } else if (item.itemType === 'rental') {
+                document.getElementById('itemRentalCostInput').value = item.originalCost || '';
+                document.getElementById('itemRentalProfitInput').value = item.profitPct || '';
+                document.getElementById('itemRoiInput').value = item.roi || '';
+                document.getElementById('itemRentalSecondaryInput').value = item.secondaryPrice || '';
+            } else {
+                document.getElementById('itemSecondaryPriceInput').value = item.secondaryPrice || '';
+            }
 
             if (item.image) {
                 showItemImagePreview(item.image);
@@ -7941,20 +8481,31 @@
                 resetItemImagePreview();
             }
 
+            updateItemTypeFields();
+            updateItemCurrencyFields();
+
             const dl = document.getElementById('itemCategoryList');
             dl.innerHTML = getItemCategories().map(c => `<option value="${c}">`).join('');
             openModal('addItem');
         }
 
-        function handleItemImageFile(input) {
+        async function handleItemImageFile(input) {
             const file = input.files[0];
             if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                document.getElementById('itemImageUrlInput').value = e.target.result;
-                showItemImagePreview(e.target.result);
-            };
-            reader.readAsDataURL(file);
+            if (isSharedProfile()) {
+                try {
+                    const url = await uploadToCDN(file);
+                    document.getElementById('itemImageUrlInput').value = url;
+                    showItemImagePreview(url);
+                } catch (e) { console.error('CDN upload failed:', e); }
+            } else {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('itemImageUrlInput').value = e.target.result;
+                    showItemImagePreview(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
             input.value = '';
         }
 
@@ -7991,12 +8542,36 @@
             const name = document.getElementById('itemNameInput').value.trim();
             if (!name) return;
             const category = document.getElementById('itemCategoryInput').value.trim();
-            const price = parseFloat(document.getElementById('itemPriceInput').value) || 0;
             const notes = document.getElementById('itemNotesInput').value.trim();
             const image = document.getElementById('itemImageUrlInput').value.trim() || null;
+            const itemType = document.getElementById('itemTypeInput').value || '';
+            const currency = document.getElementById('itemCurrencyInput').value || 'money';
+
+            const item = { name, category, notes, image, itemType, currency };
+
+            if (itemType === 'resell') {
+                item.originalCost = parseFloat(document.getElementById('itemOriginalCostInput').value) || 0;
+                item.profitPct = parseFloat(document.getElementById('itemProfitPctInput').value) || 0;
+                item.price = Math.round(item.originalCost + item.originalCost * item.profitPct / 100);
+                if (currency === 'money') {
+                    item.secondaryPrice = parseFloat(document.getElementById('itemResellSecondaryInput').value) || 0;
+                }
+            } else if (itemType === 'rental') {
+                item.originalCost = parseFloat(document.getElementById('itemRentalCostInput').value) || 0;
+                item.profitPct = parseFloat(document.getElementById('itemRentalProfitInput').value) || 0;
+                item.roi = parseInt(document.getElementById('itemRoiInput').value) || 1;
+                item.price = Math.round((item.originalCost + item.originalCost * item.profitPct / 100) / item.roi);
+                if (currency === 'money') {
+                    item.secondaryPrice = parseFloat(document.getElementById('itemRentalSecondaryInput').value) || 0;
+                }
+            } else {
+                item.price = parseFloat(document.getElementById('itemPriceInput').value) || 0;
+                if (currency === 'money') {
+                    item.secondaryPrice = parseFloat(document.getElementById('itemSecondaryPriceInput').value) || 0;
+                }
+            }
 
             const editId = document.getElementById('editItemId').value;
-            const item = { name, category, price, notes, image };
 
             if (editId !== '') {
                 const oldItem = inventoryItems[parseInt(editId)];
@@ -8010,6 +8585,57 @@
             saveInventoryItems();
             renderInventoryGrid();
             closeModal('addItem');
+        }
+
+        function updateItemTypeFields() {
+            const type = document.getElementById('itemTypeInput').value;
+            document.getElementById('itemStandardPriceFields').style.display = type === '' ? '' : 'none';
+            document.getElementById('itemResellFields').style.display = type === 'resell' ? '' : 'none';
+            document.getElementById('itemRentalFields').style.display = type === 'rental' ? '' : 'none';
+            updateItemCurrencyFields();
+            calcItemPricing();
+        }
+
+        function updateItemCurrencyFields() {
+            const currency = document.getElementById('itemCurrencyInput').value;
+            const type = document.getElementById('itemTypeInput').value;
+            const isMoney = currency === 'money';
+            const sym = isMoney ? '$' : 'B$';
+            const secSym = isMoney ? 'B$' : '$';
+
+            // Update labels
+            document.getElementById('itemPriceLabel').textContent = `Price (${sym})`;
+            document.getElementById('itemResellCostLabel').textContent = `Original Cost (${sym})`;
+            document.getElementById('itemRentalCostLabel').textContent = `Original Cost (${sym})`;
+
+            // Secondary price fields (only for money currency)
+            document.getElementById('itemSecondaryPriceGroup').style.display = isMoney && type === '' ? '' : 'none';
+            document.getElementById('itemSecondaryPriceLabel').textContent = `Secondary (${secSym})`;
+            document.getElementById('itemResellSecondaryGroup').style.display = isMoney && type === 'resell' ? '' : 'none';
+            document.getElementById('itemResellSecondaryLabel').textContent = `Secondary (${secSym})`;
+            document.getElementById('itemRentalSecondaryGroup').style.display = isMoney && type === 'rental' ? '' : 'none';
+            document.getElementById('itemRentalSecondaryLabel').textContent = `Secondary (${secSym})`;
+
+            calcItemPricing();
+        }
+
+        function calcItemPricing() {
+            const type = document.getElementById('itemTypeInput').value;
+            const currency = document.getElementById('itemCurrencyInput').value;
+            const sym = currency === 'blockbux' ? 'B$' : '$';
+            if (type === 'resell') {
+                const cost = parseFloat(document.getElementById('itemOriginalCostInput').value) || 0;
+                const pct = parseFloat(document.getElementById('itemProfitPctInput').value) || 0;
+                const customerPrice = Math.round(cost + cost * pct / 100);
+                document.getElementById('itemResellPreview').textContent = cost > 0 ? `Customer pays: ${sym}${customerPrice.toLocaleString()} (profit: ${sym}${(customerPrice - cost).toLocaleString()})` : '';
+            } else if (type === 'rental') {
+                const cost = parseFloat(document.getElementById('itemRentalCostInput').value) || 0;
+                const pct = parseFloat(document.getElementById('itemRentalProfitInput').value) || 0;
+                const roi = parseInt(document.getElementById('itemRoiInput').value) || 1;
+                const totalReturn = Math.round(cost + cost * pct / 100);
+                const perPeriod = Math.round(totalReturn / roi);
+                document.getElementById('itemRentalPreview').textContent = cost > 0 ? `Customer pays: ${sym}${perPeriod.toLocaleString()}/period · Total return: ${sym}${totalReturn.toLocaleString()} over ${roi} periods` : '';
+            }
         }
 
         function deleteItem(idx) {
@@ -8036,7 +8662,10 @@
                     const item = inventoryItems.find(i => i.id === si.itemId);
                     return item ? { ...item, stock: si.stock, lowStock: si.lowStock } : null;
                 }).filter(Boolean);
-                const totalValue = items.reduce((s, i) => s + (i.price || 0) * (i.stock != null ? i.stock : 0), 0);
+                const totalValue = items.reduce((s, i) => {
+                    const cost = (i.itemType === 'resell' || i.itemType === 'rental') ? (i.originalCost || 0) : (i.price || 0);
+                    return s + cost * (i.stock != null ? i.stock : 0);
+                }, 0);
                 const itemCount = items.length;
                 const lowStock = items.filter(i => i.stock != null && i.lowStock != null && i.stock <= i.lowStock).length;
 
@@ -8090,8 +8719,13 @@
 
         function openStockDetail(idx) {
             activeStockIdx = idx;
-            document.getElementById('stocksListView').style.display = 'none';
-            document.getElementById('stockDetailView').style.display = '';
+            document.getElementById('stocksListView').style.cssText = `display: none;`;
+            document.getElementById('stockDetailView').style.cssText = `
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                animation: fadeIn 0.3s ease;
+            `;
             renderStockDetail();
         }
 
@@ -8118,7 +8752,10 @@
                        (item.category || '').toLowerCase().includes(searchQuery);
             });
 
-            const totalValue = items.reduce((s, i) => s + (i.price || 0) * (i.stock != null ? i.stock : 0), 0);
+            const totalValue = items.reduce((s, i) => {
+                const cost = (i.itemType === 'resell' || i.itemType === 'rental') ? (i.originalCost || 0) : (i.price || 0);
+                return s + cost * (i.stock != null ? i.stock : 0);
+            }, 0);
             const lowStock = items.filter(i => i.stock != null && i.lowStock != null && i.stock <= i.lowStock).length;
 
             document.getElementById('stockDetailStats').innerHTML = `
@@ -8135,16 +8772,45 @@
 
             listEl.innerHTML = items.map(item => {
                 const isLow = item.stock != null && item.lowStock != null && item.stock <= item.lowStock;
-                const value = (item.price || 0) * (item.stock != null ? item.stock : 0);
+                const itemCost = (item.itemType === 'resell' || item.itemType === 'rental') ? (item.originalCost || 0) : (item.price || 0);
+                const value = itemCost * (item.stock != null ? item.stock : 0);
+                const cur = item.currency || 'money';
+                const fmtC = (v) => formatCurrencyPlain(v, cur);
+
+                let priceHtml = '';
+                if (item.itemType === 'resell') {
+                    const cost = item.originalCost || 0;
+                    const customerPrice = item.price || 0;
+                    priceHtml = `<span class="si-price" style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;">
+                        <span style="font-size:11px;color:rgba(0,0,0,0.35);">Cost: ${fmtC(cost)}</span>
+                        <span>${formatCurrency(customerPrice, cur)}</span>
+                    </span>`;
+                } else if (item.itemType === 'rental') {
+                    const cost = item.originalCost || 0;
+                    const customerPrice = item.price || 0;
+                    priceHtml = `<span class="si-price" style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;">
+                        <span style="font-size:11px;color:rgba(0,0,0,0.35);">Cost: ${fmtC(cost)}</span>
+                        <span>${formatCurrency(customerPrice, cur)}/pd</span>
+                    </span>`;
+                } else {
+                    priceHtml = `<span class="si-price">${formatCurrency(item.price || 0, cur)}</span>`;
+                }
+
+                const typeBadge = item.itemType === 'resell'
+                    ? '<span style="font-size:9px;font-weight:700;text-transform:uppercase;padding:1px 5px;border-radius:4px;background:rgba(16,185,129,0.12);color:rgba(5,120,80,0.7);margin-left:4px;">R</span>'
+                    : item.itemType === 'rental'
+                    ? '<span style="font-size:9px;font-weight:700;text-transform:uppercase;padding:1px 5px;border-radius:4px;background:rgba(245,158,11,0.12);color:rgba(180,110,0,0.7);margin-left:4px;">L</span>'
+                    : '';
+
                 return `
                     <div class="StockItemRow">
                         ${item.image ? `<img src="${item.image}" onerror="this.style.display='none'">` : `<span class="material-symbols-outlined" style="font-size:24px;color:rgba(0,0,0,0.2);width:36px;text-align:center;">inventory_2</span>`}
-                        <span class="si-name">${escapeHtml(item.name)}${item.category ? ' <span style="color:rgba(99,102,241,0.6);font-size:11px;">(' + escapeHtml(item.category) + ')</span>' : ''}</span>
-                        <span class="si-price">$${(item.price || 0).toLocaleString()}</span>
+                        <span class="si-name">${escapeHtml(item.name)}${typeBadge}${item.category ? ' <span style="color:rgba(99,102,241,0.6);font-size:11px;">(' + escapeHtml(item.category) + ')</span>' : ''}</span>
+                        ${priceHtml}
                         <div class="si-stock ${isLow ? 'low' : ''}">
                             <input type="number" value="${item.stock != null ? item.stock : ''}" placeholder="∞" min="0" onchange="updateStockQty(${item._idx},'stock',this.value)">
                         </div>
-                        <span class="si-value">$${value.toLocaleString()}</span>
+                        <span class="si-value">${formatCurrency(value, cur)}</span>
                         <button class="si-remove" onclick="removeItemFromStock(${item._idx})" title="Remove from inventory">
                             <span class="material-symbols-outlined" style="font-size:18px">close</span>
                         </button>
@@ -8172,18 +8838,55 @@
                 return;
             }
 
-            const overlay = document.createElement('div');
-            overlay.className = 'ModalOverlay open';
-            overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+            // Group available items by category
+            const groups = {};
+            const uncategorized = [];
+            available.forEach(item => {
+                const cat = item.category || '';
+                if (!cat) { uncategorized.push(item); return; }
+                if (!groups[cat]) groups[cat] = [];
+                groups[cat].push(item);
+            });
 
-            let itemsHtml = available.map(item => `
-                <label style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,0.2);border-radius:10px;cursor:pointer;">
+            function buildItemLabel(item) {
+                return `<label class="stock-add-item-label" data-name="${escapeHtml(item.name.toLowerCase())}" style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,0.2);border-radius:10px;cursor:pointer;">
                     <input type="checkbox" value="${item.id}" style="accent-color:#6366f1;">
                     ${item.image ? `<img src="${item.image}" style="width:32px;height:32px;border-radius:6px;object-fit:cover;" onerror="this.style.display='none'">` : ''}
                     <span style="flex:1;font-size:14px;">${escapeHtml(item.name)}</span>
-                    <span style="font-size:13px;color:rgba(0,0,0,0.5);">$${(item.price || 0).toLocaleString()}</span>
-                </label>
-            `).join('');
+                    <span style="font-size:13px;color:rgba(0,0,0,0.5);">${getItemDisplayPrice(item)}</span>
+                </label>`;
+            }
+
+            let itemsHtml = '';
+            const sortedCats = Object.keys(groups).sort();
+            sortedCats.forEach(cat => {
+                itemsHtml += `<div class="stock-add-category-group">
+                    <div class="CategoryGroupTitle" onclick="this.nextElementSibling.classList.toggle('collapsed')" style="margin:0;padding:6px 0;">
+                        <span class="material-symbols-outlined" style="font-size:16px;">folder</span>
+                        ${escapeHtml(cat)}
+                        <span class="cat-count">${groups[cat].length}</span>
+                    </div>
+                    <div class="CategoryGroupContent" style="display:flex;flex-direction:column;gap:4px;">
+                        ${groups[cat].map(item => buildItemLabel(item)).join('')}
+                    </div>
+                </div>`;
+            });
+            if (uncategorized.length > 0) {
+                itemsHtml += `<div class="stock-add-category-group">
+                    <div class="CategoryGroupTitle" onclick="this.nextElementSibling.classList.toggle('collapsed')" style="margin:0;padding:6px 0;">
+                        <span class="material-symbols-outlined" style="font-size:16px;">folder_off</span>
+                        Uncategorized
+                        <span class="cat-count">${uncategorized.length}</span>
+                    </div>
+                    <div class="CategoryGroupContent" style="display:flex;flex-direction:column;gap:4px;">
+                        ${uncategorized.map(item => buildItemLabel(item)).join('')}
+                    </div>
+                </div>`;
+            }
+
+            const overlay = document.createElement('div');
+            overlay.className = 'ModalOverlay open';
+            overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
 
             overlay.innerHTML = `
                 <div class="ModalContent" style="max-width:420px;">
@@ -8193,7 +8896,11 @@
                             <span class="material-symbols-outlined">close</span>
                         </button>
                     </div>
-                    <div style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;">
+                    <div style="position:relative;margin-bottom:10px;">
+                        <span class="material-symbols-outlined" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:18px;color:rgba(0,0,0,0.25);pointer-events:none;">search</span>
+                        <input type="text" id="stockAddItemSearch" placeholder="Search items..." oninput="filterStockAddItems(this.value)" style="width:100%;padding:8px 12px 8px 34px;border-radius:10px;border:1px solid rgba(255,255,255,0.5);background:rgba(255,255,255,0.3);backdrop-filter:blur(4px);font-size:13px;font-family:'Roboto',sans-serif;outline:none;transition:all 0.2s;box-sizing:border-box;" onfocus="this.style.background='rgba(255,255,255,0.5)';this.style.borderColor='rgba(99,102,241,0.6)';this.style.boxShadow='0 0 0 3px rgba(99,102,241,0.15)'" onblur="this.style.background='rgba(255,255,255,0.3)';this.style.borderColor='rgba(255,255,255,0.5)';this.style.boxShadow='none'">
+                    </div>
+                    <div id="stockAddItemsList" style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;">
                         ${itemsHtml}
                     </div>
                     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
@@ -8216,6 +8923,20 @@
                 renderStockDetail();
                 overlay.remove();
             };
+        }
+
+        function filterStockAddItems(query) {
+            const q = query.toLowerCase().trim();
+            const labels = document.querySelectorAll('.stock-add-item-label');
+            labels.forEach(label => {
+                const name = label.dataset.name || '';
+                label.style.display = !q || name.includes(q) ? '' : 'none';
+            });
+            // Hide category groups with no visible items
+            document.querySelectorAll('.stock-add-category-group').forEach(group => {
+                const visibleLabels = group.querySelectorAll('.stock-add-item-label:not([style*="display: none"])');
+                group.style.display = visibleLabels.length > 0 ? '' : 'none';
+            });
         }
 
         function removeItemFromStock(itemIdx) {
@@ -8343,7 +9064,7 @@
 
             row.innerHTML = `
                 <select onchange="updateOrderPreview()" style="flex:2">${options}</select>
-                <input type="number" value="1" min="1" step="1" onchange="updateOrderPreview()" style="max-width:70px" placeholder="Qty">
+                <input type="number" value="1" min="1" step="1" onchange="updateOrderPreview()" style="flex:0 0 70px" placeholder="Qty">
                 <button class="remove-line-btn" onclick="this.parentElement.remove();updateOrderPreview()">
                     <span class="material-symbols-outlined" style="font-size:18px">close</span>
                 </button>
@@ -8510,6 +9231,11 @@
                 text: 'Track your employee roster. Assign each employee a job title and associate them with a business. Use the filter to view staff per business.',
                 example: 'Example: Add "Player123" as a Cashier under "Golhem Markets" business.'
             },
+            businesses: {
+                title: 'Businesses',
+                text: 'Create and manage your businesses. View income from completed orders, staff costs, employee roster, and recent orders for each business.',
+                example: 'Example: Create "Golhem Markets" with a logo and owner. View its $2,500 income from 15 orders and $400/day staff costs from 3 employees.'
+            },
             hours: {
                 title: 'Hours Tracker',
                 text: 'Create workday records to log employee clock-in and clock-out times. The system automatically calculates hours worked and pay.',
@@ -8624,6 +9350,7 @@
         loadPartnerships();
         loadInventoryItems();
         loadOrders();
+        restoreInventoryView();
         renderLevelDropdown();
 
         // Restore config fields

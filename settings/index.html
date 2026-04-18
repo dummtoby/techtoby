@@ -680,6 +680,10 @@
                 <span class="material-symbols-outlined" style="font-size: 18px;">update</span>
                 Updates
             </div>
+            <div class="SidebarTab" data-page="desktop" onclick="switchPage('desktop')">
+                <span class="material-symbols-outlined" style="font-size: 18px;">desktop_windows</span>
+                Desktop App
+            </div>
         </div>
 
         <div class="ContentArea">
@@ -787,6 +791,19 @@
                     </button>
                 </div>
             </div>
+
+            <!-- Desktop App Page -->
+            <div class="page" id="page-desktop">
+                <div class="ContentTitle">Desktop App</div>
+                <div class="ContentDesc">Download the latest version of the Techtoby desktop app for your platform.</div>
+
+                <div id="desktopRelease">
+                    <div class="EmptyState" id="desktopLoading">
+                        <span class="material-symbols-outlined">hourglass_top</span>
+                        <div>Loading latest release...</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -888,6 +905,7 @@
             });
             if (pageId === 'data') updateDataSizeInfo();
             if (pageId === 'updates' && !commitsLoaded) fetchCommits();
+            if (pageId === 'desktop') loadDesktopRelease();
         }
 
         // ===== TOAST =====
@@ -1451,6 +1469,120 @@
 
             card.innerHTML = html;
             return card;
+        }
+
+        // ===== DESKTOP APP =====
+        let desktopReleaseLoaded = false;
+
+        async function loadDesktopRelease() {
+            if (desktopReleaseLoaded) return;
+            desktopReleaseLoaded = true;
+
+            const container = document.getElementById('desktopRelease');
+            try {
+                const resp = await fetch('https://api.github.com/repos/dummtoby/techtoby/releases/latest');
+                if (!resp.ok) throw new Error('Failed to fetch release');
+                const release = await resp.json();
+
+                const version = release.tag_name || release.name || 'Unknown';
+                const publishedDate = release.published_at
+                    ? new Date(release.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                    : '—';
+                const body = release.body || '';
+
+                const platformIcons = {
+                    '.exe': 'desktop_windows',
+                    '.msi': 'desktop_windows',
+                    '.dmg': 'desktop_mac',
+                    '.AppImage': 'desktop_windows',
+                    '.deb': 'terminal',
+                    '.rpm': 'terminal',
+                    '.zip': 'folder_zip',
+                    '.tar.gz': 'folder_zip'
+                };
+
+                const platformLabels = {
+                    '.exe': 'Windows',
+                    '.msi': 'Windows Installer',
+                    '.dmg': 'macOS',
+                    '.AppImage': 'Linux (AppImage)',
+                    '.deb': 'Linux (Debian)',
+                    '.rpm': 'Linux (RPM)',
+                    '.zip': 'Archive',
+                    '.tar.gz': 'Archive'
+                };
+
+                let html = `
+                    <div style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.35);border-radius:14px;padding:20px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;flex-direction:column;gap:14px;">
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <div style="width:44px;height:44px;border-radius:12px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.3);display:flex;align-items:center;justify-content:center;">
+                                <span class="material-symbols-outlined" style="font-size:24px;color:rgba(99,102,241,0.8);">new_releases</span>
+                            </div>
+                            <div>
+                                <div style="font-size:16px;font-weight:600;color:rgba(0,0,0,0.85);">${escapeHtml(version)}</div>
+                                <div style="font-size:12px;color:rgba(0,0,0,0.4);">Released ${publishedDate}</div>
+                            </div>
+                            <a href="${escapeHtml(release.html_url)}" target="_blank" rel="noopener" style="margin-left:auto;font-size:12px;color:rgba(99,102,241,0.8);text-decoration:none;font-weight:500;display:flex;align-items:center;gap:4px;">
+                                View on GitHub
+                                <span class="material-symbols-outlined" style="font-size:14px;">open_in_new</span>
+                            </a>
+                        </div>`;
+
+                if (body) {
+                    const bodyHtml = escapeHtml(body)
+                        .replace(/\n/g, '<br>')
+                        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/- (.+?)(<br>|$)/g, '<span style="display:flex;gap:6px;align-items:flex-start;"><span style="color:rgba(99,102,241,0.6);">•</span><span>$1</span></span>');
+                    html += `<div style="font-size:13px;color:rgba(0,0,0,0.6);line-height:1.7;padding:12px 14px;background:rgba(0,0,0,0.03);border-radius:10px;">${bodyHtml}</div>`;
+                }
+
+                if (release.assets && release.assets.length > 0) {
+                    html += `<div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:rgba(0,0,0,0.4);margin-top:4px;">Downloads</div>`;
+                    html += `<div style="display:flex;flex-direction:column;gap:8px;">`;
+
+                    release.assets.forEach(asset => {
+                        const name = asset.name;
+                        const sizeBytes = asset.size || 0;
+                        const sizeMb = (sizeBytes / (1024 * 1024)).toFixed(1);
+                        const downloads = asset.download_count || 0;
+
+                        let icon = 'download';
+                        let label = name;
+                        for (const [ext, ic] of Object.entries(platformIcons)) {
+                            if (name.endsWith(ext)) {
+                                icon = ic;
+                                label = platformLabels[ext] + ' — ' + name;
+                                break;
+                            }
+                        }
+
+                        html += `<a href="${escapeHtml(asset.browser_download_url)}" target="_blank" rel="noopener" style="text-decoration:none;">
+                            <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(255,255,255,0.25);border:1px solid rgba(255,255,255,0.4);border-radius:12px;transition:all 0.15s ease;cursor:pointer;" onmouseenter="this.style.background='rgba(255,255,255,0.4)';this.style.transform='translateY(-1px)'" onmouseleave="this.style.background='rgba(255,255,255,0.25)';this.style.transform=''">
+                                <span class="material-symbols-outlined" style="font-size:22px;color:rgba(99,102,241,0.7);">${icon}</span>
+                                <div style="flex:1;min-width:0;">
+                                    <div style="font-size:13px;font-weight:500;color:rgba(0,0,0,0.8);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(label)}</div>
+                                    <div style="font-size:11px;color:rgba(0,0,0,0.35);">${sizeMb} MB · ${downloads.toLocaleString()} downloads</div>
+                                </div>
+                                <span class="material-symbols-outlined" style="font-size:18px;color:rgba(0,0,0,0.3);">download</span>
+                            </div>
+                        </a>`;
+                    });
+
+                    html += `</div>`;
+                }
+
+                html += `</div>`;
+                container.innerHTML = html;
+            } catch (err) {
+                container.innerHTML = `<div class="EmptyState">
+                    <span class="material-symbols-outlined">error_outline</span>
+                    <div>Failed to load release info.</div>
+                    <a href="https://github.com/dummtoby/techtoby/releases/" target="_blank" rel="noopener" class="GTextBtn primary" style="margin-top:8px;">
+                        <span class="material-symbols-outlined">open_in_new</span>
+                        Open GitHub Releases
+                    </a>
+                </div>`;
+            }
         }
 
         // ===== INIT =====
