@@ -562,6 +562,22 @@
         }
         .DataSizeInfo .material-symbols-outlined { font-size: 14px; }
 
+        /* ===== Toggle Switch ===== */
+        .ToggleSwitch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+        .ToggleSwitch input { opacity: 0; width: 0; height: 0; }
+        .ToggleSlider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.15); border-radius: 24px; transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .ToggleSlider:before {
+            content: ""; position: absolute; height: 18px; width: 18px; left: 2px; bottom: 2px;
+            background: white; border-radius: 50%; transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .ToggleSwitch input:checked + .ToggleSlider { background: rgba(99,102,241,0.5); border-color: rgba(99,102,241,0.4); }
+        .ToggleSwitch input:checked + .ToggleSlider:before { transform: translateX(20px); }
+
         /* Profile description */
         .ProfileDesc {
             font-size: 12px;
@@ -684,6 +700,10 @@
                 <span class="material-symbols-outlined" style="font-size: 18px;">desktop_windows</span>
                 Desktop App
             </div>
+            <div class="SidebarTab" data-page="advanced" onclick="switchPage('advanced')">
+                <span class="material-symbols-outlined" style="font-size: 18px;">code</span>
+                Advanced
+            </div>
         </div>
 
         <div class="ContentArea">
@@ -804,6 +824,39 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Advanced Page -->
+            <div class="page" id="page-advanced">
+                <div class="ContentTitle">Advanced</div>
+                <div class="ContentDesc">Developer settings for the Techtoby OS desktop app.</div>
+
+                <div class="SettingsCard">
+                    <div class="SettingsCardTitle">
+                        <span class="material-symbols-outlined">developer_mode</span>
+                        Developer Mode
+                    </div>
+                    <div class="SettingsCardDesc">When enabled, the desktop app loads your local development server instead of the live site.</div>
+                    <div style="display: flex; align-items: center; gap: 12px; margin-top: 4px;">
+                        <label class="ToggleSwitch">
+                            <input type="checkbox" id="devModeToggle" onchange="updateDevModeUI()">
+                            <span class="ToggleSlider"></span>
+                        </label>
+                        <span id="devModeLabel" style="font-size: 13px; color: rgba(0,0,0,0.6);">Disabled</span>
+                    </div>
+                    <div id="devModeUrlGroup" style="display: none; margin-top: 8px;">
+                        <div class="form-group">
+                            <label>Development Server URL</label>
+                            <input type="text" id="devModeUrl" placeholder="e.g. http://127.0.0.1:12000">
+                        </div>
+                        <div style="display: flex; gap: 8px; margin-top: 8px;">
+                            <button class="GTextBtn primary" onclick="saveDevMode()">
+                                <span class="material-symbols-outlined">save</span>
+                                Apply &amp; Reload
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -906,6 +959,7 @@
             if (pageId === 'data') updateDataSizeInfo();
             if (pageId === 'updates' && !commitsLoaded) fetchCommits();
             if (pageId === 'desktop') loadDesktopRelease();
+            if (pageId === 'advanced') initAdvancedPage();
         }
 
         // ===== TOAST =====
@@ -1584,6 +1638,41 @@
                 </div>`;
             }
         }
+
+        // ===== DEVELOPER MODE =====
+        function updateDevModeUI() {
+            const enabled = document.getElementById('devModeToggle').checked;
+            document.getElementById('devModeLabel').textContent = enabled ? 'Enabled' : 'Disabled';
+            document.getElementById('devModeUrlGroup').style.display = enabled ? '' : 'none';
+        }
+
+        function saveDevMode() {
+            const enabled = document.getElementById('devModeToggle').checked;
+            const url = document.getElementById('devModeUrl').value.trim();
+            if (enabled && !url) {
+                showToast('Enter a development server URL', 'warning');
+                document.getElementById('devModeUrl').focus();
+                return;
+            }
+            try {
+                window.parent.postMessage({ type: '__devmode__', enabled, url }, '*');
+                showToast(enabled ? 'Developer mode enabled — reloading...' : 'Developer mode disabled — reloading...', 'code');
+            } catch(e) {
+                showToast('Dev mode is only available in the desktop app', 'info');
+            }
+        }
+
+        function initAdvancedPage() {
+            try { window.parent.postMessage({ type: '__devmode_query__' }, '*'); } catch(e) {}
+        }
+
+        window.addEventListener('message', function(e) {
+            if (e.data && e.data.type === '__devmode_status__') {
+                document.getElementById('devModeToggle').checked = e.data.enabled || false;
+                document.getElementById('devModeUrl').value = e.data.url || '';
+                updateDevModeUI();
+            }
+        });
 
         // ===== INIT =====
         renderProfiles();
