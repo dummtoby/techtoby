@@ -60,6 +60,17 @@ def run_cmake_build():
         except OSError:
             pass
 
+    # Also clear stale _deps subbuild caches (e.g. after moving the project folder)
+    deps_dir = os.path.join("build", "_deps")
+    if os.path.exists(deps_dir):
+        for root, dirs, files in os.walk(deps_dir):
+            for f in files:
+                if f == "CMakeCache.txt":
+                    try:
+                        os.remove(os.path.join(root, f))
+                    except OSError:
+                        pass
+
     subprocess.run(["cmake", "-B", "build"], check=True)
     subprocess.run(["cmake", "--build", "build", "--config", "Release"], check=True)
 
@@ -226,17 +237,20 @@ def build_installer():
 
     iss_content = f"""
 [Setup]
+AppId={{{{B5E7A3D2-9F14-4C8A-B1D6-3E7F2A8C4D09}}}}
 AppName={app_title}
 AppVersion={app_version}
 AppPublisher={app_publisher}
 {setup_icon_line}DefaultDirName={{autopf}}\\{safe_name}
 DefaultGroupName={app_title}
-OutputDir=dist
+OutputDir=.
 OutputBaseFilename={safe_name}_Installer
 Compression=lzma
 SolidCompression=yes
 ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64
+CloseApplications=yes
+RestartApplications=no
 
 [Files]
 Source: "{os.path.abspath(dist_dir)}\\*"; DestDir: "{{app}}"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -250,6 +264,33 @@ Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "A
 
 [Run]
 Filename: "{{app}}\\vc_redist.x64.exe"; Parameters: "/install /quiet /norestart"; StatusMsg: "Installing Visual C++ Redistributable..."; Flags: waituntilterminated
+
+[Code]
+function GetUninstallString(): String;
+var
+  sUnInstPath: String;
+  sUnInstString: String;
+begin
+  sUnInstPath := 'Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{{{{B5E7A3D2-9F14-4C8A-B1D6-3E7F2A8C4D09}}}}_is1';
+  sUnInstString := '';
+  if not RegQueryStringValue(HKLM, sUnInstPath, 'UninstallString', sUnInstString) then
+    RegQueryStringValue(HKCU, sUnInstPath, 'UninstallString', sUnInstString);
+  Result := sUnInstString;
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  sUnInstString: String;
+  iResultCode: Integer;
+begin
+  if CurStep = ssInstall then begin
+    sUnInstString := GetUninstallString();
+    if sUnInstString <> '' then begin
+      sUnInstString := RemoveQuotes(sUnInstString);
+      Exec(sUnInstString, '/SILENT /NORESTART /SUPPRESSMSGBOXES', '', SW_HIDE, ewWaitUntilTerminated, iResultCode);
+    end;
+  end;
+end;
 """
     iss_dir = "dist"
     if not os.path.exists(iss_dir):
@@ -272,7 +313,7 @@ Filename: "{{app}}\\vc_redist.x64.exe"; Parameters: "/install /quiet /norestart"
         print(" -> Compiling installer executable. Please wait...")
         try:
             subprocess.run([iscc_path, iss_path], check=True)
-            installer_exe = os.path.abspath(os.path.join(iss_dir, "ESDSuite_Installer.exe"))
+            installer_exe = os.path.abspath(os.path.join(iss_dir, f"{safe_name}_Installer.exe"))
             print(f"\n[Success] Your installer has been successfully built: {installer_exe}")
         except subprocess.CalledProcessError as e:
             print(f"\n[Error] Failed to compile installer: {e}")

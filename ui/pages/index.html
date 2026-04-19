@@ -5,80 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Techtoby Corp</title>
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-            background-color: transparent;
-            overflow: hidden;
-        }
-        body {
-            display: flex;
-            flex-direction: column;
-        }
-        .techtoby {
-            border: none;
-            width: 100vw;
-            height: 100vh;
-        }
-        .titlebar {
-            position: relativE;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 4px;
-            display: flex;
+        /* CSS Styles */
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; background-color: transparent; overflow: hidden; }
+        body { display: flex; flex-direction: column; }
+        .techtoby { border: none; width: 100vw; height: 100vh; }
+        .titlebar { position: relative; top: 0; left: 0; width: 100%; padding: 4px; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; z-index: 1000; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(20px) saturate(1.8); -webkit-backdrop-filter: blur(20px) saturate(1.8); border-bottom: 1px solid rgba(255, 255, 255, 0.4); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);}
+        .titlebar button { background: transparent; border: none; padding: 8px; margin-right: 8px; cursor: pointer; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
+        .titlebar button:hover { background: rgba(255, 255, 255, 0.45); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); }
+        .titlebar button:active { transform: scale(0.92); }
+        .titlebar button svg { fill: #444; width: 20px; height: 20px; transition: fill 0.2s ease; }
+        .titlebar button:hover svg { fill: #000; }
+        .row { display: flex; align-items: center; }
+        .update-banner {
+            display: none;
             align-items: center;
             justify-content: space-between;
-            box-sizing: border-box;
-            z-index: 1000;
-            
-            /* Liquid Glass Effect */
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(20px) saturate(1.8);
-            -webkit-backdrop-filter: blur(20px) saturate(1.8);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 8px 16px;
+            background: rgba(99, 102, 241, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.25);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 13px;
+            color: #333;
+            z-index: 999;
         }
-        .titlebar button {
-            background: transparent;
-            border: none;
-            padding: 8px;
-            margin-right: 8px;
-            cursor: pointer;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
+        .update-banner.visible { display: flex; }
+        .update-banner .update-text { flex: 1; display: flex; align-items: center; gap: 8px; }
+        .update-banner .update-actions { display: flex; gap: 8px; align-items: center; }
+        .update-banner button {
+            padding: 5px 12px; border-radius: 6px; border: none; cursor: pointer;
+            font-size: 12px; font-weight: 500; transition: all 0.2s;
         }
-        .titlebar button:hover {
-            background: rgba(255, 255, 255, 0.45);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-        }
-        .titlebar button:active {
-            transform: scale(0.92);
-        }
-        .titlebar button svg {
-            fill: #444;
-            width: 20px;
-            height: 20px;
-            transition: fill 0.2s ease;
-        }
-        .titlebar button:hover svg {
-            fill: #000;
-        }
-        .row {
-            display: flex;
-            align-items: center;
-        }
+        .update-banner .update-btn { background: rgba(99, 102, 241, 0.8); color: white; }
+        .update-banner .update-btn:hover { background: rgba(99, 102, 241, 1); }
+        .update-banner .update-btn:disabled { opacity: 0.6; cursor: default; }
+        .update-banner .dismiss-btn { background: transparent; color: rgba(0,0,0,0.4); padding: 5px 8px; }
+        .update-banner .dismiss-btn:hover { color: rgba(0,0,0,0.7); }
     </style>
 </head>
 <body>
     <div class="titlebar" onmousedown="if(window.dragWindow) window.dragWindow('')">
         <div class="row" style="width: 120px;">
-            <button onmousedown="event.stopPropagation()" onclick="document.querySelector('.techtoby').src='https://techtoby.shawnyxx.dev';">
+            <button onmousedown="event.stopPropagation()" onclick="goHome()">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#A6A6A6"><path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/></svg>
             </button>
         </div>
@@ -94,16 +63,140 @@
             </button>
         </span>
     </div>
-    <iframe class="techtoby" src="https://techtoby.shawnyxx.dev" width="100%" height="100%"></iframe>
+    <div class="update-banner" id="updateBanner">
+        <span class="update-text">
+            <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="rgba(99,102,241,0.8)"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>
+            <span id="updateText">A new version is available</span>
+        </span>
+        <span class="update-actions">
+            <button class="update-btn" id="updateBtn" onclick="runUpdate()">Update Now</button>
+            <button class="dismiss-btn" onclick="dismissUpdate()">&#10005;</button>
+        </span>
+    </div>
+    <iframe class="techtoby" src="about:blank" width="100%" height="100%"></iframe>
 
     <script>
+        const DEFAULT_URL = 'https://techtoby.shawnyxx.dev';
+        let currentInstallerUrl = '';
+
+        // Store the active target URL for the home button
+        window.__targetUrl = DEFAULT_URL;
+
+        function goHome() {
+            document.querySelector('.techtoby').src = window.__targetUrl || DEFAULT_URL;
+        }
+
         window.back = () => window.history.back();
         window.forward = () => window.history.forward();
-        window.refresh = () => {
-            document.querySelector('.techtoby').contentWindow.postMessage('__webview_reload__', '*');
-        };
-        
-        const 市中心 = "downtown";
+        window.refresh = () => document.querySelector('.techtoby').contentWindow.postMessage('__webview_reload__', '*');
+
+        // ===== DEV MODE: Load on startup =====
+        (async function initApp() {
+            const iframe = document.querySelector('.techtoby');
+            let targetUrl = DEFAULT_URL;
+
+            if (window.invokeBridge) {
+                try {
+                    let res = await window.invokeBridge({action: 'get_devmode'});
+                    if (typeof res === 'string') res = JSON.parse(res);
+                    if (res.status === 'ok' && res.result && res.result.enabled && res.result.url) {
+                        targetUrl = res.result.url;
+                    }
+                } catch(e) {}
+            }
+
+            window.__targetUrl = targetUrl;
+            iframe.src = targetUrl;
+        })();
+
+        // ===== DEV MODE: Listen for settings page messages =====
+        window.addEventListener('message', function(e) {
+            if (!e.data || !e.data.type) return;
+
+            if (e.data.type === '__devmode__') {
+                const enabled = e.data.enabled;
+                const url = e.data.url;
+                if (window.invokeBridge) {
+                    window.invokeBridge({action: 'set_devmode', enabled: enabled, url: url});
+                }
+                const targetUrl = (enabled && url) ? url : DEFAULT_URL;
+                window.__targetUrl = targetUrl;
+                document.querySelector('.techtoby').src = targetUrl;
+            }
+
+            if (e.data.type === '__devmode_query__') {
+                (async function() {
+                    if (!window.invokeBridge) return;
+                    try {
+                        let res = await window.invokeBridge({action: 'get_devmode'});
+                        if (typeof res === 'string') res = JSON.parse(res);
+                        if (res.status === 'ok') {
+                            document.querySelector('.techtoby').contentWindow.postMessage({
+                                type: '__devmode_status__',
+                                enabled: res.result.enabled,
+                                url: res.result.url
+                            }, '*');
+                        }
+                    } catch(e) {}
+                })();
+            }
+        });
+
+        // ===== UPDATE CHECK =====
+        setTimeout(async function() {
+            if (!window.invokeBridge) return;
+            try {
+                let res = await window.invokeBridge({action: 'check_update'});
+                if (typeof res === 'string') res = JSON.parse(res);
+                if (res.status === 'ok' && res.result && res.result.update_available) {
+                    currentInstallerUrl = res.result.installer_url;
+                    document.getElementById('updateText').textContent =
+                        'Techtoby OS ' + res.result.latest_version + ' is available (you have ' + res.result.current_version + ')';
+                    document.getElementById('updateBanner').classList.add('visible');
+                    if (!currentInstallerUrl) {
+                        document.getElementById('updateBtn').textContent = 'View Release';
+                    }
+                }
+            } catch(e) {}
+        }, 3000);
+
+        async function runUpdate() {
+            if (!currentInstallerUrl) {
+                if (window.openExternalLink) {
+                    window.openExternalLink('https://github.com/dummtoby/techtoby/releases/latest');
+                }
+                return;
+            }
+
+            const btn = document.getElementById('updateBtn');
+            btn.textContent = 'Downloading...';
+            btn.disabled = true;
+
+            try {
+                let res = await window.invokeBridge({
+                    action: 'download_and_install_update',
+                    installer_url: currentInstallerUrl
+                });
+                if (typeof res === 'string') res = JSON.parse(res);
+
+                if (res.status === 'ok') {
+                    btn.textContent = 'Installing...';
+                    setTimeout(function() {
+                        if (window.closeWindow) window.closeWindow();
+                    }, 1000);
+                } else {
+                    btn.textContent = 'Failed';
+                    setTimeout(function() { btn.textContent = 'Retry'; btn.disabled = false; }, 2000);
+                }
+            } catch(e) {
+                btn.textContent = 'Failed';
+                setTimeout(function() { btn.textContent = 'Retry'; btn.disabled = false; }, 2000);
+            }
+        }
+
+        function dismissUpdate() {
+            document.getElementById('updateBanner').classList.remove('visible');
+        }
     </script>
 </body>
 </html>
