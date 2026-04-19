@@ -9,18 +9,23 @@ import shutil
 GITHUB_REPO = "dummtoby/techtoby"
 GITHUB_API = f"https://api.github.com/repos/{GITHUB_REPO}"
 
-RELEASE_BODY_TEMPLATE = """### Techtoby OS
+RELEASE_BODY_TEMPLATE = """## Techtoby OS
 
 Tired of needing to have a heavy and laggy browser opened while you play Bloxburg and you wish to have your very own desktop companion, well that's why I have made a desktop app version of the Techtoby Corp website.
 
 It runs the website in a sandboxed environment so you will still need an internet connection for it to work, but the good thing is that it wont require you to update the app every time an update comes out in order to get the latest features.
 
-### Security & Troubleshooting
+## Changes
 
-If you have issues downloading the app, make sure you donwload it on a web browser that allows you to keep potentially dangerous apps on your computer. The potentially dangerous message is there only for user knowledge, it doesn't mean that it's 100% a virus. And to get rid of it, I would need to pay a software license key, and since it's a personal project, I don't have the funds to pay microsoft a sum of 350$ or more in order to mark my software autorun on their Windows 11 operating system.
+{changes}
 
-### Changes
-{changes}"""
+## Windows Security & Troubleshooting
+
+### How to install
+To install Techtoby OS, it's preferable that you use a browser that allows force-keeping potentially dangerous apps, because since my app is not signed to [Microsoft Windows Security Registry](https://learn.microsoft.com/en-us/windows/security/operating-system-security/virus-and-threat-protection/microsoft-defender-smartscreen/).
+
+### Watch this video to learn how to bypass it.
+https://github.com/user-attachments/assets/36c12ef4-52e5-4f11-938c-fb9766a7fa9d"""
 
 
 def print_header(title):
@@ -198,7 +203,7 @@ def delete_asset(asset_id, token):
 def get_commit_message_for_tag(tag):
     try:
         result = subprocess.run(
-            ["git", "log", "--format=%B", "-n", "1", tag],
+            ["git", "log", "--format=%B", "-n", "1", f"origin/standalone"],
             capture_output=True, text=True, timeout=10
         )
         if result.returncode == 0 and result.stdout.strip():
@@ -243,7 +248,18 @@ def build_release_body(tag):
     commit_msg = get_commit_message_for_tag(tag)
     if commit_msg:
         lines = commit_msg.strip().split("\n")
-        changes = "\n".join(f"- {line}" for line in lines if line.strip())
+        # Skip the first line (version number), keep description header + bullet points
+        content_lines = lines[1:] if len(lines) > 1 else lines
+        # Turn the description header into a ### heading
+        formatted = []
+        for i, line in enumerate(content_lines):
+            if not line.strip():
+                continue
+            if i == 0 and not line.startswith("#") and not line.startswith("-"):
+                formatted.append(f"### {line}")
+            else:
+                formatted.append(line)
+        changes = "\n".join(formatted)
     else:
         changes = "- No commit message found for this tag."
     return RELEASE_BODY_TEMPLATE.format(changes=changes)

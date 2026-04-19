@@ -276,6 +276,39 @@ int main() {
     // Inject a reload listener into all frames (including cross-origin iframes)
     w.init("window.addEventListener('message', function(e) { if (e.data === '__webview_reload__') location.reload(); });");
 
+    // Intercept new window requests (window.open, target="_blank", etc.) and open in default browser
+#ifdef _WIN32
+    {
+        ICoreWebView2* wv = (ICoreWebView2*)w.widget();
+        if (wv) {
+            // Lightweight COM handler for NewWindowRequested
+            struct NewWindowHandler : ICoreWebView2NewWindowRequestedEventHandler {
+                ULONG m_ref = 1;
+                HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppv) override {
+                    if (riid == __uuidof(IUnknown) || riid == IID_ICoreWebView2NewWindowRequestedEventHandler) {
+                        *ppv = this; AddRef(); return S_OK;
+                    }
+                    *ppv = nullptr; return E_NOINTERFACE;
+                }
+                ULONG STDMETHODCALLTYPE AddRef() override { return ++m_ref; }
+                ULONG STDMETHODCALLTYPE Release() override { auto r = --m_ref; if (!r) delete this; return r; }
+                HRESULT STDMETHODCALLTYPE Invoke(ICoreWebView2* sender, ICoreWebView2NewWindowRequestedEventArgs* args) override {
+                    LPWSTR uri = nullptr;
+                    args->get_Uri(&uri);
+                    if (uri) {
+                        ShellExecuteW(0, L"open", uri, 0, 0, SW_SHOW);
+                        CoTaskMemFree(uri);
+                    }
+                    args->put_Handled(TRUE);
+                    return S_OK;
+                }
+            };
+            EventRegistrationToken token;
+            wv->add_NewWindowRequested(new NewWindowHandler(), &token);
+        }
+    }
+#endif
+
     // 3. Create the JS -> C++ -> Python Bridge
     w.bind("setNativeTitlebarColor", [&](std::string req) -> std::string {
 #ifdef _WIN32

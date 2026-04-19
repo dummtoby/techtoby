@@ -2274,6 +2274,7 @@ public:
     }
   }
   void *window() { return (void *)m_window; }
+  void *widget() { return (void *)m_webview; }
   void terminate() { PostQuitMessage(0); }
   void dispatch(dispatch_fn_t f) {
     PostThreadMessage(m_main_thread, WM_APP, 0, (LPARAM) new dispatch_fn_t(f));
