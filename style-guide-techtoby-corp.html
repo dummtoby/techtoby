@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Techtoby Corp — Style Guide</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <style>
+    /* ======================================================
+       STYLE GUIDE — BASE RESET & LAYOUT
+       ====================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* ── Colors ── */
+      --color-bg:            #DCDCDC;
+      --color-bg-alt:        #C8C8C8;
+      --color-text:          rgba(0,0,0,0.85);
+      --color-text-muted:    rgba(0,0,0,0.5);
+      --color-text-subtle:   rgba(0,0,0,0.35);
+
+      /* Accent — Indigo */
+      --color-primary:       rgba(99,102,241,1);
+      --color-primary-bg:    rgba(99,102,241,0.25);
+      --color-primary-border:rgba(99,102,241,0.45);
+      --color-primary-glow:  rgba(99,102,241,0.2);
+
+      /* State */
+      --color-success:       rgba(34,197,94,0.85);
+      --color-success-bg:    rgba(34,197,94,0.2);
+      --color-success-border:rgba(34,197,94,0.4);
+
+      --color-danger:        rgba(239,68,68,0.85);
+      --color-danger-bg:     rgba(239,68,68,0.2);
+      --color-danger-border: rgba(239,68,68,0.4);
+
+      --color-warning:       rgba(234,179,8,0.85);
+      --color-warning-bg:    rgba(234,179,8,0.2);
+      --color-warning-border:rgba(234,179,8,0.4);
+
+      /* Glass */
+      --glass-bg:            rgba(255,255,255,0.2);
+      --glass-bg-light:      rgba(255,255,255,0.4);
+      --glass-bg-strong:     rgba(255,255,255,0.65);
+      --glass-border:        rgba(255,255,255,0.4);
+      --glass-shadow:        0 8px 32px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,0.6);
+      --glass-shadow-lg:     0 20px 60px rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.6);
+
+      /* ── Typography ── */
+      --font-primary:   'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      --font-mono:      'Consolas', 'Courier New', monospace;
+
+      /* ── Spacing ── */
+      --space-1:  4px;
+      --space-2:  8px;
+      --space-3:  12px;
+      --space-4:  16px;
+      --space-5:  20px;
+      --space-6:  24px;
+      --space-7:  28px;
+      --space-8:  32px;
+      --space-10: 40px;
+
+      /* ── Radius ── */
+      --radius-sm:  8px;
+      --radius-md:  12px;
+      --radius-lg:  16px;
+      --radius-xl:  20px;
+      --radius-2xl: 22px;
+      --radius-pill:100px;
+      --radius-circle: 50%;
+
+      /* ── Transitions ── */
+      --transition-fast: 0.15s ease;
+      --transition-base: 0.2s ease;
+      --transition-slow: 0.3s ease;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.5;
+      padding: 40px 24px 80px;
+    }
+
+    /* ── Guide Layout ── */
+    .sg-wrapper { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 64px; }
+
+    /* ── Page Header ── */
+    .sg-page-header {
+      display: flex; align-items: center; gap: 20px;
+      padding: 32px 36px;
+      background: var(--glass-bg); backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border); border-radius: var(--radius-xl);
+      box-shadow: var(--glass-shadow-lg);
+    }
+    .sg-page-header img { width: 64px; height: 64px; object-fit: contain; }
+    .sg-page-header h1 { font-size: 28px; font-weight: 700; }
+    .sg-page-header p  { font-size: 14px; color: var(--color-text-muted); margin-top: 4px; }
+    .sg-badge {
+      margin-left: auto; padding: 6px 14px; font-size: 12px; font-weight: 600;
+      background: var(--color-primary-bg); border: 1px solid var(--color-primary-border);
+      border-radius: var(--radius-pill); color: var(--color-primary);
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+
+    /* ── Section ── */
+    .sg-section { display: flex; flex-direction: column; gap: 28px; }
+    .sg-section-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+      color: var(--color-text-muted); border-bottom: 1px solid rgba(0,0,0,0.1);
+      padding-bottom: 10px;
+    }
+    .sg-section-subtitle { font-size: 16px; font-weight: 600; color: var(--color-text); margin-bottom: -8px; }
+    .sg-desc { font-size: 13px; color: var(--color-text-muted); line-height: 1.6; }
+
+    /* ── Row / Grid helpers ── */
+    .sg-row    { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+    .sg-col    { display: flex; flex-direction: column; gap: 8px; }
+    .sg-grid-2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+    .sg-grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+
+    /* ── Preview Card (wraps component demos) ── */
+    .sg-preview {
+      background: var(--glass-bg); backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border); border-radius: var(--radius-lg);
+      box-shadow: var(--glass-shadow);
+      overflow: hidden;
+    }
+    .sg-preview-body { padding: 28px 24px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+    .sg-preview-body.column { flex-direction: column; align-items: flex-start; }
+    .sg-preview-body.center { justify-content: center; }
+    .sg-code {
+      background: rgba(0,0,0,0.05); border-top: 1px solid rgba(0,0,0,0.06);
+      padding: 14px 18px; font-family: var(--font-mono); font-size: 12px;
+      color: var(--color-text-muted); overflow-x: auto; white-space: pre;
+    }
+
+    /* ======================================================
+       1. FOUNDATIONS — COLOR PALETTE
+       ====================================================== */
+    .color-swatch {
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .color-block {
+      height: 72px; border-radius: var(--radius-md);
+      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .color-label { font-size: 12px; font-weight: 600; color: var(--color-text); }
+    .color-value { font-size: 11px; color: var(--color-text-muted); font-family: var(--font-mono); }
+
+    /* ======================================================
+       2. FOUNDATIONS — TYPOGRAPHY
+       ====================================================== */
+    .type-specimen { display: flex; flex-direction: column; gap: 6px; }
+    .type-meta { font-size: 11px; color: var(--color-text-subtle); font-family: var(--font-mono); }
+
+    /* ======================================================
+       3. FOUNDATIONS — SPACING
+       ====================================================== */
+    .space-row { display: flex; align-items: center; gap: 14px; }
+    .space-block { background: var(--color-primary-bg); border: 1px solid var(--color-primary-border); border-radius: 4px; flex-shrink: 0; }
+    .space-label { font-size: 12px; color: var(--color-text-muted); font-family: var(--font-mono); min-width: 90px; }
+
+    /* ======================================================
+       4. COMPONENTS — BUTTONS (GTextBtn)
+       ====================================================== */
+    .GTextBtn {
+      padding: 10px 16px; font-size: 13px; font-weight: 500;
+      border: 1px solid var(--glass-border); border-radius: var(--radius-md);
+      background: var(--glass-bg); backdrop-filter: blur(12px);
+      color: black; cursor: pointer;
+      transition: transform var(--transition-base), background var(--transition-base), box-shadow var(--transition-base);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,0.6);
+      display: inline-flex; align-items: center; gap: 6px; justify-content: center;
+      white-space: nowrap; text-decoration: none;
+    }
+    .GTextBtn:hover {
+      transform: scale(1.05); background: var(--glass-bg-light);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.8);
+    }
+    .GTextBtn .material-symbols-outlined { font-size: 18px; }
+    .GTextBtn.primary { background: var(--color-primary-bg); border-color: var(--color-primary-border); }
+    .GTextBtn.primary:hover { background: rgba(99,102,241,0.4); }
+    .GTextBtn.danger  { background: var(--color-danger-bg); border-color: var(--color-danger-border); }
+    .GTextBtn.danger:hover  { background: rgba(239,68,68,0.35); }
+    .GTextBtn.success { background: var(--color-success-bg); border-color: var(--color-success-border); }
+    .GTextBtn.success:hover { background: rgba(34,197,94,0.35); }
+    .GTextBtn.active  { background: rgba(99,102,241,0.35); border-color: rgba(99,102,241,0.5); box-shadow: 0 4px 16px rgba(99,102,241,0.2), inset 0 1px 1px rgba(255,255,255,0.6); }
+    .GTextBtn:disabled { opacity: 0.5; pointer-events: none; }
+
+    /* ── Done / Pill button ── */
+    .done-btn {
+      background: var(--glass-bg-light); color: black;
+      border: 1px solid rgba(255,255,255,0.6); backdrop-filter: blur(10px);
+      padding: 6px 16px; border-radius: var(--radius-md);
+      cursor: pointer; font-weight: 700; font-family: var(--font-primary);
+      transition: all var(--transition-base);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .done-btn:hover { background: rgba(255,255,255,0.6); transform: scale(1.1); }
+
+    /* ── ToolBtn (Icon-only) ── */
+    .ToolBtn {
+      width: 36px; height: 36px; border: 1px solid var(--glass-border);
+      border-radius: 10px; background: rgba(255,255,255,0.15);
+      cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      transition: all var(--transition-fast); color: rgba(0,0,0,0.65);
+    }
+    .ToolBtn:hover { background: var(--glass-bg-light); color: rgba(0,0,0,0.85); }
+    .ToolBtn.active { background: var(--color-primary-bg); border-color: var(--color-primary-border); color: var(--color-primary); }
+    .ToolBtn .material-symbols-outlined { font-size: 20px; }
+
+    /* ======================================================
+       5. COMPONENTS — INPUTS & FORM CONTROLS
+       ====================================================== */
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 13px; font-weight: 600; color: rgba(0,0,0,0.7); }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.5);
+      color: black; padding: 10px 12px; border-radius: var(--radius-sm);
+      font-size: 13px; outline: none; backdrop-filter: blur(4px);
+      transition: all var(--transition-base); font-family: var(--font-primary);
+      width: 100%;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      background: rgba(255,255,255,0.5); border-color: rgba(99,102,241,0.6);
+      box-shadow: 0 0 0 3px var(--color-primary-glow);
+    }
+    .form-group input.error { border-color: var(--color-danger-border); box-shadow: 0 0 0 3px rgba(239,68,68,0.15); }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: var(--color-text-subtle); }
+    .form-group textarea { resize: vertical; min-height: 72px; }
+    .form-group input:disabled { opacity: 0.5; pointer-events: none; }
+    .form-error-msg { font-size: 12px; color: var(--color-danger); margin-top: 2px; }
+
+    /* Toggle Switch */
+    .toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; display: inline-block; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background-color: rgba(0,0,0,0.15); transition: 0.3s; border-radius: 22px;
+    }
+    .toggle-slider::before {
+      content: ""; position: absolute; height: 16px; width: 16px;
+      left: 3px; bottom: 3px; background: white; transition: 0.3s;
+      border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .toggle input:checked + .toggle-slider { background-color: rgba(99,102,241,0.7); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+    /* InputRow */
+    .InputRow { display: flex; gap: 8px; align-items: flex-end; }
+    .InputRow .form-group { flex: 1; }
+
+    /* ======================================================
+       6. COMPONENTS — CARDS
+       ====================================================== */
+    /* Glass Panel / App Window */
+    .glass-panel {
+      background: var(--glass-bg); backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border); border-radius: var(--radius-lg);
+      box-shadow: var(--glass-shadow); padding: 24px;
+    }
+
+    /* Settings Card */
+    .SettingsCard {
+      background: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.5);
+      border-radius: 14px; padding: 20px; backdrop-filter: blur(6px);
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .SettingsCardTitle {
+      font-size: 14px; font-weight: 600; color: rgba(0,0,0,0.8);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .SettingsCardTitle .material-symbols-outlined { font-size: 20px; color: rgba(99,102,241,0.7); }
+    .SettingsCardDesc { font-size: 12px; color: var(--color-text-muted); line-height: 1.5; }
+    .SettingsCardActions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* Profile Card */
+    .ProfileCard {
+      background: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.5);
+      border-radius: 14px; padding: 20px; backdrop-filter: blur(6px);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      text-align: center; transition: all var(--transition-base); position: relative; cursor: pointer;
+    }
+    .ProfileCard:hover { background: rgba(255,255,255,0.4); }
+    .ProfileCard.active-profile { border-color: rgba(99,102,241,0.5); background: rgba(99,102,241,0.08); box-shadow: 0 0 0 2px rgba(99,102,241,0.2); }
+    .ProfileAvatarPlaceholder {
+      width: 64px; height: 64px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.6); box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      background: rgba(99,102,241,0.12); display: flex; align-items: center; justify-content: center;
+      color: rgba(99,102,241,0.6);
+    }
+    .ProfileName     { font-size: 14px; font-weight: 600; color: rgba(0,0,0,0.85); }
+    .ProfileUsername { font-size: 12px; color: rgba(0,0,0,0.45); }
+    .ProfileBadge {
+      font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 6px;
+      background: rgba(99,102,241,0.15); color: rgba(99,102,241,0.85);
+      border: 1px solid rgba(99,102,241,0.25); text-transform: uppercase; letter-spacing: 0.3px;
+    }
+
+    /* Add Card (dashed) */
+    .AddCard {
+      background: rgba(255,255,255,0.15); border: 2px dashed rgba(0,0,0,0.15);
+      border-radius: 14px; padding: 20px; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 8px; cursor: pointer;
+      transition: all var(--transition-base); min-height: 140px; color: rgba(0,0,0,0.35);
+    }
+    .AddCard:hover { background: rgba(255,255,255,0.25); border-color: rgba(99,102,241,0.3); color: rgba(99,102,241,0.6); }
+
+    /* Code Block */
+    .CodeBlock {
+      background: rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.1);
+      border-radius: var(--radius-sm); padding: 12px; font-family: var(--font-mono);
+      font-size: 12px; word-break: break-all; max-height: 120px; overflow-y: auto;
+      color: rgba(0,0,0,0.7); user-select: all;
+    }
+
+    /* ======================================================
+       7. COMPONENTS — APP ICON (Desktop)
+       ====================================================== */
+    .app-icon-demo {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-decoration: none; color: var(--color-text); padding: 1rem;
+      border-radius: 15px; transition: all var(--transition-base);
+      background: transparent; cursor: pointer; width: 100px;
+    }
+    .app-icon-demo:hover { transform: translateY(-5px); }
+    .icon-img-demo {
+      width: 64px; height: 64px; border-radius: 20%;
+      background: var(--glass-bg); backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border); box-shadow: 0 4px 16px 0 rgba(0,0,0,0.2);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 0.8rem; font-size: 1.5rem; font-weight: bold;
+      overflow: hidden; transition: box-shadow var(--transition-slow);
+    }
+    .app-icon-demo:hover .icon-img-demo { box-shadow: 0 8px 24px 0 rgba(0,0,0,0.4); }
+    .app-name-demo { font-size: 0.9rem; text-align: center; font-weight: 600; }
+
+    /* ======================================================
+       8. COMPONENTS — NAVIGATION (Sidebar + Tabs)
+       ====================================================== */
+    .Sidebar-demo {
+      width: 220px; border-radius: var(--radius-lg);
+      background: var(--glass-bg); backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow);
+      padding: 20px 14px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .SidebarTab {
+      padding: 12px 14px; font-size: 14px; font-weight: 400;
+      border: 1px solid rgba(255,255,255,0.5); border-top-width: 2px;
+      border-radius: var(--radius-md); background: rgba(255,255,255,0.4);
+      backdrop-filter: blur(8px); color: rgba(0,0,0,0.8); cursor: pointer;
+      transition: all var(--transition-base); display: flex; align-items: center; gap: 8px;
+    }
+    .SidebarTab:hover { background: rgba(255,255,255,0.55); }
+    .SidebarTab.active { background: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.75); font-weight: 500; }
+    .SidebarTab.inactive { opacity: 0.5; }
+
+    /* Toolbar */
+    .Toolbar-demo {
+      border-radius: var(--radius-lg); background: var(--glass-bg); backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow);
+      padding: 10px 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .ToolbarDivider { width: 1px; height: 24px; background: rgba(0,0,0,0.1); flex-shrink: 0; }
+    .ToolbarGroup   { display: flex; align-items: center; gap: 4px; }
+
+    /* ======================================================
+       9. COMPONENTS — MODAL
+       ====================================================== */
+    .Modal-demo {
+      background: rgba(0,0,0,0.08); border-radius: var(--radius-xl);
+      padding: 20px; display: flex; align-items: center; justify-content: center;
+    }
+    .ModalContent-demo {
+      background: rgba(255,255,255,0.25); backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.4); border-radius: var(--radius-xl);
+      box-shadow: var(--glass-shadow-lg); width: 100%; max-width: 480px; overflow: hidden;
+    }
+    .ModalHeader {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px 24px; border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    .ModalHeader h3 { margin: 0; color: black; font-size: 18px; font-weight: 600; }
+    .CloseModalBtn {
+      background: none; border: none; font-size: 24px; color: black; cursor: pointer;
+      padding: 4px; border-radius: 50%; width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background var(--transition-base);
+    }
+    .CloseModalBtn:hover { background: rgba(255,255,255,0.3); }
+    .ModalBody { padding: 24px; }
+
+    /* ======================================================
+       10. COMPONENTS — TOOLTIP
+       ====================================================== */
+    .app-tooltip-demo {
+      background: rgba(255,255,255,0.35); backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      padding: 12px; border-radius: var(--radius-md);
+      color: black; width: max-content; max-width: 220px;
+      display: flex; flex-direction: column; gap: 4px; text-align: center;
+    }
+    .app-tooltip-title { font-weight: bold; font-size: 14px; }
+    .app-tooltip-desc  { font-size: 12px; opacity: 0.85; }
+
+    /* ======================================================
+       11. COMPONENTS — CONTEXT MENU
+       ====================================================== */
+    .ContextMenu-demo {
+      background: rgba(255,255,255,0.25); backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.4); border-radius: var(--radius-md);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12), inset 0 1px 1px rgba(255,255,255,0.6);
+      overflow: hidden; padding: 4px; display: inline-block;
+    }
+    .ContextMenu-demo button {
+      display: block; width: 180px; padding: 10px 12px; background: transparent;
+      border: none; border-radius: var(--radius-sm); text-align: left;
+      cursor: pointer; font-size: 13px; color: black;
+      transition: background var(--transition-fast); font-family: var(--font-primary);
+    }
+    .ContextMenu-demo button:hover { background: rgba(255,255,255,0.4); }
+
+    /* ======================================================
+       12. COMPONENTS — GUIDE / ONBOARDING CARD
+       ====================================================== */
+    .GuideCard-demo {
+      background: rgba(255,255,255,0.3); backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.45); border-radius: 22px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.18), inset 0 1px 1px rgba(255,255,255,0.7);
+      max-width: 420px; overflow: hidden; color: black;
+    }
+    .GuideImagePlaceholder {
+      width: 100%; height: 160px; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(168,85,247,0.12));
+      font-size: 52px; color: rgba(99,102,241,0.5);
+    }
+    .GuideBody { padding: 24px 24px 16px; display: flex; flex-direction: column; gap: 8px; }
+    .GuideStepLabel { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(99,102,241,0.7); }
+    .GuideTitle { font-size: 20px; font-weight: 700; color: rgba(0,0,0,0.88); }
+    .GuideDesc  { font-size: 14px; color: rgba(0,0,0,0.6); line-height: 1.65; }
+    .GuideFooter { padding: 0 24px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .GuideDots  { display: flex; gap: 7px; }
+    .GuideDot   { width: 8px; height: 8px; border-radius: 50%; background: rgba(0,0,0,0.15); }
+    .GuideDot.active { background: rgba(99,102,241,0.7); transform: scale(1.25); }
+    .GuideActions { display: flex; gap: 8px; }
+    .GuideBtn {
+      padding: 9px 18px; font-size: 13px; font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.45); border-radius: var(--radius-md);
+      background: rgba(255,255,255,0.25); backdrop-filter: blur(8px);
+      color: black; cursor: pointer; transition: all var(--transition-base);
+      font-family: var(--font-primary);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06), inset 0 1px 1px rgba(255,255,255,0.5);
+    }
+    .GuideBtn:hover { background: rgba(255,255,255,0.45); transform: scale(1.04); }
+    .GuideBtn.primary { background: rgba(99,102,241,0.25); border-color: rgba(99,102,241,0.4); }
+    .GuideBtn.primary:hover { background: rgba(99,102,241,0.4); }
+
+    /* ======================================================
+       13. STATES — LOADING
+       ====================================================== */
+    .loader-content-demo {
+      display: flex; flex-direction: column; align-items: center;
+      background: rgba(255,255,255,0.35); border: 1px solid rgba(255,255,255,0.5);
+      padding: 2rem 3rem; border-radius: var(--radius-xl);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2); backdrop-filter: blur(20px);
+    }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 4px solid rgba(0,0,0,0.1); border-top: 4px solid black;
+      border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { color: black; font-size: 1.1rem; font-weight: 600; }
+
+    /* ======================================================
+       14. STATES — EMPTY STATE
+       ====================================================== */
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 12px; padding: 40px 24px; text-align: center;
+    }
+    .empty-state-icon { font-size: 48px; color: rgba(0,0,0,0.2); }
+    .empty-state-title { font-size: 16px; font-weight: 600; color: rgba(0,0,0,0.5); }
+    .empty-state-desc  { font-size: 13px; color: rgba(0,0,0,0.35); max-width: 280px; line-height: 1.55; }
+
+    /* ======================================================
+       15. STATES — ROLE LABEL & BADGE
+       ====================================================== */
+    .RoleLabel {
+      font-size: 11px; padding: 2px 8px; border-radius: 6px;
+      background: rgba(255,255,255,0.45); border: 1px solid rgba(255,255,255,0.6);
+      color: rgba(0,0,0,0.6); font-weight: 500; display: inline-block;
+    }
+
+    /* Section Header inside content panels */
+    .SectionHeader {
+      font-size: 14px; font-weight: 600; color: rgba(0,0,0,0.8);
+      padding-bottom: 8px; border-bottom: 1px solid rgba(0,0,0,0.1);
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+
+    /* ======================================================
+       16. LAYOUT — STEP TIMELINE
+       ====================================================== */
+    .timeline { display: flex; align-items: center; gap: 0; }
+    .timeline-step {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      cursor: pointer; transition: all var(--transition-base);
+      border-radius: var(--radius-md); position: relative;
+    }
+    .timeline-step:hover:not(.disabled) { background: rgba(255,255,255,0.4); }
+    .timeline-step.disabled { opacity: 0.4; cursor: not-allowed; }
+    .timeline-step.active   { background: rgba(255,255,255,0.5); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .timeline-step.completed .step-number { background: rgba(76,175,80,0.9); border-color: rgba(76,175,80,0.9); }
+    .timeline-step.active    .step-number { background: rgba(37,99,235,0.8); border-color: rgba(37,99,235,0.8); }
+    .step-number {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(255,255,255,0.4); border: 2px solid rgba(0,0,0,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 500; color: rgba(0,0,0,0.5); transition: all var(--transition-base);
+    }
+    .timeline-step.completed .step-number,
+    .timeline-step.active    .step-number { color: #fff; }
+    .step-label { font-size: 14px; font-weight: 400; color: rgba(0,0,0,0.5); }
+    .timeline-step.active .step-label,
+    .timeline-step.completed .step-label { color: rgba(0,0,0,0.8); font-weight: 500; }
+    .timeline-connector { width: 32px; height: 2px; background: rgba(0,0,0,0.15); }
+    .timeline-connector.completed { background: rgba(76,175,80,0.8); }
+
+    /* ======================================================
+       17. GRID OVERLAY PATTERN
+       ====================================================== */
+    .gridOverlay-demo {
+      position: relative; width: 100%; height: 80px; border-radius: var(--radius-md); overflow: hidden;
+      background-image: radial-gradient(circle, rgba(99,102,241,0.4) 1.5px, transparent 1.5px),
+                        radial-gradient(circle, rgba(99,102,241,0.15) 1px, transparent 1px);
+      background-size: 20px 20px, 100px 100px; background-color: var(--color-bg);
+    }
+    .gridOverlay-demo span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--color-text-muted); font-weight: 500; }
+
+    /* ======================================================
+       STYLE GUIDE SPECIFIC UI
+       ====================================================== */
+    .sg-label {
+      font-size: 11px; font-weight: 600; color: var(--color-text-muted);
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;
+    }
+    .sg-tag {
+      display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px;
+      background: rgba(0,0,0,0.06); color: var(--color-text-muted); font-family: var(--font-mono);
+    }
+    .sg-divider { border: none; border-top: 1px solid rgba(0,0,0,0.08); margin: 0; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
+  </style>
+</head>
+<body>
+<div class="sg-wrapper">
+
+  <!-- ══════════════════════════════════════════
+       PAGE HEADER
+       ══════════════════════════════════════════ -->
+  <header class="sg-page-header">
+    <div style="width:64px;height:64px;border-radius:20%;background:var(--glass-bg);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;font-size:1.8rem;">🧊</div>
+    <div>
+      <h1>Techtoby Corp — Design System</h1>
+      <p>Glassmorphic UI foundations, components, and patterns for Bloxburg tooling.</p>
+    </div>
+    <div class="sg-badge">v1.0</div>
+  </header>
+
+  <!-- ══════════════════════════════════════════
+       1. FOUNDATIONS — COLORS
+       ══════════════════════════════════════════ -->
+  <section class="sg-section">
+    <h2 class="sg-section-title">1 — Foundations / Color Palette</h2>
+    <p class="sg-desc">All surfaces use glassmorphism over a <strong>#DCDCDC</strong> background, with rgba white layers and a single indigo accent. Semantic state colors follow the same glass pattern.</p>
+
+    <div class="sg-preview">
+      <div class="sg-preview-body column">
+        <span class="sg-label">Surface &amp; Background</span>
+        <div class="sg-grid-3">
+          <div class="color-swatch">
+            <div class="color-block" style="background:#DCDCDC;"></div>
+            <div class="color-label">Background</div>
+            <div class="color-value">#DCDCDC</div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-block" style="background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.4);"></div>
+            <div class="color-label">Glass Base</div>
+            <div class="color-value">rgba(255,255,255,0.2)</div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-block" style="background:rgba(255,255,255,0.4);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.5);"></div>
+            <div class="color-label">Glass Light</div>
+            <div class="color-value">rgba(255,255,255,0.4)</div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-block" style="background:rgba(255,255,255,0.65);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.6);"></div>
+            <div class="color-label">Glass Strong</div>
+            <div class="color-value">rgba(255,255,255,0.65)</div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-block" style="background:rgba(0,0,0,0.06);border:1px solid rgba(0,0,0,0.1);"></div>
+            <div class="color-label">Code / Subtle BG</div>
+            <div class="color-value">rgba(0,0,0,0.06)</div>
+          </div>
+        </div>
+
+        <hr class="sg-divider" style="width:100%;margin:8px 0;">
+        <span class="sg-label">Accent — Indigo</span>
+        <div class="sg-grid-3">
+          <div class="color-swatch">
+            <div class="color-block" style="background:rgb(99,102,241);"></div>
+            <div class="color-label">Primary</div>
+            <div class="color-value">rgb(99,102,241)</div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-block" style="background:rgba(99,102,241,0.25);border:1px solid rgba(99,102,241,0.45);"></div>
+            <div class="color-label">Primary Bg</div>
+            <div class="color-value">rgba(99,102,241,0.25)</div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-block" style="background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.2);"></div>
+            <div class="color-label">Primary Subtle</div>
+            <div class="color-value">rgba(99,102,241,0.12)</div>
+          </div>
+        </div>
+
+        <hr class="sg-divider" style="width:100%;margin:8px 0;">
+        <span class="sg-label">State Colors</span>
+        <div class="sg-grid-3">
+          <div class="color-swatch">
+            <div class="color-block" style="background:rgba(34,197,94,0.2);border:1px solid rgba(34,197,94,0.4);"></div>
+            <div class="color-label">Success</div>
+            <div class="color-value">rgba(34,197,94,0.2)</div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-block" style="background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4);"></div>
+            <div class="color-label">Danger</div>
+            <div class="color-value">rgba(239,68,68,0.2)</div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-block" style="background:rgba(234,179,8,0.2);border:1px solid rgba(234,179,8,0.4);"></div>
+            <div class="color-label">Warning</div>
+            <div class="color-value">rgba(234,179,8,0.2)</div>
+          </div>
+        </div>
+
+        <hr class="sg-divider" style="width:100%;margin:8px 0;">
+        <span class="sg-label">Text</span>
+        <div class="sg-grid-3">
+          <div class="color-swatch">
+            <div class="color-block" style="background:rgba(0,0,0,0.85);"></div>
+            <div class="color-label">Text Default</div>
+            <div class="color-value">rgba(0,0,0,0.85)</div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-block" style="background:rgba(0,0,0,0.5);"></div>
+            <div class="color-label">Text Muted</div>
+            <div class="color-value">rgba(0,0,0,0.5)</div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-block" style="background:rgba(0,0,0,0.35);"></div>
+            <div class="color-label">Text Subtle</div>
+            <div class="color-value">rgba(0,0,0,0.35)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       1b. FOUNDATIONS — TYPOGRAPHY
+       ══════════════════════════════════════════ -->
+  <section class="sg-section">
+    <h2 class="sg-section-title">1 — Foundations / Typography</h2>
+    <p class="sg-desc">Primary font is <strong>Roboto</strong> (apps &amp; settings). Fallback is <strong>Segoe UI</strong> (home screen). Monospace for code blocks is <strong>Consolas / Courier New</strong>. A secondary handwriting font, <strong>Caveat</strong>, is used exclusively in the Whiteboard app.</p>
+
+    <div class="sg-preview">
+      <div class="sg-preview-body column" style="gap:24px;">
+        <div class="type-specimen">
+          <div style="font-size:28px;font-weight:700;line-height:1.2;">Display — 28px / 700</div>
+          <div class="type-meta">font-size:28px · font-weight:700 · Roboto</div>
+        </div>
+        <div class="type-specimen">
+          <div style="font-size:22px;font-weight:700;line-height:1.25;">Heading 1 — 22px / 700</div>
+          <div class="type-meta">font-size:22px · font-weight:700</div>
+        </div>
+        <div class="type-specimen">
+          <div style="font-size:20px;font-weight:600;">Heading 2 — 20px / 600</div>
+          <div class="type-meta">font-size:20px · font-weight:600</div>
+        </div>
+        <div class="type-specimen">
+          <div style="font-size:18px;font-weight:600;color:rgba(0,0,0,0.85);">Heading 3 — 18px / 600</div>
+          <div class="type-meta">font-size:18px · font-weight:600 · ContentTitle</div>
+        </div>
+        <div class="type-specimen">
+          <div style="font-size:16px;font-weight:600;">Heading 4 — 16px / 600</div>
+          <div class="type-meta">font-size:16px · font-weight:600</div>
+        </div>
+        <div class="type-specimen">
+          <div style="font-size:14px;font-weight:400;">Body — 14px / 400</div>
+          <div class="type-meta">font-size:14px · font-weight:400 · SidebarTab, GuideDesc parent</div>
+        </div>
+        <div class="type-specimen">
+          <div style="font-size:13px;color:rgba(0,0,0,0.6);line-height:1.5;">Body Small — 13px / 400, muted · ContentDesc, form labels</div>
+          <div class="type-meta">font-size:13px · color:rgba(0,0,0,0.6) · line-height:1.5</div>
+        </div>
+        <div class="type-specimen">
+          <div style="font-size:12px;color:rgba(0,0,0,0.5);">Caption — 12px / 400</div>
+          <div class="type-meta">font-size:12px · SettingsCardDesc, ProfileUsername</div>
+        </div>
+        <div class="type-specimen">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(0,0,0,0.5);">Label / Overline — 11px / 700 UPPER</div>
+          <div class="type-meta">font-size:11px · font-weight:700 · letter-spacing:1–1.5px · GuideStepLabel, SectionHeader</div>
+        </div>
+        <div class="type-specimen">
+          <div style="font-family:'Consolas','Courier New',monospace;font-size:12px;color:rgba(0,0,0,0.7);">Monospace — CodeBlock · Consolas 12px</div>
+          <div class="type-meta">font-family:Consolas,Courier New · font-size:12px</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       1c. FOUNDATIONS — SPACING
+       ══════════════════════════════════════════ -->
+  <section class="sg-section">
+    <h2 class="sg-section-title">1 — Foundations / Spacing</h2>
+    <p class="sg-desc">4 px base unit. Common values extracted from the codebase.</p>
+
+    <div class="sg-preview">
+      <div class="sg-preview-body column" style="gap:12px;">
+        <div class="space-row"><div class="space-block" style="width:4px;height:16px;"></div><span class="space-label">--space-1 · 4px</span><span class="sg-tag">gap, padding micro</span></div>
+        <div class="space-row"><div class="space-block" style="width:8px;height:16px;"></div><span class="space-label">--space-2 · 8px</span><span class="sg-tag">button gap, small gap</span></div>
+        <div class="space-row"><div class="space-block" style="width:12px;height:16px;"></div><span class="space-label">--space-3 · 12px</span><span class="sg-tag">ContextMenu btn pad</span></div>
+        <div class="space-row"><div class="space-block" style="width:16px;height:16px;"></div><span class="space-label">--space-4 · 16px</span><span class="sg-tag">Toolbar/ContentArea gap</span></div>
+        <div class="space-row"><div class="space-block" style="width:20px;height:16px;"></div><span class="space-label">--space-5 · 20px</span><span class="sg-tag">Sidebar margin</span></div>
+        <div class="space-row"><div class="space-block" style="width:24px;height:16px;"></div><span class="space-label">--space-6 · 24px</span><span class="sg-tag">ModalBody / Sidebar pad</span></div>
+        <div class="space-row"><div class="space-block" style="width:28px;height:16px;"></div><span class="space-label">--space-7 · 28px</span><span class="sg-tag">GuideBody padding</span></div>
+        <div class="space-row"><div class="space-block" style="width:40px;height:16px;"></div><span class="space-label">--space-10 · 40px</span><span class="sg-tag">main-content padding</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       1d. FOUNDATIONS — BORDERS, RADIUS, SHADOWS
+       ══════════════════════════════════════════ -->
+  <section class="sg-section">
+    <h2 class="sg-section-title">1 — Foundations / Borders, Radius &amp; Shadows</h2>
+
+    <div class="sg-preview">
+      <div class="sg-preview-body" style="flex-wrap:wrap;gap:24px;align-items:flex-start;">
+        <div class="sg-col">
+          <span class="sg-label">Border Radius</span>
+          <div class="sg-row" style="flex-wrap:wrap;gap:12px;align-items:center;">
+            <div class="sg-col" style="align-items:center;gap:6px;">
+              <div style="width:56px;height:56px;background:var(--glass-bg-light);border:1px solid var(--glass-border);border-radius:8px;"></div>
+              <span class="sg-tag">8px — sm</span>
+            </div>
+            <div class="sg-col" style="align-items:center;gap:6px;">
+              <div style="width:56px;height:56px;background:var(--glass-bg-light);border:1px solid var(--glass-border);border-radius:12px;"></div>
+              <span class="sg-tag">12px — md</span>
+            </div>
+            <div class="sg-col" style="align-items:center;gap:6px;">
+              <div style="width:56px;height:56px;background:var(--glass-bg-light);border:1px solid var(--glass-border);border-radius:16px;"></div>
+              <span class="sg-tag">16px — lg</span>
+            </div>
+            <div class="sg-col" style="align-items:center;gap:6px;">
+              <div style="width:56px;height:56px;background:var(--glass-bg-light);border:1px solid var(--glass-border);border-radius:20px;"></div>
+              <span class="sg-tag">20px — xl</span>
+            </div>
+            <div class="sg-col" style="align-items:center;gap:6px;">
+              <div style="width:56px;height:56px;background:var(--glass-bg-light);border:1px solid var(--glass-border);border-radius:22px;"></div>
+              <span class="sg-tag">22px — 2xl</span>
+            </div>
+            <div class="sg-col" style="align-items:center;gap:6px;">
+              <div style="width:56px;height:56px;background:var(--glass-bg-light);border:1px solid var(--glass-border);border-radius:50%;"></div>
+              <span class="sg-tag">50% — circle</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sg-col" style="flex:1;min-width:220px;">
+          <span class="sg-label">Shadows</span>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div style="background:var(--glass-bg-light);border:1px solid var(--glass-border);border-radius:14px;padding:16px;box-shadow:0 4px 16px rgba(0,0,0,0.1),inset 0 1px 1px rgba(255,255,255,0.6);">
+              <div class="sg-tag">Shadow SM — buttons &amp; small cards</div>
+              <div class="type-meta" style="margin-top:4px;">0 4px 16px rgba(0,0,0,0.1)</div>
+            </div>
+            <div style="background:var(--glass-bg-light);border:1px solid var(--glass-border);border-radius:14px;padding:16px;box-shadow:0 8px 32px rgba(0,0,0,0.1),inset 0 1px 1px rgba(255,255,255,0.6);">
+              <div class="sg-tag">Shadow MD — panels &amp; sidebars</div>
+              <div class="type-meta" style="margin-top:4px;">0 8px 32px rgba(0,0,0,0.1) + inner highlight</div>
+            </div>
+            <div style="background:var(--glass-bg-light);border:1px solid var(--glass-border);border-radius:14px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,0.15),inset 0 1px 1px rgba(255,255,255,0.6);">
+              <div class="sg-tag">Shadow LG — modals &amp; guide cards</div>
+              <div class="type-meta" style="margin-top:4px;">0 20px 60px rgba(0,0,0,0.15) + inner highlight</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       2. COMPONENTS — BUTTONS
+       ══════════════════════════════════════════ -->
+  <section class="sg-section">
+    <h2 class="sg-section-title">2 — Components / Buttons</h2>
+
+    <div class="sg-preview">
+      <div class="sg-preview-body">
+        <button class="GTextBtn">Default</button>
+        <button class="GTextBtn primary">
+          <span class="material-symbols-outlined">add</span> Primary
+        </button>
+        <button class="GTextBtn danger">
+          <span class="material-symbols-outlined">delete</span> Danger
+        </button>
+        <button class="GTextBtn success">
+          <span class="material-symbols-outlined">check</span> Success
+        </button>
+        <button class="GTextBtn active">Active</button>
+        <button class="GTextBtn" disabled>Disabled</button>
+        <button class="done-btn">Done</button>
+      </div>
+      <div class="sg-code">&lt;button class="GTextBtn"&gt;Default&lt;/button&gt;
+&lt;button class="GTextBtn primary"&gt;&lt;span class="material-symbols-outlined"&gt;add&lt;/span&gt; Primary&lt;/button&gt;
+&lt;button class="GTextBtn danger"&gt;Danger&lt;/button&gt;
+&lt;button class="GTextBtn success"&gt;Success&lt;/button&gt;
+&lt;button class="GTextBtn active"&gt;Active&lt;/button&gt;
+&lt;button class="GTextBtn" disabled&gt;Disabled&lt;/button&gt;
+&lt;button class="done-btn"&gt;Done&lt;/button&gt;</div>
+    </div>
+
+    <p class="sg-section-subtitle" style="margin-top:8px;">Icon-only Tool Buttons</p>
+    <div class="sg-preview">
+      <div class="sg-preview-body">
+        <button class="ToolBtn"><span class="material-symbols-outlined">edit</span></button>
+        <button class="ToolBtn"><span class="material-symbols-outlined">undo</span></button>
+        <button class="ToolBtn"><span class="material-symbols-outlined">redo</span></button>
+        <button class="ToolBtn active"><span class="material-symbols-outlined">pan_tool</span></button>
+        <button class="ToolBtn"><span class="material-symbols-outlined">delete</span></button>
+      </div>
+      <div class="sg-code">&lt;button class="ToolBtn"&gt;&lt;span class="material-symbols-outlined"&gt;edit&lt;/span&gt;&lt;/button&gt;
+&lt;button class="ToolBtn active"&gt;...&lt;/button&gt; &lt;!-- active state --&gt;</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       2b. COMPONENTS — INPUTS & FORM CONTROLS
+       ══════════════════════════════════════════ -->
+  <section class="sg-section">
+    <h2 class="sg-section-title">2 — Components / Inputs &amp; Form Controls</h2>
+
+    <div class="sg-preview">
+      <div class="sg-preview-body column" style="max-width:480px;">
+        <div class="form-group">
+          <label>Default Input</label>
+          <input type="text" placeholder="Enter a value…">
+        </div>
+        <div class="form-group">
+          <label>Focused Input (simulated)</label>
+          <input type="text" value="Focused value" style="background:rgba(255,255,255,0.5);border-color:rgba(99,102,241,0.6);box-shadow:0 0 0 3px rgba(99,102,241,0.2);">
+        </div>
+        <div class="form-group">
+          <label>Error Input</label>
+          <input type="text" class="error" value="Invalid value">
+          <span class="form-error-msg">This field is required.</span>
+        </div>
+        <div class="form-group">
+          <label>Disabled Input</label>
+          <input type="text" disabled value="Disabled">
+        </div>
+        <div class="form-group">
+          <label>Select</label>
+          <select><option>Option A</option><option>Option B</option></select>
+        </div>
+        <div class="form-group">
+          <label>Textarea</label>
+          <textarea placeholder="Write something…"></textarea>
+        </div>
+        <div class="InputRow">
+          <div class="form-group"><label>First</label><input type="text" placeholder="First…"></div>
+          <div class="form-group"><label>Last</label><input type="text" placeholder="Last…"></div>
+          <button class="GTextBtn" style="margin-bottom:0;align-self:flex-end;">Add</button>
+        </div>
+      </div>
+      <div class="sg-code">&lt;div class="form-group"&gt;
+  &lt;label&gt;Label&lt;/label&gt;
+  &lt;input type="text" placeholder="Enter a value…"&gt;
+&lt;/div&gt;
+&lt;!-- States: add class="error" to input | disabled attr --&gt;
+&lt;span class="form-error-msg"&gt;Error message&lt;/span&gt;
+
+&lt;!-- Side-by-side row --&gt;
+&lt;div class="InputRow"&gt;
+  &lt;div class="form-group"&gt;...&lt;/div&gt;
+  &lt;div class="form-group"&gt;...&lt;/div&gt;
+  &lt;button class="GTextBtn"&gt;Add&lt;/button&gt;
+&lt;/div&gt;</div>
+    </div>
+
+    <p class="sg-section-subtitle" style="margin-top:8px;">Toggle Switch</p>
+    <div class="sg-preview">
+      <div class="sg-preview-body" style="gap:24px;align-items:center;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+          <span style="font-size:13px;">Off</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+          <span style="font-size:13px;">On</span>
+        </div>
+      </div>
+      <div class="sg-code">&lt;label class="toggle"&gt;
+  &lt;input type="checkbox" [checked]&gt;
+  &lt;span class="toggle-slider"&gt;&lt;/span&gt;
+&lt;/label&gt;</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       2c. COMPONENTS — CARDS
+       ══════════════════════════════════════════ -->
+  <section class="sg-section">
+    <h2 class="sg-section-title">2 — Components / Cards</h2>
+
+    <p class="sg-section-subtitle">Glass Panel</p>
+    <div class="sg-preview">
+      <div class="sg-preview-body">
+        <div class="glass-panel" style="flex:1;min-width:200px;">
+          <div style="font-size:15px;font-weight:600;margin-bottom:8px;">Glass Panel</div>
+          <div style="font-size:13px;color:var(--color-text-muted);">General-purpose glass container used for app windows, content areas, and sidebars.</div>
+        </div>
+      </div>
+      <div class="sg-code">&lt;div class="glass-panel"&gt;
+  Content here
+&lt;/div&gt;</div>
+    </div>
+
+    <p class="sg-section-subtitle" style="margin-top:8px;">Settings Card</p>
+    <div class="sg-preview">
+      <div class="sg-preview-body">
+        <div class="SettingsCard" style="flex:1;min-width:240px;max-width:360px;">
+          <div class="SettingsCardTitle">
+            <span class="material-symbols-outlined">settings</span>
+            Card Title
+          </div>
+          <div class="SettingsCardDesc">A brief description of this settings section explaining what it controls.</div>
+          <div class="SettingsCardActions">
+            <button class="GTextBtn primary"><span class="material-symbols-outlined">save</span> Save</button>
+            <button class="GTextBtn danger">Reset</button>
+          </div>
+        </div>
+      </div>
+      <div class="sg-code">&lt;div class="SettingsCard"&gt;
+  &lt;div class="SettingsCardTitle"&gt;
+    &lt;span class="material-symbols-outlined"&gt;settings&lt;/span&gt; Title
+  &lt;/div&gt;
+  &lt;div class="SettingsCardDesc"&gt;Description&lt;/div&gt;
+  &lt;div class="SettingsCardActions"&gt;
+    &lt;button class="GTextBtn primary"&gt;Save&lt;/button&gt;
+    &lt;button class="GTextBtn danger"&gt;Reset&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</div>
+    </div>
+
+    <p class="sg-section-subtitle" style="margin-top:8px;">Profile Cards</p>
+    <div class="sg-preview">
+      <div class="sg-preview-body" style="flex-wrap:wrap;">
+        <div class="ProfileCard" style="width:160px;">
+          <div class="ProfileAvatarPlaceholder"><span class="material-symbols-outlined">person</span></div>
+          <div class="ProfileName">dummtoby</div>
+          <div class="ProfileUsername">@dummtoby</div>
+          <div class="ProfileBadge">Owner</div>
+        </div>
+        <div class="ProfileCard active-profile" style="width:160px;">
+          <div class="ProfileAvatarPlaceholder"><span class="material-symbols-outlined">person</span></div>
+          <div class="ProfileName">PlayerOne</div>
+          <div class="ProfileUsername">@playerone</div>
+          <div class="ProfileBadge">Active</div>
+        </div>
+        <div class="AddCard" style="width:160px;min-height:unset;padding:24px 16px;">
+          <span class="material-symbols-outlined" style="font-size:32px;">add</span>
+          <span style="font-size:13px;font-weight:500;">Add Profile</span>
+        </div>
+      </div>
+      <div class="sg-code">&lt;div class="ProfileCard"&gt;
+  &lt;div class="ProfileAvatarPlaceholder"&gt;...&lt;/div&gt;
+  &lt;div class="ProfileName"&gt;Name&lt;/div&gt;
+  &lt;div class="ProfileUsername"&gt;@username&lt;/div&gt;
+  &lt;div class="ProfileBadge"&gt;Role&lt;/div&gt;
+&lt;/div&gt;
+&lt;!-- active: add class="active-profile" --&gt;
+
+&lt;!-- Add new card --&gt;
+&lt;div class="AddCard"&gt;...&lt;/div&gt;</div>
+    </div>
+
+    <p class="sg-section-subtitle" style="margin-top:8px;">Code Block</p>
+    <div class="sg-preview">
+      <div class="sg-preview-body column" style="max-width:480px;">
+        <div class="CodeBlock">eyJhcHBzIjpbeyJuYW1lIjoiYmJjb21wdXRlciIsImljb24iOiJtZWRpYS8xMDAwMDMucG5nIn1dfQ==</div>
+      </div>
+      <div class="sg-code">&lt;div class="CodeBlock"&gt;base64-or-plain-text-here&lt;/div&gt;</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       2d. COMPONENTS — APP ICON (Desktop)
+       ══════════════════════════════════════════ -->
+  <section class="sg-section">
+    <h2 class="sg-section-title">2 — Components / Desktop App Icon</h2>
+    <p class="sg-desc">Used on the home screen desktop grid. Icons are 64×64 with 20% border-radius and a glass backing. A jiggle animation applies in customization mode.</p>
+
+    <div class="sg-preview">
+      <div class="sg-preview-body" style="gap:8px;">
+        <div class="app-icon-demo">
+          <div class="icon-img-demo">🖥️</div>
+          <div class="app-name-demo">bbcomputer</div>
+        </div>
+        <div class="app-icon-demo">
+          <div class="icon-img-demo">🌳</div>
+          <div class="app-name-demo">bbfamtree</div>
+        </div>
+        <div class="app-icon-demo">
+          <div class="icon-img-demo">🖼️</div>
+          <div class="app-name-demo">bbmural</div>
+        </div>
+        <div class="app-icon-demo">
+          <div class="icon-img-demo">💼</div>
+          <div class="app-name-demo">bbbusinessman</div>
+        </div>
+        <div class="app-icon-demo">
+          <div class="icon-img-demo">✏️</div>
+          <div class="app-name-demo">bbwhiteboard</div>
+        </div>
+        <div class="app-icon-demo">
+          <div class="icon-img-demo">⚙️</div>
+          <div class="app-name-demo">settings</div>
+        </div>
+      </div>
+      <div class="sg-code">&lt;a href="path/" class="app-icon desktop-item"&gt;
+  &lt;div class="icon-img"&gt;
+    &lt;img src="icon.png" alt="App Name"&gt;
+  &lt;/div&gt;
+  &lt;div class="app-name"&gt;App Name&lt;/div&gt;
+&lt;/a&gt;</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       2e. COMPONENTS — TOOLTIP
+       ══════════════════════════════════════════ -->
+  <section class="sg-section">
+    <h2 class="sg-section-title">2 — Components / Tooltip</h2>
+    <p class="sg-desc">Appears on <code>mouseenter</code> over app icons. Positioned absolutely below the icon. Fades in/out with <code>.show</code> class.</p>
+
+    <div class="sg-preview">
+      <div class="sg-preview-body center">
+        <div class="app-tooltip-demo">
+          <div class="app-tooltip-title">Bloxburg Computer Decal Designer</div>
+          <div class="app-tooltip-desc">Design nice computer desktop decals for your Bloxburg builds!</div>
+        </div>
+      </div>
+      <div class="sg-code">&lt;div id="appTooltip" class="app-tooltip"&gt;
+  &lt;div class="app-tooltip-title"&gt;&lt;/div&gt;
+  &lt;div class="app-tooltip-desc"&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;!-- add/remove class="show" via JS --&gt;</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       2f. COMPONENTS — CONTEXT MENU
+       ══════════════════════════════════════════ -->
+  <section class="sg-section">
+    <h2 class="sg-section-title">2 — Components / Context Menu</h2>
+
+    <div class="sg-preview">
+      <div class="sg-preview-body center">
+        <div class="ContextMenu-demo">
+          <button>Customize Home Screen</button>
+          <button>Settings</button>
+        </div>
+      </div>
+      <div class="sg-code">&lt;div class="ContextMenu" id="desktopContextMenu"&gt;
+  &lt;button&gt;Customize Home Screen&lt;/button&gt;
+  &lt;button&gt;Settings&lt;/button&gt;
+&lt;/div&gt;
+&lt;!-- display:none by default; shown via JS at cursor position --&gt;</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       2g. COMPONENTS — MODAL
+       ══════════════════════════════════════════ -->
+  <section class="sg-section">
+    <h2 class="sg-section-title">2 — Components / Modal</h2>
+    <p class="sg-desc">Backdrop: <code>rgba(0,0,0,0.3)</code> + <code>backdrop-filter:blur(8px)</code>. Content scales in from 0.9 to 1.0. Add/remove <code>.show</code> to toggle. Two variants: the standard reusable Modal and the more-opaque Settings ModalOverlay.</p>
+
+    <div class="sg-preview">
+      <div class="sg-preview-body column center" style="background:rgba(0,0,0,0.06);padding:32px;border-radius:12px;">
+        <div class="ModalContent-demo">
+          <div class="ModalHeader">
+            <h3>Modal Title</h3>
+            <button class="CloseModalBtn">&times;</button>
+          </div>
+          <div class="ModalBody">
+            <p style="font-size:13px;color:var(--color-text-muted);line-height:1.6;">Modal body content is injected here. Supports any HTML — forms, lists, text.</p>
+            <div style="display:flex;gap:8px;margin-top:16px;">
+              <button class="GTextBtn primary">Confirm</button>
+              <button class="GTextBtn">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sg-code">&lt;div class="Modal" id="appModal"&gt;
+  &lt;div class="ModalContent"&gt;
+    &lt;div class="ModalHeader"&gt;
+      &lt;h3 id="modalTitle"&gt;Title&lt;/h3&gt;
+      &lt;button class="CloseModalBtn"&gt;&amp;times;&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class="ModalBody" id="modalBody"&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;!-- Toggle: modal.classList.toggle('show') --&gt;</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       2h. COMPONENTS — NAVIGATION
+       ══════════════════════════════════════════ -->
+  <section class="sg-section">
+    <h2 class="sg-section-title">2 — Components / Navigation</h2>
+
+    <p class="sg-section-subtitle">Sidebar + SidebarTab</p>
+    <div class="sg-preview">
+      <div class="sg-preview-body">
+        <div class="Sidebar-demo">
+          <div style="font-size:16px;font-weight:600;margin-bottom:4px;">Navigation</div>
+          <button class="SidebarTab active"><span class="material-symbols-outlined" style="font-size:18px;">home</span> Overview</button>
+          <button class="SidebarTab"><span class="material-symbols-outlined" style="font-size:18px;">people</span> Permissions</button>
+          <button class="SidebarTab"><span class="material-symbols-outlined" style="font-size:18px;">payments</span> Salary</button>
+          <button class="SidebarTab inactive"><span class="material-symbols-outlined" style="font-size:18px;">lock</span> Locked</button>
+        </div>
+      </div>
+      <div class="sg-code">&lt;div class="Sidebar"&gt;
+  &lt;button class="SidebarTab active"&gt;Overview&lt;/button&gt;
+  &lt;button class="SidebarTab"&gt;Permissions&lt;/button&gt;
+  &lt;button class="SidebarTab inactive"&gt;Locked&lt;/button&gt;
+&lt;/div&gt;</div>
+    </div>
+
+    <p class="sg-section-subtitle" style="margin-top:8px;">Toolbar</p>
+    <div class="sg-preview">
+      <div class="sg-preview-body column">
+        <div class="Toolbar-demo">
+          <div class="ToolbarGroup">
+            <button class="ToolBtn active"><span class="material-symbols-outlined">edit</span></button>
+            <button class="ToolBtn"><span class="material-symbols-outlined">pan_tool</span></button>
+          </div>
+          <div class="ToolbarDivider"></div>
+          <div class="ToolbarGroup">
+            <button class="ToolBtn"><span class="material-symbols-outlined">undo</span></button>
+            <button class="ToolBtn"><span class="material-symbols-outlined">redo</span></button>
+          </div>
+          <div class="ToolbarDivider"></div>
+          <div class="ToolbarGroup">
+            <button class="ToolBtn"><span class="material-symbols-outlined">delete</span></button>
+          </div>
+          <div style="flex:1;"></div>
+          <button class="GTextBtn primary"><span class="material-symbols-outlined">save</span> Save</button>
+        </div>
+      </div>
+      <div class="sg-code">&lt;div class="Toolbar"&gt;
+  &lt;div class="ToolbarGroup"&gt;
+    &lt;button class="ToolBtn active"&gt;...&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div class="ToolbarDivider"&gt;&lt;/div&gt;
+  &lt;div class="ToolbarGroup"&gt;...&lt;/div&gt;
+&lt;/div&gt;</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       2i. COMPONENTS — GUIDE / ONBOARDING
+       ══════════════════════════════════════════ -->
+  <section class="sg-section">
+    <h2 class="sg-section-title">2 — Components / Guide &amp; Onboarding Card</h2>
+    <p class="sg-desc">Multi-step onboarding shown on first visit. Overlay: <code>rgba(0,0,0,0.35)</code> + blur. Card scales in. Includes dismissal, step dots, and Back/Next actions.</p>
+
+    <div class="sg-preview">
+      <div class="sg-preview-body center" style="background:rgba(0,0,0,0.06);padding:32px;border-radius:12px;">
+        <div class="GuideCard-demo">
+          <div class="GuideImagePlaceholder">🏠</div>
+          <div class="GuideBody">
+            <div class="GuideStepLabel">Step 1 of 3</div>
+            <div class="GuideTitle">Welcome to Techtoby Corp</div>
+            <div class="GuideDesc">Click any app icon on the desktop to open it. Hover to see a description first.</div>
+          </div>
+          <div class="GuideFooter">
+            <div class="GuideDots">
+              <div class="GuideDot active"></div>
+              <div class="GuideDot"></div>
+              <div class="GuideDot"></div>
+            </div>
+            <div class="GuideActions">
+              <button class="GuideBtn">Back</button>
+              <button class="GuideBtn primary">Next</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sg-code">&lt;div class="GuideCard"&gt;
+  &lt;div class="GuideImagePlaceholder"&gt;...&lt;/div&gt;
+  &lt;div class="GuideBody"&gt;
+    &lt;div class="GuideStepLabel"&gt;Step 1&lt;/div&gt;
+    &lt;div class="GuideTitle"&gt;Title&lt;/div&gt;
+    &lt;div class="GuideDesc"&gt;Body&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="GuideFooter"&gt;
+    &lt;div class="GuideDots"&gt;
+      &lt;div class="GuideDot active"&gt;&lt;/div&gt;
+      &lt;div class="GuideDot"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="GuideActions"&gt;
+      &lt;button class="GuideBtn"&gt;Back&lt;/button&gt;
+      &lt;button class="GuideBtn primary"&gt;Next&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       3. LAYOUT & PATTERNS
+       ══════════════════════════════════════════ -->
+  <section class="sg-section">
+    <h2 class="sg-section-title">3 — Layout &amp; Patterns</h2>
+
+    <p class="sg-section-subtitle">Two-column App Layout (Sidebar + ContentArea)</p>
+    <p class="sg-desc" style="margin-top:-12px;">Used in Settings, Business Manager, Desktop Creator. Sidebar is fixed-width (260–340 px), content area fills remaining space. Both panels are glass cards with 20 px margins and <code>calc(100vh - 40px)</code> height.</p>
+    <div class="sg-preview">
+      <div class="sg-preview-body column">
+        <div style="background:var(--color-bg);border-radius:12px;overflow:hidden;width:100%;height:200px;display:flex;gap:0;padding:12px;box-sizing:border-box;gap:10px;">
+          <div style="width:180px;flex-shrink:0;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;">
+            <div style="height:18px;background:rgba(0,0,0,0.08);border-radius:4px;width:80%;"></div>
+            <div style="height:32px;background:rgba(255,255,255,0.5);border-radius:8px;border:1px solid rgba(255,255,255,0.6);"></div>
+            <div style="height:32px;background:rgba(255,255,255,0.3);border-radius:8px;border:1px solid rgba(255,255,255,0.4);"></div>
+            <div style="height:32px;background:rgba(255,255,255,0.3);border-radius:8px;border:1px solid rgba(255,255,255,0.4);"></div>
+          </div>
+          <div style="flex:1;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;">
+            <div style="height:18px;background:rgba(0,0,0,0.08);border-radius:4px;width:40%;"></div>
+            <div style="height:12px;background:rgba(0,0,0,0.05);border-radius:4px;width:70%;"></div>
+            <div style="flex:1;background:rgba(255,255,255,0.25);border-radius:8px;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sg-code">&lt;div class="MainLayout"&gt;
+  &lt;aside class="Sidebar"&gt;
+    &lt;button class="SidebarTab active"&gt;Page 1&lt;/button&gt;
+    &lt;button class="SidebarTab"&gt;Page 2&lt;/button&gt;
+  &lt;/aside&gt;
+  &lt;main class="ContentArea"&gt;
+    &lt;div class="page active"&gt;...&lt;/div&gt;
+    &lt;div class="page"&gt;...&lt;/div&gt;
+  &lt;/main&gt;
+&lt;/div&gt;
+/* .MainLayout { display:flex; width:100%; height:100vh; }
+   .Sidebar    { width:260px; margin:20px; height:calc(100vh - 40px); ... }
+   .ContentArea{ flex:1; margin:20px 20px 20px 0; ... } */</div>
+    </div>
+
+    <p class="sg-section-subtitle" style="margin-top:8px;">Step Timeline</p>
+    <div class="sg-preview">
+      <div class="sg-preview-body">
+        <div class="timeline">
+          <div class="timeline-step completed">
+            <div class="step-number">✓</div>
+            <div class="step-label">Upload</div>
+          </div>
+          <div class="timeline-connector completed"></div>
+          <div class="timeline-step active">
+            <div class="step-number">2</div>
+            <div class="step-label">Configure</div>
+          </div>
+          <div class="timeline-connector"></div>
+          <div class="timeline-step disabled">
+            <div class="step-number">3</div>
+            <div class="step-label">Export</div>
+          </div>
+        </div>
+      </div>
+      <div class="sg-code">&lt;div class="timeline"&gt;
+  &lt;div class="timeline-step completed"&gt;
+    &lt;div class="step-number"&gt;✓&lt;/div&gt;
+    &lt;div class="step-label"&gt;Upload&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="timeline-connector completed"&gt;&lt;/div&gt;
+  &lt;div class="timeline-step active"&gt;...&lt;/div&gt;
+  &lt;div class="timeline-connector"&gt;&lt;/div&gt;
+  &lt;div class="timeline-step disabled"&gt;...&lt;/div&gt;
+&lt;/div&gt;</div>
+    </div>
+
+    <p class="sg-section-subtitle" style="margin-top:8px;">Section Header</p>
+    <div class="sg-preview">
+      <div class="sg-preview-body column" style="max-width:400px;">
+        <div class="SectionHeader">Appearance Settings</div>
+        <div style="font-size:13px;color:var(--color-text-muted);">Content below the section header.</div>
+      </div>
+      <div class="sg-code">&lt;div class="SectionHeader"&gt;Section Title&lt;/div&gt;</div>
+    </div>
+
+    <p class="sg-section-subtitle" style="margin-top:8px;">Grid Dot Overlay</p>
+    <p class="sg-desc" style="margin-top:-12px;">Present in all app pages as a decorative background layer. Active grid (customization mode) uses a denser, more opaque indigo dot pattern.</p>
+    <div class="sg-preview">
+      <div class="sg-preview-body column">
+        <div class="gridOverlay-demo">
+          <span>gridOverlay — radial dot pattern (20px grid, rgba indigo)</span>
+        </div>
+      </div>
+      <div class="sg-code">&lt;div class="gridOverlay"&gt;&lt;/div&gt;
+/* background-image: radial-gradient(circle, rgba(99,102,241,0.4) 1.5px, transparent 1.5px),
+                    radial-gradient(circle, rgba(99,102,241,0.15) 1px, transparent 1px);
+   background-size: 20px 20px, 100px 100px; */</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       4. STATES & FEEDBACK
+       ══════════════════════════════════════════ -->
+  <section class="sg-section">
+    <h2 class="sg-section-title">4 — States &amp; Feedback</h2>
+
+    <p class="sg-section-subtitle">Loading State</p>
+    <div class="sg-preview">
+      <div class="sg-preview-body center" style="background:rgba(0,0,0,0.06);padding:32px;border-radius:12px;">
+        <div class="loader-content-demo">
+          <div class="spinner"></div>
+          <div class="loading-text">Opening App...</div>
+        </div>
+      </div>
+      <div class="sg-code">&lt;div class="LoadingScreen" id="loadingScreen"&gt;
+  &lt;div class="loader-content"&gt;
+    &lt;div class="spinner"&gt;&lt;/div&gt;
+    &lt;div class="loading-text"&gt;Opening App...&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+/* .LoadingScreen.show { display:flex; opacity:1; } */</div>
+    </div>
+
+    <p class="sg-section-subtitle" style="margin-top:8px;">Empty State</p>
+    <div class="sg-preview">
+      <div class="sg-preview-body center">
+        <div class="glass-panel" style="width:100%;max-width:360px;">
+          <div class="empty-state">
+            <div class="empty-state-icon">📂</div>
+            <div class="empty-state-title">No items yet</div>
+            <div class="empty-state-desc">Add your first item to get started. It will appear here once created.</div>
+            <button class="GTextBtn primary" style="margin-top:4px;"><span class="material-symbols-outlined">add</span> Add Item</button>
+          </div>
+        </div>
+      </div>
+      <div class="sg-code">&lt;div class="empty-state"&gt;
+  &lt;div class="empty-state-icon"&gt;📂&lt;/div&gt;
+  &lt;div class="empty-state-title"&gt;No items yet&lt;/div&gt;
+  &lt;div class="empty-state-desc"&gt;Description&lt;/div&gt;
+  &lt;button class="GTextBtn primary"&gt;Add Item&lt;/button&gt;
+&lt;/div&gt;</div>
+    </div>
+
+    <p class="sg-section-subtitle" style="margin-top:8px;">Mobile Block / Desktop-Only Error State</p>
+    <div class="sg-preview">
+      <div class="sg-preview-body center">
+        <div style="background:rgba(255,255,255,0.2);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.4);border-radius:20px;padding:2rem 2rem;max-width:280px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.1);">
+          <span style="font-size:40px;display:block;margin-bottom:12px;">🖥️</span>
+          <h2 style="font-size:18px;font-weight:600;margin-bottom:6px;color:rgba(0,0,0,0.8);">Desktop Only</h2>
+          <p style="font-size:13px;color:rgba(0,0,0,0.5);line-height:1.6;">Sorry, this site is currently only available on desktop devices.</p>
+        </div>
+      </div>
+      <div class="sg-code">&lt;!-- Applied via media query on mobile --&gt;
+@media (max-width: 768px) {
+  .MobileBlock { display: flex !important; }
+  body > *:not(.MobileBlock) { display: none !important; }
+}</div>
+    </div>
+
+    <p class="sg-section-subtitle" style="margin-top:8px;">State Badges &amp; Role Labels</p>
+    <div class="sg-preview">
+      <div class="sg-preview-body" style="flex-wrap:wrap;gap:10px;">
+        <span class="ProfileBadge">Owner</span>
+        <span class="ProfileBadge">Manager</span>
+        <span class="ProfileBadge">Active</span>
+        <span class="RoleLabel">Staff</span>
+        <span class="RoleLabel">Guest</span>
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(99,102,241,0.7);padding:2px 8px;background:rgba(99,102,241,0.08);border-radius:6px;">Step 1</span>
+      </div>
+      <div class="sg-code">&lt;span class="ProfileBadge"&gt;Owner&lt;/span&gt;
+&lt;span class="RoleLabel"&gt;Staff&lt;/span&gt;
+&lt;span class="GuideStepLabel"&gt;Step 1&lt;/span&gt;</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       5. CSS CUSTOM PROPERTIES REFERENCE
+       ══════════════════════════════════════════ -->
+  <section class="sg-section">
+    <h2 class="sg-section-title">5 — CSS Custom Properties Reference</h2>
+    <div class="sg-preview">
+      <div class="sg-code" style="font-size:12px;line-height:1.7;border-top:none;">:root {
+  /* Surfaces */
+  --color-bg:             #DCDCDC;
+  --glass-bg:             rgba(255,255,255,0.2);
+  --glass-bg-light:       rgba(255,255,255,0.4);
+  --glass-bg-strong:      rgba(255,255,255,0.65);
+  --glass-border:         rgba(255,255,255,0.4);
+  --glass-shadow:         0 8px 32px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,0.6);
+  --glass-shadow-lg:      0 20px 60px rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.6);
+
+  /* Accent */
+  --color-primary:        rgba(99,102,241,1);
+  --color-primary-bg:     rgba(99,102,241,0.25);
+  --color-primary-border: rgba(99,102,241,0.45);
+  --color-primary-glow:   rgba(99,102,241,0.2);
+
+  /* States */
+  --color-success-bg:     rgba(34,197,94,0.2);
+  --color-danger-bg:      rgba(239,68,68,0.2);
+  --color-warning-bg:     rgba(234,179,8,0.2);
+
+  /* Text */
+  --color-text:           rgba(0,0,0,0.85);
+  --color-text-muted:     rgba(0,0,0,0.5);
+  --color-text-subtle:    rgba(0,0,0,0.35);
+
+  /* Typography */
+  --font-primary:   'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --font-mono:      'Consolas', 'Courier New', monospace;
+
+  /* Spacing (4px base) */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-7: 28px; --space-10: 40px;
+
+  /* Radius */
+  --radius-sm: 8px;  --radius-md: 12px; --radius-lg: 16px;
+  --radius-xl: 20px; --radius-2xl: 22px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.3s ease;
+}</div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

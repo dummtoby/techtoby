@@ -7,6 +7,15 @@
     },
     "apps": [
         {
+            "name": "floorplanner",
+            "long_name": "Bloxburg Floorplanner",
+            "version": "1.0",
+            "description": "Draw 2D top-down floor plans of your builds with walls, doors, windows, roofs and furniture across multiple floors!",
+            "author": "dummtoby",
+            "path": "floorplanner/",
+            "icon": "media/100011.png"
+        },
+        {
             "name": "bbcomputer",
             "long_name": "Bloxburg Computer Decal Designer",
             "version": "1.0",
@@ -22,7 +31,7 @@
             "description": "Generate a family tree for your Bloxburg builds!",
             "author": "dummtoby",
             "path": "bbfamtree/",
-            "icon": "https://cdn.shawnyxx.dev/assets/655910.png"
+            "icon": "media/100009.png"
         },
         {
             "name": "bbmural",
@@ -31,7 +40,7 @@
             "description": "Generate a mural for your Bloxburg builds!",
             "author": "dummtoby",
             "path": "bbmural/",
-            "icon": "https://cdn.shawnyxx.dev/icons/158450.png"
+            "icon": "media/100010.png"
         },
         {
             "name": "bbbusinessman",
