@@ -14,6 +14,27 @@ const ROOF_COLORS = ['#f59e0b', '#ef4444', '#6366f1', '#64748b', '#10b981'];
 const FLOOR_COLORS = ['#a16207', '#b45309', '#0e7490', '#4d7c0f', '#6366f1', '#9333ea', '#64748b', '#1f2937'];
 const MARK_COLORS = ['#1f2937', '#ef4444', '#f59e0b', '#22c55e', '#0ea5e9', '#6366f1', '#ec4899', '#ffffff'];
 
+// Roof shapes — drawn as top-down schematics (ridge / hip / valley lines).
+const ROOF_TYPES = [
+    { id: 'gable', name: 'Gable', abbr: 'Gable' },
+    { id: 'flat', name: 'Flat', abbr: 'Flat' },
+    { id: 'hip', name: 'Hip', abbr: 'Hip' },
+    { id: 'pyramid', name: 'Pyramid', abbr: 'Pyr' },
+    { id: 'chamfered', name: 'Chamfered', abbr: 'Cham' },
+    { id: 'barn', name: 'Curved (Barn)', abbr: 'Barn' },
+    { id: 'mansard', name: 'Mansard', abbr: 'Mans' },
+];
+
+// Door styles — drawn as top-down architectural symbols on a wall opening.
+const DOOR_TYPES = [
+    { id: 'single', name: 'Swing', abbr: 'Swing' },
+    { id: 'hole', name: 'Opening (Hole)', abbr: 'Hole' },
+    { id: 'sliding', name: 'Sliding', abbr: 'Slide' },
+    { id: 'folding', name: 'Folding', abbr: 'Fold' },
+    { id: 'revolving', name: 'Revolving (Commercial)', abbr: 'Revolve' },
+    { id: 'commercial', name: 'Commercial Sliding', abbr: 'Auto' },
+];
+
 // ===================== PARKING LOT =====================
 // Stalls are 2 cells wide; their length varies by type. Cars enter from the open
 // (aisle) end. Lots store an ordered list of stalls that flow into rows — re-ordering
@@ -137,6 +158,8 @@ FLOORS.forEach(f => floorData[f] = { walls: [], openings: [], roofs: [], furnitu
 let selected = null;        // { kind, id }
 let newItemColor = FURNITURE_COLORS[0];
 let newRoofColor = ROOF_COLORS[0];
+let newRoofType = 'gable';   // roof shape chosen in the toolbar for new roofs
+let newDoorType = 'single';  // door style chosen in the toolbar for new doors
 let currentFurnitureDef = 'sofa';
 let placeRot = 0;           // furniture placement rotation (degrees)
 let rotateStep = 90;        // rotation increment (90 or 45)
@@ -151,6 +174,13 @@ let newFloorColor = '#a16207';
 let parkingCounts = { small: 0, regular: 12, large: 0, xl: 0 };
 // The individual stall currently selected for labelling: { lotId, spot } or null
 let parkSelSpot = null;
+// Explicit mode of the stall-label editor ('none'|'text'|'icon'|null). When null the
+// mode is derived from the stall's data; an explicit value lets the Text field show
+// even before any text has been typed. Reset whenever the selected stall changes.
+let stallLabelMode = null;
+// Character-fit drag state — set while the figure from the zoom controls is dragged
+// over the canvas: { over, gx, gy }. null when idle.
+let charDrag = null;
 
 // Marking tool state
 let markMode = 'icon';            // 'icon' | 'text'
@@ -413,6 +443,9 @@ function drawScene(c, V) {
             }
         }
 
+        // Character-fit figure dragged over the canvas
+        if (charDrag && charDrag.over) drawCharFootprint(c, V, ppc, sx, sy, charDrag.gx, charDrag.gy, charDrag.rot);
+
         // Marquee rectangle
         if (rectSelState) {
             const rx = Math.min(rectSelState.gx0, rectSelState.gx1), ry = Math.min(rectSelState.gy0, rectSelState.gy1);
@@ -562,14 +595,7 @@ function drawOpening(c, V, sx, sy, op, sel) {
 
     const accent = isSel ? '#6366f1' : (op.type === 'door' ? '#1f2937' : '#0ea5e9');
     if (op.type === 'door') {
-        const lx = x1 + nx * len, ly = y1 + ny * len;
-        c.strokeStyle = accent; c.lineWidth = Math.max(1.5, 2 * V.zoom); c.lineCap = 'round';
-        c.beginPath(); c.moveTo(x1, y1); c.lineTo(lx, ly); c.stroke();
-        c.beginPath();
-        const a0 = Math.atan2(ny, nx), a1 = Math.atan2(uy, ux);
-        c.arc(x1, y1, len, a0, a1, (nx * uy - ny * ux) < 0);
-        c.strokeStyle = isSel ? 'rgba(99,102,241,0.9)' : 'rgba(0,0,0,0.35)';
-        c.setLineDash([4 * V.zoom, 4 * V.zoom]); c.stroke(); c.setLineDash([]);
+        drawDoorSymbol(c, V, op.doorType || 'single', x1, y1, x2, y2, ux, uy, nx, ny, len, lw, accent, isSel);
     } else {
         const hw = lw / 2;
         c.strokeStyle = accent; c.lineWidth = Math.max(1.2, 1.5 * V.zoom); c.lineCap = 'butt';
@@ -588,6 +614,80 @@ function drawOpening(c, V, sx, sy, op, sel) {
             c.fillStyle = '#fff'; c.strokeStyle = 'rgba(99,102,241,0.95)'; c.lineWidth = 2;
             c.beginPath(); c.arc(px, py, r, 0, Math.PI * 2); c.fill(); c.stroke();
         });
+    }
+}
+
+// Draws a door's top-down architectural symbol on its wall opening. A=(x1,y1) is the
+// hinge / leading end (already resolved for flip), B=(x2,y2) the other jamb; u is the
+// unit vector along the wall A→B, n the interior normal (already flipped for side).
+function drawDoorSymbol(c, V, dt, x1, y1, x2, y2, ux, uy, nx, ny, len, lw, accent, isSel) {
+    const leafW = Math.max(1.6, 2 * V.zoom);
+    const thin = Math.max(1.2, 1.5 * V.zoom);
+    const swing = isSel ? 'rgba(99,102,241,0.9)' : 'rgba(0,0,0,0.35)';
+    const dash = [4 * V.zoom, 4 * V.zoom];
+    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+    const ccw = (nx * uy - ny * ux) < 0;   // arc sweep so the door swings onto the n side
+    c.lineJoin = 'round'; c.lineCap = 'round';
+    const line = (ax, ay, bx, by) => { c.beginPath(); c.moveTo(ax, ay); c.lineTo(bx, by); c.stroke(); };
+    switch (dt) {
+        case 'hole': {
+            const hw = lw / 2;
+            c.strokeStyle = accent; c.lineWidth = thin;
+            line(x1 + nx * hw, y1 + ny * hw, x1 - nx * hw, y1 - ny * hw);
+            line(x2 + nx * hw, y2 + ny * hw, x2 - nx * hw, y2 - ny * hw);
+            break;
+        }
+        case 'sliding': {
+            const off = Math.max(2.5, lw * 0.45);
+            c.strokeStyle = swing; c.lineWidth = thin; c.setLineDash(dash);
+            line(x1, y1, x2, y2); c.setLineDash([]);
+            c.strokeStyle = accent; c.lineWidth = leafW;
+            line(x1 + nx * off, y1 + ny * off, mx + ux * (len * 0.1) + nx * off, my + uy * (len * 0.1) + ny * off);
+            break;
+        }
+        case 'folding': {
+            const amp = Math.max(3, lw * 0.7);
+            c.strokeStyle = accent; c.lineWidth = leafW;
+            c.beginPath(); c.moveTo(x1, y1);
+            const segs = 6;
+            for (let i = 1; i <= segs; i++) {
+                const t = i / segs * len;
+                const off = (i % 2 === 1) ? amp : 0;
+                c.lineTo(x1 + ux * t + nx * off, y1 + uy * t + ny * off);
+            }
+            c.stroke();
+            break;
+        }
+        case 'revolving': {
+            const r = len / 2;
+            c.strokeStyle = accent; c.lineWidth = thin;
+            c.beginPath(); c.arc(mx, my, r, 0, Math.PI * 2); c.stroke();
+            const base = Math.atan2(uy, ux) + Math.PI / 4;
+            c.lineWidth = leafW; c.beginPath();
+            for (let kk = 0; kk < 4; kk++) { const a = base + kk * Math.PI / 2; c.moveTo(mx, my); c.lineTo(mx + Math.cos(a) * r, my + Math.sin(a) * r); }
+            c.stroke();
+            break;
+        }
+        case 'commercial': {
+            const off = Math.max(2.5, lw * 0.45);
+            c.strokeStyle = accent; c.lineWidth = thin;
+            line(x1 + nx * off, y1 + ny * off, x2 + nx * off, y2 + ny * off);
+            line(x1 - nx * off, y1 - ny * off, x2 - nx * off, y2 - ny * off);
+            const g = len * 0.05, pl = len * 0.34;
+            c.lineWidth = leafW + 0.5;
+            line(mx - ux * g, my - uy * g, mx - ux * (g + pl), my - uy * (g + pl));
+            line(mx + ux * g, my + uy * g, mx + ux * (g + pl), my + uy * (g + pl));
+            break;
+        }
+        case 'single':
+        default: {
+            c.strokeStyle = accent; c.lineWidth = leafW;
+            line(x1, y1, x1 + nx * len, y1 + ny * len);
+            c.strokeStyle = swing; c.lineWidth = thin; c.setLineDash(dash);
+            c.beginPath(); c.arc(x1, y1, len, Math.atan2(ny, nx), Math.atan2(uy, ux), ccw); c.stroke();
+            c.setLineDash([]);
+            break;
+        }
     }
 }
 
@@ -616,11 +716,7 @@ function drawRoof(c, V, ppc, sx, sy, rf, sel, others) {
     c.restore();
     c.save();
     clipToRoof();
-    c.strokeStyle = hexToRgba(col, 0.7); c.lineWidth = Math.max(1.5, 2 * V.zoom);
-    c.beginPath();
-    if (w >= hgt) { c.moveTo(x, y + hgt / 2); c.lineTo(x + w, y + hgt / 2); }
-    else { c.moveTo(x + w / 2, y); c.lineTo(x + w / 2, y + hgt); }
-    c.stroke();
+    drawRoofRidges(c, V, rf.roofType || 'gable', x, y, w, hgt, col);
     c.setLineDash([6 * V.zoom, 4 * V.zoom]);
     c.strokeStyle = isSel ? 'rgba(99,102,241,0.9)' : hexToRgba(col, 0.65);
     c.lineWidth = isSel ? 2.5 : 1.5; c.strokeRect(x, y, w, hgt); c.setLineDash([]);
@@ -656,6 +752,81 @@ function drawRoofMerges(c, V, ppc, sx, sy, roofs) {
             c.restore();
         }
     }
+}
+
+// Draws the ridge / hip / valley line work that distinguishes one roof shape from
+// another, top-down. Assumes the caller has already clipped to the roof footprint.
+// x,y,w,hgt are screen-space pixels; col is the roof colour.
+function drawRoofRidges(c, V, type, x, y, w, hgt, col) {
+    c.strokeStyle = hexToRgba(col, 0.7);
+    c.lineWidth = Math.max(1.5, 2 * V.zoom);
+    c.lineJoin = 'round'; c.lineCap = 'round';
+    const horiz = w >= hgt;
+    const inset = Math.min(w, hgt) / 2;
+    const cx = x + w / 2, cy = y + hgt / 2;
+    c.beginPath();
+    if (type === 'flat') {
+        const m = Math.min(w, hgt) * 0.14;
+        c.rect(x + m, y + m, w - 2 * m, hgt - 2 * m);
+    } else if (type === 'gable') {
+        if (horiz) { c.moveTo(x, cy); c.lineTo(x + w, cy); }
+        else { c.moveTo(cx, y); c.lineTo(cx, y + hgt); }
+    } else if (type === 'hip') {
+        if (horiz) {
+            c.moveTo(x + inset, cy); c.lineTo(x + w - inset, cy);
+            c.moveTo(x, y); c.lineTo(x + inset, cy); c.lineTo(x, y + hgt);
+            c.moveTo(x + w, y); c.lineTo(x + w - inset, cy); c.lineTo(x + w, y + hgt);
+        } else {
+            c.moveTo(cx, y + inset); c.lineTo(cx, y + hgt - inset);
+            c.moveTo(x, y); c.lineTo(cx, y + inset); c.lineTo(x + w, y);
+            c.moveTo(x, y + hgt); c.lineTo(cx, y + hgt - inset); c.lineTo(x + w, y + hgt);
+        }
+    } else if (type === 'pyramid') {
+        c.moveTo(x, y); c.lineTo(cx, cy);
+        c.moveTo(x + w, y); c.lineTo(cx, cy);
+        c.moveTo(x, y + hgt); c.lineTo(cx, cy);
+        c.moveTo(x + w, y + hgt); c.lineTo(cx, cy);
+    } else if (type === 'chamfered') {
+        // Jerkinhead: a gable ridge whose ends are clipped by a short hip.
+        const e = Math.min(w, hgt) * 0.24;
+        if (horiz) {
+            c.moveTo(x + e, cy); c.lineTo(x + w - e, cy);
+            c.moveTo(x, y); c.lineTo(x + e, cy); c.lineTo(x, y + hgt);
+            c.moveTo(x + w, y); c.lineTo(x + w - e, cy); c.lineTo(x + w, y + hgt);
+        } else {
+            c.moveTo(cx, y + e); c.lineTo(cx, y + hgt - e);
+            c.moveTo(x, y); c.lineTo(cx, y + e); c.lineTo(x + w, y);
+            c.moveTo(x, y + hgt); c.lineTo(cx, y + hgt - e); c.lineTo(x + w, y + hgt);
+        }
+    } else if (type === 'mansard') {
+        // Steep lower slope around a flatter deck: outline + inset deck + corner hips.
+        const mx = w * 0.22, my = hgt * 0.22;
+        c.rect(x + mx, y + my, w - 2 * mx, hgt - 2 * my);
+        c.moveTo(x, y); c.lineTo(x + mx, y + my);
+        c.moveTo(x + w, y); c.lineTo(x + w - mx, y + my);
+        c.moveTo(x, y + hgt); c.lineTo(x + mx, y + hgt - my);
+        c.moveTo(x + w, y + hgt); c.lineTo(x + w - mx, y + hgt - my);
+    } else if (type === 'barn') {
+        // Curved/barrel: ridge plus bowed ribs across the span suggest the curve.
+        const ribGap = Math.max(9, 16 * V.zoom);
+        if (horiz) {
+            c.moveTo(x, cy); c.lineTo(x + w, cy);
+            const bow = Math.min(6, hgt * 0.12);
+            for (let gx = x + ribGap; gx < x + w - 1; gx += ribGap) {
+                c.moveTo(gx, y); c.quadraticCurveTo(gx + bow, cy, gx, y + hgt);
+            }
+        } else {
+            c.moveTo(cx, y); c.lineTo(cx, y + hgt);
+            const bow = Math.min(6, w * 0.12);
+            for (let gy = y + ribGap; gy < y + hgt - 1; gy += ribGap) {
+                c.moveTo(x, gy); c.quadraticCurveTo(cx, gy + bow, x + w, gy);
+            }
+        }
+    } else {
+        if (horiz) { c.moveTo(x, cy); c.lineTo(x + w, cy); }
+        else { c.moveTo(cx, y); c.lineTo(cx, y + hgt); }
+    }
+    c.stroke();
 }
 
 function drawFurniture(c, V, ppc, sx, sy, ft, sel, ghost) {
@@ -816,6 +987,30 @@ function drawHandles(c, x, y, w, h) {
     });
 }
 
+// Draws a Roblox-character footprint as a simple shaded ghost rectangle centred on
+// (gx, gy). Normally 0.25 cells wide (x) × 1 cell long (y); Q/E rotate it 90°
+// (rot === 90) so the user can check the fit in either orientation.
+function drawCharFootprint(c, V, ppc, sx, sy, gx, gy, rot) {
+    let CW = 0.25, CH = 1;
+    if (rot === 90) { CW = 1; CH = 0.25; }
+    const x = sx(gx - CW / 2), y = sy(gy - CH / 2), w = CW * ppc, h = CH * ppc;
+    c.save();
+    c.fillStyle = 'rgba(99,102,241,0.22)';
+    c.fillRect(x, y, w, h);
+    c.strokeStyle = 'rgba(99,102,241,0.85)'; c.lineWidth = Math.max(1.5, 2 * V.zoom);
+    c.setLineDash([5 * V.zoom, 4 * V.zoom]);
+    c.strokeRect(x, y, w, h);
+    c.setLineDash([]);
+    const fs = Math.max(10, 11 * V.zoom);
+    c.font = `600 ${fs}px Roboto`; c.textAlign = 'center'; c.textBaseline = 'top';
+    const dims = (rot === 90) ? '0.25 × 1' : '1 × 0.25';
+    c.strokeStyle = 'rgba(255,255,255,0.85)'; c.lineWidth = Math.max(2, fs / 4); c.lineJoin = 'round';
+    c.strokeText('Character · ' + dims, x + w / 2, y + h + 4 * V.zoom);
+    c.fillStyle = 'rgba(31,41,55,0.9)';
+    c.fillText('Character · ' + dims, x + w / 2, y + h + 4 * V.zoom);
+    c.restore();
+}
+
 function roundRect(c, x, y, w, h, r) {
     r = Math.max(0, r);
     c.beginPath();
@@ -834,7 +1029,7 @@ function drawGhostPreview(c, V, ppc, sx, sy) {
         const seg = computeOpeningTarget(hoverGrid.x, hoverGrid.y);
         if (seg) {
             c.save(); c.globalAlpha = 0.55;
-            drawOpening(c, V, sx, sy, { type: currentTool, x1: seg.x1, y1: seg.y1, x2: seg.x2, y2: seg.y2 }, null);
+            drawOpening(c, V, sx, sy, { type: currentTool, x1: seg.x1, y1: seg.y1, x2: seg.x2, y2: seg.y2, doorType: newDoorType }, null);
             c.restore();
         } else {
             c.fillStyle = 'rgba(99,102,241,0.3)';
@@ -1571,7 +1766,7 @@ function commitRect() {
     const x = Math.min(pending.x0, pending.x1), y = Math.min(pending.y0, pending.y1);
     const w = Math.abs(pending.x1 - pending.x0), h = Math.abs(pending.y1 - pending.y0);
     if (w >= 1 && h >= 1) {
-        const rf = { id: nid(), x, y, w, h, color: newRoofColor };
+        const rf = { id: nid(), x, y, w, h, color: newRoofColor, roofType: newRoofType };
         floor().roofs.push(rf);
         selectItem({ kind: 'roof', id: rf.id });
     } else { undoStack.pop(); updateUndoRedoBtns(); }
@@ -1610,6 +1805,7 @@ function commitSpotDrag() {
             undoStack.pop(); updateUndoRedoBtns();
             flowParking(lot);
             parkSelSpot = { lotId: lot.id, spot: action.dragSpot };
+            stallLabelMode = null;
             renderPropPanel();
         }
     } else { undoStack.pop(); updateUndoRedoBtns(); }
@@ -1662,6 +1858,7 @@ function placeOpening(type, gx, gy) {
     const seg = computeOpeningTarget(gx, gy);
     if (!seg) { undoStack.pop(); updateUndoRedoBtns(); flashHint('Click directly on a wall to place a ' + type); return; }
     const op = { id: nid(), type, x1: seg.x1, y1: seg.y1, x2: seg.x2, y2: seg.y2, flipHinge: false, flipSide: false };
+    if (type === 'door') op.doorType = newDoorType;
     floor().openings.push(op);
     selectItem({ kind: 'opening', id: op.id });
     draw();
@@ -1674,7 +1871,7 @@ function selectItem(sel) {
         multiSelected.clear();
     }
     // Drop any per-stall selection unless we're staying on the same parking lot
-    if (parkSelSpot && !(sel && sel.kind === 'parking' && sel.id === parkSelSpot.lotId)) parkSelSpot = null;
+    if (parkSelSpot && !(sel && sel.kind === 'parking' && sel.id === parkSelSpot.lotId)) { parkSelSpot = null; stallLabelMode = null; }
     selected = sel;
     renderPropPanel();
 }
@@ -1694,7 +1891,7 @@ function renderPropPanel() {
         document.getElementById('ppTitleText').textContent = multiSelected.size + 1 + ' items';
         labelRow.style.display = 'none'; colorRow.style.display = 'none';
         rotateRow.style.display = 'none'; flipRow.style.display = 'none';
-        ['ppNameRow', 'ppMarkTextRow', 'ppSizeRow', 'ppFenceRow', 'ppPatternRow', 'ppParkRow', 'ppParkBtnRow', 'ppStallRow'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+        ['ppNameRow', 'ppMarkTextRow', 'ppSizeRow', 'ppFenceRow', 'ppPatternRow', 'ppParkRow', 'ppParkBtnRow', 'ppStallRow', 'ppRoofRow', 'ppDoorRow'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
         info.textContent = 'Drag to move all • Del to delete all • Esc to deselect';
         return;
     }
@@ -1737,6 +1934,17 @@ function renderPropPanel() {
         document.getElementById('ppPatternName').textContent = pdef.name;
         document.getElementById('ppPatternThumb').src = 'data:image/svg+xml,' + encodeURIComponent(defSvgColored(pdef, item.color));
     }
+
+    // Roof shape chooser
+    const roofRow = document.getElementById('ppRoofRow');
+    roofRow.style.display = kind === 'roof' ? 'flex' : 'none';
+    if (kind === 'roof') buildTypeButtons(document.getElementById('ppRoofTypes'), ROOF_TYPES, item.roofType || 'gable', setSelRoofType, false);
+
+    // Door style chooser
+    const doorRow = document.getElementById('ppDoorRow');
+    const isDoorOpening = kind === 'opening' && item.type === 'door';
+    doorRow.style.display = isDoorOpening ? 'flex' : 'none';
+    if (isDoorOpening) buildTypeButtons(document.getElementById('ppDoorTypes'), DOOR_TYPES, item.doorType || 'single', setSelDoorType, false);
 
     // Parking lot rows (stall counts + auto-arrange)
     const parkRow = document.getElementById('ppParkRow');
@@ -1786,7 +1994,7 @@ function renderPropPanel() {
     else if (kind === 'mark')
         info.textContent = (item.mtype === 'text' ? 'Text label' : 'Icon marking') + ` • size ${(item.size || 1).toFixed(2)}` + (item.mtype === 'icon' ? ' • rot ' + (item.rot || 0) + '°' : '');
     else if (kind === 'parking')
-        info.textContent = `${item.spots.length} stalls • drag a stall to move it (others shift aside) • click a stall to label it`;
+        info.textContent = `${item.spots.length} stalls • drag a stall to move it (Q/E rotate while dragging) • click a stall to label it`;
     else
         info.textContent = `${Math.hypot(item.x2 - item.x1, item.y2 - item.y1).toFixed(2)} cells long`;
 }
@@ -2157,38 +2365,54 @@ function parkingSpotList(counts) {
 
 // Pack lot.spots into rows for the given orientation and assign each stall x,y,w,h.
 // 'h' → rows run along x (stalls 2 wide in x, length in y); 'v' → rows run along y.
+// A stall's footprint in row-local terms (along = the row direction, depth = across
+// rows). A normal stall is 2 wide × len long; rotating it 90° (s.rot === 90, set by
+// pressing Q/E while dragging it) swaps those so it parks "nose-in" sideways.
+function stallFootprint(s) {
+    const L = PARKING_SPOTS[s.type].len;
+    return (s.rot === 90) ? { along: L, depth: PARK_STALL_W } : { along: PARK_STALL_W, depth: L };
+}
+
+// Greedily pack stalls into rows along the row direction, wrapping to a new row when
+// the next stall would overflow the lot. Stalls may have mixed footprints (rotated or
+// different lengths), so rows have variable capacity and depth. `cb` is called per row.
+function _parkingRows(lot, orient, cb) {
+    const alongCap = orient === 'h' ? lot.w : lot.h;
+    const spots = lot.spots;
+    let i = 0;
+    while (i < spots.length) {
+        let u = 0, rowDepth = 0;
+        const row = [];
+        while (i < spots.length) {
+            const fp = stallFootprint(spots[i]);
+            if (row.length > 0 && u + fp.along > alongCap + 1e-6) break;   // wrap, but ≥1 per row
+            row.push({ s: spots[i], fp, u });
+            u += fp.along;
+            rowDepth = Math.max(rowDepth, fp.depth);
+            i++;
+        }
+        cb(row, rowDepth);
+    }
+}
+
 function flowParking(lot) {
     const aisle = lot.aisle != null ? lot.aisle : PARK_AISLE;
     const orient = lot.orient || 'h';
-    const alongRow = orient === 'h' ? lot.w : lot.h;          // size of the row direction
-    const perRow = Math.max(1, Math.floor(alongRow / PARK_STALL_W));
-    const spots = lot.spots;
-    let v = 0, i = 0;
-    while (i < spots.length) {
-        const row = spots.slice(i, i + perRow);
-        const rowLen = Math.max(...row.map(s => PARKING_SPOTS[s.type].len));
-        row.forEach((s, j) => {
-            const u = j * PARK_STALL_W, L = PARKING_SPOTS[s.type].len;
-            if (orient === 'h') { s.x = lot.x + u; s.y = lot.y + v; s.w = PARK_STALL_W; s.h = L; }
-            else { s.x = lot.x + v; s.y = lot.y + u; s.w = L; s.h = PARK_STALL_W; }
+    let v = 0;
+    _parkingRows(lot, orient, (row, rowDepth) => {
+        row.forEach(({ s, fp, u }) => {
+            if (orient === 'h') { s.x = lot.x + u; s.y = lot.y + v; s.w = fp.along; s.h = fp.depth; }
+            else { s.x = lot.x + v; s.y = lot.y + u; s.w = fp.depth; s.h = fp.along; }
         });
-        i += row.length;
-        v += rowLen + aisle;
-    }
+        v += rowDepth + aisle;
+    });
 }
 
 // Total depth (across-row extent) the current stalls consume for a given orientation.
 function parkingDepth(lot, orient) {
     const aisle = lot.aisle != null ? lot.aisle : PARK_AISLE;
-    const alongRow = orient === 'h' ? lot.w : lot.h;
-    const perRow = Math.max(1, Math.floor(alongRow / PARK_STALL_W));
-    const spots = lot.spots;
-    let v = 0, i = 0;
-    while (i < spots.length) {
-        const row = spots.slice(i, i + perRow);
-        v += Math.max(...row.map(s => PARKING_SPOTS[s.type].len)) + aisle;
-        i += row.length;
-    }
+    let v = 0;
+    _parkingRows(lot, orient, (row, rowDepth) => { v += rowDepth + aisle; });
     return Math.max(0, v - aisle);
 }
 
@@ -2356,7 +2580,7 @@ function curStall() {
     return item.spots.includes(parkSelSpot.spot) ? parkSelSpot.spot : null;
 }
 function renderStallLabelEditor(stall) {
-    const mode = stall.labelIcon ? 'icon' : (stall.labelText ? 'text' : 'none');
+    const mode = stallLabelMode || (stall.labelIcon ? 'icon' : (stall.labelText ? 'text' : 'none'));
     document.getElementById('ppStallNone').classList.toggle('primary', mode === 'none');
     document.getElementById('ppStallTextBtn').classList.toggle('primary', mode === 'text');
     document.getElementById('ppStallIconBtn').classList.toggle('primary', mode === 'icon');
@@ -2380,6 +2604,7 @@ function renderStallLabelEditor(stall) {
 function setStallLabelMode(mode) {
     const s = curStall(); if (!s) return;
     pushHistory();
+    stallLabelMode = mode;
     if (mode === 'none') { s.labelText = ''; s.labelIcon = ''; }
     else if (mode === 'text') { s.labelIcon = ''; }                 // keep any existing text
     else if (mode === 'icon') { s.labelText = ''; if (!s.labelIcon) s.labelIcon = PARK_LABEL_ICONS[0].icon; }
@@ -2394,6 +2619,7 @@ function updateStallText(val) {
 function chooseStallIcon(icon) {
     const s = curStall(); if (!s) return;
     pushHistory();
+    stallLabelMode = 'icon';
     s.labelIcon = icon; s.labelText = '';
     renderPropPanel(); draw();
 }
@@ -2436,12 +2662,20 @@ function chooseMark(icon) {
 
 function setTool(tool) {
     pending = null; action = null; rectSelState = null; polyPending = null; repeaterPending = null;
-    multiSelected.clear(); parkSelSpot = null;
+    multiSelected.clear(); parkSelSpot = null; stallLabelMode = null;
     currentTool = tool;
     document.querySelectorAll('.ToolBtn[data-tool]').forEach(b => b.classList.toggle('active', b.dataset.tool === tool));
     const showWl = tool === 'wall';
     document.getElementById('wallToolbar').style.display = showWl ? 'flex' : 'none';
     document.getElementById('wallDivider').style.display = showWl ? 'block' : 'none';
+    const showRf = tool === 'roof';
+    document.getElementById('roofToolbar').style.display = showRf ? 'flex' : 'none';
+    document.getElementById('roofDivider').style.display = showRf ? 'block' : 'none';
+    if (showRf) refreshRoofToolbar();
+    const showDr = tool === 'door';
+    document.getElementById('doorToolbar').style.display = showDr ? 'flex' : 'none';
+    document.getElementById('doorDivider').style.display = showDr ? 'block' : 'none';
+    if (showDr) refreshDoorToolbar();
     const showFx = tool === 'furniture';
     document.getElementById('fxToolbar').style.display = showFx ? 'flex' : 'none';
     document.getElementById('fxDivider').style.display = showFx ? 'block' : 'none';
@@ -2463,6 +2697,37 @@ function setTool(tool) {
     document.getElementById('markDivider').style.display = showMk ? 'block' : 'none';
     if (tool !== 'select') selectItem(null);
     updateCursor(); updateHint(); draw();
+}
+
+// ----- Roof & door style choosers (shared by the toolbar and the properties panel) -----
+function buildTypeButtons(container, types, current, onPick, toolbar) {
+    if (!container) return;
+    container.innerHTML = '';
+    types.forEach(t => {
+        const b = document.createElement('button');
+        if (toolbar) {
+            b.className = 'ToolBtn'; b.style.cssText = 'width:auto;padding:0 9px;font-size:11px;font-weight:700;';
+            b.classList.toggle('active', t.id === current);
+        } else {
+            b.className = 'GTextBtn'; b.style.cssText = 'padding:5px;font-size:11px;flex:1 1 28%;';
+            b.classList.toggle('primary', t.id === current);
+        }
+        b.textContent = t.abbr; b.title = t.name;
+        b.onclick = () => onPick(t.id);
+        container.appendChild(b);
+    });
+}
+function refreshRoofToolbar() { buildTypeButtons(document.getElementById('roofToolbar'), ROOF_TYPES, newRoofType, setRoofType, true); }
+function setRoofType(id) { newRoofType = id; refreshRoofToolbar(); }
+function setSelRoofType(id) {
+    const it = getItem(selected); if (!it || !selected || selected.kind !== 'roof') return;
+    pushHistory(); it.roofType = id; newRoofType = id; refreshRoofToolbar(); renderPropPanel(); draw();
+}
+function refreshDoorToolbar() { buildTypeButtons(document.getElementById('doorToolbar'), DOOR_TYPES, newDoorType, setDoorType, true); }
+function setDoorType(id) { newDoorType = id; refreshDoorToolbar(); }
+function setSelDoorType(id) {
+    const it = getItem(selected); if (!it || !selected || selected.kind !== 'opening' || it.type !== 'door') return;
+    pushHistory(); it.doorType = id; newDoorType = id; refreshDoorToolbar(); renderPropPanel(); draw();
 }
 
 function setWallMode(mode) {
@@ -2624,6 +2889,20 @@ document.addEventListener('keydown', e => {
         renderPropPanel(); draw(); return;
     }
     if (k === 'q' || k === 'e') {
+        // While dragging the character figure, Q/E rotate its footprint 90°.
+        if (charDrag) { charDrag.rot = charDrag.rot === 90 ? 0 : 90; draw(); return; }
+        // While dragging a parking stall, Q/E rotate that stall 90° and re-flow the lot.
+        if (action && action.type === 'spotDrag' && action.dragSpot) {
+            action.dragSpot.rot = action.dragSpot.rot === 90 ? 0 : 90;
+            const lot = getItem({ kind: 'parking', id: action.lotId });
+            if (lot && action.origOrder) {
+                lot.spots = action.origOrder.slice();
+                const idx = lot.spots.indexOf(action.dragSpot);
+                if (idx >= 0) reorderParkingSpot(lot, idx, action.dragX - action.offX, action.dragY - action.offY);
+            }
+            draw();
+            return;
+        }
         if (currentTool === 'floor') setFloorMode(floorMode === 'rect' ? 'poly' : 'rect');
         else rotatePlacement(k === 'q' ? -1 : 1);
         return;
@@ -3483,8 +3762,61 @@ window.addEventListener('resize', () => { if (tutorial.active) showTutStep(); })
     }, { passive: false });
 })();
 
+// ===================== CHARACTER-FIT FIGURE =====================
+// The figure button in the zoom controls can be dragged onto the canvas (Google
+// Street-View style). While dragging, a 0.25×1-cell footprint is drawn on the canvas
+// so the user can judge how a Roblox character fits; on release the floating avatar
+// eases back to its home button.
+(function setupCharacterDrag() {
+    const btn = document.getElementById('charBtn');
+    if (!btn) return;
+    let avatar = null, home = null;
+
+    function moveAvatar(cx, cy) { if (avatar) { avatar.style.left = cx + 'px'; avatar.style.top = cy + 'px'; } }
+    function updateOver(e) {
+        const r = canvas.getBoundingClientRect();
+        const inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+        if (inside) {
+            const gx = (e.clientX - r.left - panX) / pxPerCell();
+            const gy = (e.clientY - r.top - panY) / pxPerCell();
+            charDrag.over = true;
+            charDrag.gx = clampGrid(snap(gx, SUB));
+            charDrag.gy = clampGrid(snap(gy, SUB));
+        } else { charDrag.over = false; }
+    }
+    function onMove(e) { moveAvatar(e.clientX, e.clientY); updateOver(e); draw(); }
+    function onUp(e) {
+        document.removeEventListener('pointermove', onMove);
+        const av = avatar;
+        av.classList.add('returning');
+        av.style.left = home.x + 'px'; av.style.top = home.y + 'px';
+        setTimeout(() => av.remove(), 340);
+        avatar = null;
+        btn.classList.remove('dragging');
+        charDrag = null;
+        draw();
+    }
+    btn.addEventListener('pointerdown', e => {
+        e.preventDefault();
+        const r = btn.getBoundingClientRect();
+        home = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+        avatar = document.createElement('div');
+        avatar.className = 'CharAvatar';
+        avatar.innerHTML = '<span class="material-symbols-outlined">accessibility_new</span>';
+        document.body.appendChild(avatar);
+        charDrag = { over: false, gx: 0, gy: 0, rot: 0 };
+        btn.classList.add('dragging');
+        moveAvatar(e.clientX, e.clientY);
+        updateOver(e); draw();
+        document.addEventListener('pointermove', onMove);
+        document.addEventListener('pointerup', onUp, { once: true });
+    });
+})();
+
 // ===================== INIT =====================
 window.addEventListener('resize', resize);
+refreshRoofToolbar();
+refreshDoorToolbar();
 fitView();
 updateFloorUI();
 updateCursor();

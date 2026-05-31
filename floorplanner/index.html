@@ -90,6 +90,14 @@
                         class="material-symbols-outlined">crop_square</span></button>
             </div>
 
+            <!-- Roof type controls (visible only with roof tool) -->
+            <div class="ToolbarDivider" id="roofDivider" style="display:none;"></div>
+            <div class="ToolbarGroup" id="roofToolbar" style="display:none;"></div>
+
+            <!-- Door type controls (visible only with door tool) -->
+            <div class="ToolbarDivider" id="doorDivider" style="display:none;"></div>
+            <div class="ToolbarGroup" id="doorToolbar" style="display:none;"></div>
+
             <!-- Furniture chooser (visible only with furniture tool) -->
             <div class="ToolbarDivider" id="fxDivider" style="display:none;"></div>
             <div class="ToolbarGroup" id="fxToolbar" style="display:none;">
@@ -300,6 +308,14 @@
                     <button class="GTextBtn FxChooser" style="width:100%;" onclick="openPatternLibrary(true)"><img
                             id="ppPatternThumb" alt=""><span class="fxName" id="ppPatternName">Wood</span></button>
                 </div>
+                <div class="PropRow" id="ppRoofRow" style="display:none;">
+                    <label>Roof type</label>
+                    <div class="TypeGrid" id="ppRoofTypes"></div>
+                </div>
+                <div class="PropRow" id="ppDoorRow" style="display:none;">
+                    <label>Door type</label>
+                    <div class="TypeGrid" id="ppDoorTypes"></div>
+                </div>
                 <div class="PropRow" id="ppParkRow" style="display:none;">
                     <label>Spots by type</label>
                     <div class="PkPanelGrid">
@@ -326,9 +342,11 @@
                     </div>
                 </div>
                 <div class="PropBtnRow" id="ppParkBtnRow" style="display:none;">
-                    <button class="GTextBtn" style="flex:1;padding:6px;font-size:11px;" onclick="autoArrangeSelectedParking()"
+                    <button class="GTextBtn" style="flex:1;padding:6px;font-size:11px;"
+                        onclick="autoArrangeSelectedParking()"
                         title="Re-pack the spots into the optimal layout (discards manual rearranging)"><span
-                            class="material-symbols-outlined" style="font-size:16px;">grid_view</span> Auto-arrange</button>
+                            class="material-symbols-outlined" style="font-size:16px;">grid_view</span>
+                        Auto-arrange</button>
                 </div>
                 <div class="PropRow" id="ppStallRow" style="display:none;">
                     <label>Stall label</label>
@@ -355,6 +373,9 @@
                         class="material-symbols-outlined">remove</span></button>
                 <button onclick="fitView(); draw();" title="Fit to view"><span
                         class="material-symbols-outlined">fit_screen</span></button>
+                <div class="ZoomDivider"></div>
+                <button id="charBtn" title="Drag onto the canvas to see how a Roblox character (1 × 0.25) fits — Q/E to rotate"><span
+                        class="material-symbols-outlined">accessibility_new</span></button>
             </div>
 
             <!-- Status bar -->
