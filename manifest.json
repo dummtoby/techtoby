@@ -61,6 +61,15 @@
             "icon": "media/100007.png"
         },
         {
+            "name": "bsecsign",
+            "long_name": "BS.EC Sign Generator",
+            "version": "1.0",
+            "description": "Turn text or an image into a buildable shape chart of rectangles and wedges for 3D Bloxburg signs!",
+            "author": "dummtoby",
+            "path": "bsecsign/",
+            "icon": "media/100002.png"
+        },
+        {
             "name": "settings",
             "long_name": "Settings",
             "version": "1.0",

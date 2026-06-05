@@ -1,0 +1,2950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BS.EC Sign Generator</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- Display fonts available for sign text -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Bungee&family=Lobster&family=Montserrat:wght@700&family=Oswald:wght@600&family=Pacifico&family=Poppins:wght@600&family=Press+Start+2P&family=Russo+One&display=swap" />
+    <link rel="shortcut icon" href="../media/100002.png" type="image/png">
+    <style>
+        /* =============================================================================
+           GLASSMORPHIC APP STYLESHEET - Bloxburg Style
+           ============================================================================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background: #DCDCDC;
+            color: rgba(0, 0, 0, 0.8);
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .TreeBackground {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .gridOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 2;
+            opacity: 1;
+            /* Modern dot grid pattern */
+            background-image: 
+                radial-gradient(circle, rgba(99, 102, 241, 0.4) 1.5px, transparent 1.5px),
+                radial-gradient(circle, rgba(99, 102, 241, 0.15) 1px, transparent 1px);
+            background-size: 20px 20px, 100px 100px;
+            background-position: 0 0, 0 0;
+            pointer-events: none;
+        }
+
+        .full-container {
+            position: relative;
+            z-index: 10;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .app-window {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15),
+                inset 0 1px 1px rgba(255, 255, 255, 0.6);
+            overflow: hidden;
+        }
+
+        /* ========== STEP TIMELINE ========== */
+        .timeline-header {
+            background: rgba(255, 255, 255, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 20px 24px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .timeline-left {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .timeline-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timeline {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            max-width: 600px;
+        }
+
+        .timeline-step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .timeline-step:hover:not(.disabled) {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .timeline-step.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .timeline-step.active {
+            background: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .timeline-step.completed .step-number {
+            background: rgba(76, 175, 80, 0.9);
+            border-color: rgba(76, 175, 80, 0.9);
+        }
+
+        .timeline-step.active .step-number {
+            background: rgba(37, 99, 235, 0.8);
+            border-color: rgba(37, 99, 235, 0.8);
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            border: 2px solid rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.5);
+            transition: all 0.2s ease;
+        }
+
+        .timeline-step.completed .step-number,
+        .timeline-step.active .step-number {
+            color: #fff;
+        }
+
+        .step-label {
+            font-size: 14px;
+            font-weight: 400;
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .timeline-step.active .step-label,
+        .timeline-step.completed .step-label {
+            color: rgba(0, 0, 0, 0.8);
+            font-weight: 500;
+        }
+
+        .timeline-connector {
+            width: 40px;
+            height: 2px;
+            background: rgba(0, 0, 0, 0.15);
+            transition: background 0.3s ease;
+        }
+
+        .timeline-connector.completed {
+            background: rgba(76, 175, 80, 0.8);
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 40px;
+        }
+
+        .main-content::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .main-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .main-content::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 5px;
+        }
+
+        .step-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.85);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-description {
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.5);
+            font-weight: 400;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
+                inset 0 1px 1px rgba(255, 255, 255, 0.6);
+        }
+
+        .card:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.8);
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: black;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            text-decoration: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1),
+                inset 0 1px 1px rgba(255, 255, 255, 0.6);
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15),
+                inset 0 1px 1px rgba(255, 255, 255, 0.8);
+            color: black;
+        }
+
+        .btn-primary {
+            background: rgba(37, 99, 235, 0.8);
+            backdrop-filter: blur(8px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: rgba(37, 99, 235, 1);
+            transform: translateY(-1px) scale(1.02);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-icon {
+            padding: 10px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-lg {
+            padding: 10px 16px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.6);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        select {
+            padding: 8px 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: black;
+            outline: none;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            font-size: 14px;
+            font-weight: 400;
+            font-family: inherit;
+            transition: background 0.2s ease, border 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        select:focus {
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(0, 0, 0, 0.25);
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(0, 0, 0, 0.2);
+            padding: 60px 40px;
+            text-align: center;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+            border-radius: 16px;
+        }
+
+        .upload-area:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .upload-area.dragover {
+            border-color: rgba(37, 99, 235, 0.6);
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 56px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .upload-text {
+            font-size: 16px;
+            color: rgba(0, 0, 0, 0.6);
+            margin-bottom: 8px;
+        }
+
+        .upload-subtext {
+            font-size: 13px;
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        /* ========== PRESET CARDS ========== */
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .preset-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 20px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        .preset-card:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: scale(1.02);
+        }
+
+        .preset-card.selected {
+            border-color: rgba(37, 99, 235, 0.6);
+            background: rgba(37, 99, 235, 0.1);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.15);
+        }
+
+        .preset-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .preset-card-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preset-card.selected .preset-card-icon {
+            background: rgba(37, 99, 235, 0.2);
+        }
+
+        .preset-card-icon .material-symbols-outlined {
+            font-size: 22px;
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .preset-card.selected .preset-card-icon .material-symbols-outlined {
+            color: rgba(37, 99, 235, 0.9);
+        }
+
+        .preset-card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        .preset-card-desc {
+            font-size: 13px;
+            color: rgba(0, 0, 0, 0.5);
+            margin-bottom: 15px;
+        }
+
+        .preset-dropdown {
+            margin-top: 12px;
+        }
+
+        .preset-dropdown label {
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.5);
+            margin-bottom: 6px;
+        }
+
+        /* ========== SEAMLESS TILE GRID ========== */
+        .tiles-container {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 14px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        .tiles-grid {
+            display: grid;
+            gap: 0;
+            background: rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .tile-cell {
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            border: 1px dashed rgba(0, 0, 0, 0.3);
+            box-sizing: border-box;
+        }
+
+        .tile-cell canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .tile-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(1.05);
+        }
+
+        .tile-cell:hover .tile-overlay {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .tile-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.85);
+            margin-bottom: 4px;
+            text-shadow: 0 1px 4px rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.3);
+            padding: 4px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transform: translateY(-10px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .tile-cell:hover .tile-label {
+            transform: translateY(0);
+        }
+
+        .tile-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 80%;
+            transform: translateY(10px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .tile-cell:hover .tile-actions {
+            transform: translateY(0);
+        }
+
+        .tile-btn {
+            width: 100%;
+            justify-content: center;
+            padding: 8px 14px;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            color: rgba(0, 0, 0, 0.8);
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+        }
+
+        .tile-btn:hover {
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+            color: black;
+        }
+
+        .tile-btn .material-symbols-outlined {
+            font-size: 16px;
+        }
+
+        /* ========== IMAGE PREVIEW ========== */
+        .image-preview-area {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .preview-image-wrapper {
+            position: relative;
+        }
+
+        .preview-image-wrapper img {
+            max-height: 200px;
+            max-width: 300px;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            display: block;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .grid-overlay-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* ========== CROP HANDLE ========== */
+        .crop-handle {
+            position: absolute;
+            display: none;
+            border: 2px dashed rgba(37, 99, 235, 0.9);
+            cursor: move;
+            z-index: 10;
+        }
+
+        .crop-handle-label {
+            position: absolute;
+            bottom: 7px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(37, 99, 235, 0.85);
+            color: white;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 3px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .crop-handle-corner {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: white;
+            border: 2px solid rgba(37, 99, 235, 0.9);
+            border-radius: 2px;
+            pointer-events: none;
+        }
+        .crop-handle-corner.tl { top: -5px; left: -5px; }
+        .crop-handle-corner.tr { top: -5px; right: -5px; }
+        .crop-handle-corner.bl { bottom: -5px; left: -5px; }
+        .crop-handle-corner.br { bottom: -5px; right: -5px; }
+
+        .preview-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .preview-info-label {
+            font-size: 13px;
+            color: rgba(0, 0, 0, 0.5);
+            margin-bottom: 4px;
+        }
+
+        .preview-info-value {
+            font-size: 20px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        .preview-info-sub {
+            font-size: 13px;
+            color: rgba(0, 0, 0, 0.4);
+            margin-top: 8px;
+        }
+
+        /* ========== ACTION BAR ========== */
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .action-bar-left,
+        .action-bar-right {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* ========== EXPORT HEADER ========== */
+        .export-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .export-info {
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.6);
+        }
+
+        .export-info strong {
+            color: rgba(0, 0, 0, 0.85);
+        }
+
+        /* ========== PROGRESS BAR ========== */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .progress-bar.active {
+            display: block;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: rgba(37, 99, 235, 0.8);
+            width: 0%;
+            transition: width 0.2s ease;
+        }
+
+        /* ========== TOAST NOTIFICATIONS ========== */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 14px 20px;
+            border-radius: 12px;
+            color: rgba(0, 0, 0, 0.8);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12),
+                inset 0 1px 1px rgba(255, 255, 255, 0.6);
+            max-width: 350px;
+        }
+
+        .toast.success { border-left: 4px solid #4caf50; }
+        .toast.error { border-left: 4px solid #f44336; }
+        .toast.info { border-left: 4px solid rgba(37, 99, 235, 0.8); }
+
+        .toast .material-symbols-outlined { font-size: 20px; }
+        .toast.success .material-symbols-outlined { color: #4caf50; }
+        .toast.error .material-symbols-outlined { color: #f44336; }
+        .toast.info .material-symbols-outlined { color: rgba(37, 99, 235, 0.9); }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(50px); }
+        }
+
+        /* ========== LOADING OVERLAY ========== */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9998;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: rgba(37, 99, 235, 0.9);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ========== KEYBOARD HINT ========== */
+        .kbd {
+            display: inline-block;
+            padding: 2px 6px;
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            font-size: 11px;
+            font-family: monospace;
+            color: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* ========== MODALS ========== */
+        .Modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .Modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .ModalContent {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow: hidden;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .Modal.show .ModalContent {
+            transform: scale(1);
+        }
+
+        .ModalHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .ModalHeader h3 {
+            margin: 0;
+            color: rgba(0, 0, 0, 0.8);
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .CloseModalBtn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: rgba(0, 0, 0, 0.6);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            transition: background 0.2s ease, color 0.2s ease;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .CloseModalBtn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        .ModalBody {
+            padding: 24px;
+        }
+
+        /* Forms & Inputs */
+        input[type="number"] {
+            padding: 8px 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: black;
+            outline: none;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            font-size: 14px;
+            font-weight: 400;
+            font-family: inherit;
+            transition: background 0.2s ease, border 0.2s ease, box-shadow 0.2s ease;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        input[type="number"]:focus {
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(0, 0, 0, 0.25);
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        .setting-desc {
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.5);
+            margin-top: 4px;
+        }
+
+        /* Toggle switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 24px;
+        }
+
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        input:checked + .slider {
+            background-color: rgba(37, 99, 235, 0.8);
+            border-color: rgba(37, 99, 235, 1);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .timeline-header {
+                padding: 15px 20px;
+            }
+            .timeline {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .timeline-connector {
+                display: none;
+            }
+            .main-content {
+                padding: 20px;
+            }
+            .preset-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <style>
+        @media (max-width: 768px) {
+            .MobileBlock { display: flex !important; }
+            body > *:not(.MobileBlock) { display: none !important; }
+        }
+    </style>
+    <style>
+        /* ========== SIGN GENERATOR SPECIFIC ========== */
+        .mode-toggle {
+            display: inline-flex;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            padding: 4px;
+            gap: 4px;
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6);
+        }
+
+        .mode-toggle button {
+            border: none;
+            background: transparent;
+            padding: 9px 20px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.6);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .mode-toggle button.active {
+            background: rgba(37, 99, 235, 0.85);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+
+        .input-panel { display: none; }
+        .input-panel.active { display: block; }
+
+        textarea.sign-text {
+            width: 100%;
+            min-height: 72px;
+            resize: vertical;
+            padding: 12px 14px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            outline: none;
+            font-family: inherit;
+            color: black;
+            transition: background 0.2s ease, box-shadow 0.2s ease;
+        }
+        textarea.sign-text:focus {
+            background: rgba(255, 255, 255, 0.45);
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .field-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
+        .field { flex: 1; min-width: 160px; }
+
+        .inline-switches { display: flex; gap: 18px; align-items: center; height: 38px; }
+        .inline-switch { display: flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(0,0,0,0.7); }
+
+        .font-preview {
+            font-size: 38px;
+            color: rgba(0, 0, 0, 0.85);
+            padding: 12px 4px;
+            min-height: 60px;
+            line-height: 1.1;
+            word-break: break-word;
+            text-align: center;
+        }
+
+        .range-row { display: flex; align-items: center; gap: 14px; }
+        .range-row input[type=range] {
+            flex: 1;
+            accent-color: rgba(37, 99, 235, 0.85);
+        }
+        .range-val {
+            min-width: 76px;
+            text-align: right;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.8);
+            font-size: 14px;
+        }
+
+        .chart-wrap {
+            border-radius: 14px;
+            overflow: auto;
+            padding: 18px;
+            background:
+                linear-gradient(45deg, rgba(0,0,0,0.05) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.05) 75%),
+                linear-gradient(45deg, rgba(0,0,0,0.05) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.05) 75%),
+                rgba(255, 255, 255, 0.35);
+            background-size: 22px 22px;
+            background-position: 0 0, 11px 11px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6);
+            max-height: 56vh;
+            display: flex;
+            /* "safe center" keeps the chart centred when it fits, but left-aligns
+               (instead of clipping the left edge) when it overflows and scrolls */
+            justify-content: safe center;
+            align-items: flex-start;
+        }
+        .chart-wrap canvas {
+            display: block;
+            border-radius: 6px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+        }
+        .stat {
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            padding: 14px 16px;
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6);
+        }
+        .stat .v { font-size: 22px; font-weight: 600; color: rgba(0, 0, 0, 0.85); }
+        .stat .l { font-size: 12px; color: rgba(0, 0, 0, 0.5); margin-top: 2px; }
+
+        .view-toggles { display: flex; gap: 22px; flex-wrap: wrap; align-items: center; }
+        .view-toggle { display: flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(0, 0, 0, 0.7); cursor: pointer; }
+        .view-toggle input { accent-color: rgba(37, 99, 235, 0.85); width: 16px; height: 16px; cursor: pointer; }
+
+        .parts-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .parts-table th, .parts-table td {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+        }
+        .parts-table th {
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.55);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .parts-table td { color: rgba(0, 0, 0, 0.8); }
+        .parts-table tr:last-child td { border-bottom: none; }
+        .swatch {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            border: 1px solid rgba(0, 0, 0, 0.25);
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .swatch.wedge { border-radius: 0 0 3px 0; }
+
+        /* ========== SAVED SIGNS ========== */
+        .saves-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 14px;
+        }
+        .save-card {
+            background: rgba(255, 255, 255, 0.22);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        .save-card:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.3); }
+        .save-thumb {
+            width: 100%;
+            height: 92px;
+            object-fit: contain;
+            display: block;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+            background:
+                linear-gradient(45deg, rgba(0,0,0,0.05) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.05) 75%),
+                linear-gradient(45deg, rgba(0,0,0,0.05) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.05) 75%),
+                rgba(255, 255, 255, 0.4);
+            background-size: 16px 16px;
+            background-position: 0 0, 8px 8px;
+        }
+        .save-body { padding: 10px 12px 12px; }
+        .save-name {
+            font-size: 14px; font-weight: 600; color: rgba(0, 0, 0, 0.8);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .save-meta { font-size: 11px; color: rgba(0, 0, 0, 0.5); margin-top: 2px; }
+        .save-actions { display: flex; gap: 6px; margin-top: 10px; }
+        .save-actions .btn { flex: 1 1 auto; padding: 6px 8px; font-size: 12px; }
+        .save-actions .btn.del { flex: 0 0 auto; }
+        .save-actions .material-symbols-outlined { font-size: 16px; }
+        .saves-empty {
+            text-align: center; color: rgba(0, 0, 0, 0.45);
+            font-size: 14px; padding: 22px 12px; line-height: 1.5;
+        }
+
+        input[type="text"].txt {
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            color: black;
+            outline: none;
+            font-size: 15px;
+            font-family: inherit;
+            width: 100%;
+            transition: background 0.2s ease, box-shadow 0.2s ease;
+        }
+        input[type="text"].txt:focus {
+            background: rgba(255, 255, 255, 0.45);
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="MobileBlock" style="display:none;position:fixed;inset:0;z-index:999999;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;font-family:'Roboto',sans-serif;">
+        <div style="background:rgba(255,255,255,0.2);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.4);border-radius:20px;padding:2.5rem 2rem;max-width:380px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,0.1);">
+            <span style="font-size:48px;display:block;margin-bottom:16px;">🖥️</span>
+            <h2 style="font-size:20px;font-weight:600;margin-bottom:8px;color:rgba(0,0,0,0.8);">Desktop Only</h2>
+            <p style="font-size:14px;color:rgba(0,0,0,0.5);line-height:1.6;">Sorry, this site is currently only available on desktop devices.</p>
+        </div>
+    </div>
+    <img class="TreeBackground" src="https://cdn.ecxogames.ca/ecxogames/assets/794037.png">
+    <div id="gridOverlay" class="gridOverlay"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Settings Modal -->
+    <div id="SettingsModal" class="Modal">
+        <div class="ModalContent">
+            <div class="ModalHeader">
+                <h3>Settings</h3>
+                <button onclick="toggleSettingsModal(false)" class="CloseModalBtn">&times;</button>
+            </div>
+            <div class="ModalBody">
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Smooth diagonals (wedges)</div>
+                        <div class="setting-desc">Fill stair-stepped diagonal edges with wedge triangles for smoother letters. Adds extra parts.</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="setting-smooth" onchange="updateSettings()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Invert silhouette</div>
+                        <div class="setting-desc">Build the background instead of the shape — turns filled areas into gaps and gaps into parts.</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="setting-invert" onchange="updateSettings()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Sign Modal -->
+    <div id="SaveModal" class="Modal">
+        <div class="ModalContent">
+            <div class="ModalHeader">
+                <h3>Save Sign</h3>
+                <button onclick="toggleSaveModal(false)" class="CloseModalBtn">&times;</button>
+            </div>
+            <div class="ModalBody">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="save-name" class="txt" placeholder="My sign" maxlength="60"
+                        onkeydown="if(event.key==='Enter')confirmSaveSign();">
+                </div>
+                <p class="setting-desc" style="margin-bottom:18px;">Saved signs are stored in this browser and appear on the Input step so you can reopen them anytime.</p>
+                <div style="display:flex;justify-content:flex-end;gap:10px;">
+                    <button class="btn btn-secondary" onclick="toggleSaveModal(false)">Cancel</button>
+                    <button class="btn btn-primary" onclick="confirmSaveSign()">
+                        <span class="material-symbols-outlined">save</span>
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Custom Font Modal -->
+    <div id="FontModal" class="Modal">
+        <div class="ModalContent">
+            <div class="ModalHeader">
+                <h3>Add Custom Font</h3>
+                <button onclick="toggleFontModal(false)" class="CloseModalBtn">&times;</button>
+            </div>
+            <div class="ModalBody" style="max-height:72vh;overflow-y:auto;">
+                <div style="display:flex;justify-content:center;margin-bottom:18px;">
+                    <div class="mode-toggle">
+                        <button id="fm-file-btn" class="active" onclick="setFontMethod('file')">
+                            <span class="material-symbols-outlined">upload_file</span>File
+                        </button>
+                        <button id="fm-url-btn" onclick="setFontMethod('url')">
+                            <span class="material-symbols-outlined">link</span>URL
+                        </button>
+                        <button id="fm-code-btn" onclick="setFontMethod('code')">
+                            <span class="material-symbols-outlined">code</span>Paste
+                        </button>
+                    </div>
+                </div>
+
+                <div id="fm-file" class="fm-panel">
+                    <div class="upload-area" id="font-drop" style="padding:32px 24px;">
+                        <span class="material-symbols-outlined upload-icon">font_download</span>
+                        <div class="upload-text" id="font-file-name">Click or drop a font file here</div>
+                        <div class="upload-subtext">.ttf, .otf, .woff, .woff2</div>
+                    </div>
+                    <input type="file" id="font-file-input" accept=".ttf,.otf,.woff,.woff2,font/*" style="display:none;">
+                </div>
+
+                <div id="fm-url" class="fm-panel" style="display:none;">
+                    <label>Font file or stylesheet URL</label>
+                    <input type="text" id="font-url" class="txt" placeholder="https://… .woff2  or a Google Fonts CSS link">
+                    <p class="setting-desc" style="margin-top:8px;">Direct font files must allow cross-origin (CORS) access. Google Fonts CSS links work out of the box.</p>
+                </div>
+
+                <div id="fm-code" class="fm-panel" style="display:none;">
+                    <label>Paste embed code, @font-face CSS, or a Google font name</label>
+                    <textarea id="font-code" class="sign-text" placeholder="&lt;link href=&quot;…&quot;&gt;   •   @import url(…)   •   @font-face { … }   •   Bebas Neue"></textarea>
+                </div>
+
+                <div class="form-group" style="margin-top:16px;">
+                    <label>Font name <span style="font-weight:400;color:rgba(0,0,0,0.45);">(auto-detected when possible)</span></label>
+                    <input type="text" id="font-name" class="txt" placeholder="e.g. My Brand Font">
+                </div>
+
+                <div style="display:flex;justify-content:flex-end;gap:10px;">
+                    <button class="btn btn-secondary" onclick="toggleFontModal(false)">Cancel</button>
+                    <button class="btn btn-primary" onclick="confirmAddFont()">
+                        <span class="material-symbols-outlined">add</span>
+                        Add Font
+                    </button>
+                </div>
+
+                <div id="custom-font-list" style="margin-top:22px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="full-container">
+        <div class="app-window">
+            <!-- Timeline Header -->
+        <div class="timeline-header">
+            <div class="timeline-left">
+                <div class="timeline-title">
+                    <span class="material-symbols-outlined">signpost</span>
+                    BS.EC Sign Generator
+                </div>
+                <div class="timeline">
+                    <div class="timeline-step active" id="step-1-btn" onclick="goToStep(1)">
+                        <div class="step-number">1</div>
+                        <span class="step-label">Input</span>
+                    </div>
+                    <div class="timeline-connector" id="connector-1"></div>
+                    <div class="timeline-step disabled" id="step-2-btn" onclick="goToStep(2)">
+                        <div class="step-number">2</div>
+                        <span class="step-label">Configure</span>
+                    </div>
+                    <div class="timeline-connector" id="connector-2"></div>
+                    <div class="timeline-step disabled" id="step-3-btn" onclick="goToStep(3)">
+                        <div class="step-number">3</div>
+                        <span class="step-label">Shape Chart</span>
+                    </div>
+                </div>
+            </div>
+            <div style="display:flex;gap:10px;">
+                <button class="btn btn-secondary btn-icon" onclick="toggleSettingsModal(true)" title="Settings">
+                    <span class="material-symbols-outlined">settings</span>
+                </button>
+                <button class="btn btn-secondary btn-icon" onclick="window.location.href='../'" title="Back to Desktop">
+                    <span class="material-symbols-outlined">home</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- STEP 1: INPUT -->
+            <div class="step-content active" id="step-1">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="material-symbols-outlined">edit_note</span>
+                        Choose Input
+                    </h2>
+                    <p class="section-description">Type your sign text and pick a font, or upload an image to turn into a buildable shape chart.</p>
+                </div>
+
+                <!-- Saved Signs -->
+                <div class="card" id="saves-card">
+                    <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
+                        <span style="display:flex;align-items:center;gap:8px;">
+                            <span class="material-symbols-outlined" style="font-size:20px;">bookmarks</span>
+                            Saved Signs
+                        </span>
+                        <span class="preview-info-label" id="saves-count"></span>
+                    </div>
+                    <div id="saves-container"></div>
+                </div>
+
+                <div style="display:flex;justify-content:center;margin-bottom:26px;">
+                    <div class="mode-toggle">
+                        <button id="mode-text-btn" class="active" onclick="setMode('text')">
+                            <span class="material-symbols-outlined">title</span>Text
+                        </button>
+                        <button id="mode-image-btn" onclick="setMode('image')">
+                            <span class="material-symbols-outlined">image</span>Image
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TEXT PANEL -->
+                <div id="text-panel" class="input-panel active">
+                    <div class="card">
+                        <div class="card-title">Sign Text</div>
+                        <div class="form-group">
+                            <label>Text (one line per row)</label>
+                            <textarea id="sign-text" class="sign-text" placeholder="Enter your sign text…" oninput="onTextInput()">OPEN</textarea>
+                        </div>
+                        <div class="field-row">
+                            <div class="field">
+                                <label>Font</label>
+                                <div style="display:flex;gap:8px;">
+                                    <select id="font-select" onchange="onTextInput()" style="flex:1;min-width:0;">
+                                        <option value="Anton" data-stack="'Anton', sans-serif" selected>Anton (bold display)</option>
+                                        <option value="Bebas Neue" data-stack="'Bebas Neue', sans-serif">Bebas Neue (tall caps)</option>
+                                        <option value="Bungee" data-stack="'Bungee', sans-serif">Bungee (blocky)</option>
+                                        <option value="Russo One" data-stack="'Russo One', sans-serif">Russo One (chunky)</option>
+                                        <option value="Press Start 2P" data-stack="'Press Start 2P', monospace">Press Start 2P (pixel)</option>
+                                        <option value="Oswald" data-stack="'Oswald', sans-serif">Oswald (condensed)</option>
+                                        <option value="Montserrat" data-stack="'Montserrat', sans-serif">Montserrat</option>
+                                        <option value="Poppins" data-stack="'Poppins', sans-serif">Poppins</option>
+                                        <option value="Roboto" data-stack="'Roboto', sans-serif">Roboto</option>
+                                        <option value="Lobster" data-stack="'Lobster', cursive">Lobster (script)</option>
+                                        <option value="Pacifico" data-stack="'Pacifico', cursive">Pacifico (script)</option>
+                                    </select>
+                                    <button type="button" class="btn btn-secondary btn-icon" style="flex:0 0 auto;" onclick="openFontModal()" title="Add custom font">
+                                        <span class="material-symbols-outlined">add</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="field" style="flex:0 0 auto;">
+                                <label>Style</label>
+                                <div class="inline-switches">
+                                    <div class="inline-switch">
+                                        <label class="switch"><input type="checkbox" id="opt-upper" onchange="onTextInput()"><span class="slider"></span></label>
+                                        Uppercase
+                                    </div>
+                                    <div class="inline-switch">
+                                        <label class="switch"><input type="checkbox" id="opt-bold" onchange="onTextInput()"><span class="slider"></span></label>
+                                        Bold
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <label style="margin-top:14px;">Preview</label>
+                        <div class="font-preview" id="font-preview">OPEN</div>
+                    </div>
+                </div>
+
+                <!-- IMAGE PANEL -->
+                <div id="image-panel" class="input-panel">
+                    <div id="upload-area" class="upload-area">
+                        <span class="material-symbols-outlined upload-icon">cloud_upload</span>
+                        <div class="upload-text">Click or drag &amp; drop image here</div>
+                        <div class="upload-subtext">PNG, JPG, WEBP — high-contrast logos &amp; text work best</div>
+                    </div>
+                    <input type="file" id="file-input" accept="image/*" style="display:none;">
+                    <div style="text-align:center;margin-top:20px;">
+                        <button onclick="document.getElementById('file-input').click()" class="btn btn-primary btn-lg">
+                            <span class="material-symbols-outlined">folder_open</span>
+                            Choose from computer
+                        </button>
+                    </div>
+                    <div id="image-preview-section" style="display:none;margin-top:30px;">
+                        <div class="card">
+                            <div class="image-preview-area">
+                                <div class="preview-image-wrapper">
+                                    <img id="original-preview" alt="Original">
+                                </div>
+                                <div class="preview-info">
+                                    <div class="preview-info-label">Source resolution</div>
+                                    <div class="preview-info-value" id="original-dimensions">—</div>
+                                    <div class="preview-info-sub">Tip: a transparent or plain background gives the cleanest silhouette.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <div class="action-bar-left">
+                        <button onclick="resetAll()" class="btn btn-secondary">
+                            <span class="material-symbols-outlined">refresh</span>
+                            Start Over
+                        </button>
+                    </div>
+                    <div class="action-bar-right">
+                        <button onclick="goToStep(2)" class="btn btn-primary btn-lg" id="continue-to-config">
+                            Continue to Configure
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: CONFIGURE -->
+            <div class="step-content" id="step-2">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="material-symbols-outlined">tune</span>
+                        Configure Shapes
+                    </h2>
+                    <p class="section-description">Set how finely the sign is sliced and the real-world scale of each block.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Detail (blocks across)</div>
+                    <p class="section-description" style="margin-bottom:14px;">More blocks = finer letters but more parts to place.</p>
+                    <div class="range-row">
+                        <input type="range" id="cfg-detail" min="16" max="160" step="1" value="64" oninput="updateConfig()">
+                        <span class="range-val" id="cfg-detail-val">64 wide</span>
+                    </div>
+                </div>
+
+                <div class="card" id="threshold-card">
+                    <div class="card-title">Ink Threshold</div>
+                    <p class="section-description" style="margin-bottom:14px;">Controls how dark/opaque a region must be to count as part of the shape.</p>
+                    <div class="range-row">
+                        <input type="range" id="cfg-threshold" min="5" max="95" step="1" value="45" oninput="updateConfig()">
+                        <span class="range-val" id="cfg-threshold-val">45%</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Building Scale</div>
+                    <div class="field-row">
+                        <div class="field" style="max-width:200px;">
+                            <label>Studs per block</label>
+                            <input type="number" id="cfg-studs" value="0.5" min="0.05" step="0.05" oninput="updateConfig()">
+                        </div>
+                        <div class="field">
+                            <div class="preview-info-label">Overall sign size</div>
+                            <div class="preview-info-value" id="overall-size">—</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Preview</div>
+                    <div class="chart-wrap" style="max-height:40vh;">
+                        <canvas id="config-canvas"></canvas>
+                    </div>
+                    <div class="preview-info-sub" id="config-stats" style="margin-top:14px;">—</div>
+                </div>
+
+                <div class="action-bar">
+                    <div class="action-bar-left">
+                        <button onclick="goToStep(1)" class="btn btn-secondary">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                            Back
+                        </button>
+                    </div>
+                    <div class="action-bar-right">
+                        <button onclick="generate()" class="btn btn-primary btn-lg">
+                            Generate Shape Chart
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3: SHAPE CHART -->
+            <div class="step-content" id="step-3">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <span class="material-symbols-outlined">dashboard</span>
+                        Shape Chart
+                    </h2>
+                    <p class="section-description">A build blueprint of your sign. Same-sized parts share a colour so they are easy to count and place.</p>
+                </div>
+
+                <div class="export-header">
+                    <div class="export-info" id="sign-info">—</div>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <button onclick="openSaveModal()" class="btn btn-secondary">
+                            <span class="material-symbols-outlined">bookmark_add</span>
+                            Save Sign
+                        </button>
+                        <button onclick="copyChartImage()" class="btn btn-secondary">
+                            <span class="material-symbols-outlined">content_copy</span>
+                            Copy
+                        </button>
+                        <button onclick="downloadPartsList()" class="btn btn-secondary">
+                            <span class="material-symbols-outlined">description</span>
+                            Parts .txt
+                        </button>
+                        <button onclick="downloadChartImage()" class="btn btn-primary">
+                            <span class="material-symbols-outlined">download</span>
+                            Download PNG
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stat-grid" id="stat-grid" style="margin-bottom:18px;"></div>
+
+                <div class="card">
+                    <div class="view-toggles">
+                        <label class="view-toggle"><input type="checkbox" id="vt-grid" checked onchange="renderChart()"> Grid lines</label>
+                        <label class="view-toggle"><input type="checkbox" id="vt-color" checked onchange="renderChart()"> Colour parts</label>
+                        <label class="view-toggle"><input type="checkbox" id="vt-ghost" onchange="renderChart()"> Silhouette ghost</label>
+                        <label class="view-toggle"><input type="checkbox" id="vt-labels" onchange="renderChart()"> Size labels</label>
+                    </div>
+                </div>
+
+                <div class="chart-wrap">
+                    <canvas id="chart-canvas"></canvas>
+                </div>
+
+                <div class="card" style="margin-top:18px;">
+                    <div class="card-title">Parts Breakdown</div>
+                    <table class="parts-table">
+                        <thead>
+                            <tr>
+                                <th>Shape</th>
+                                <th>Size (blocks)</th>
+                                <th>Size (studs)</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="parts-tbody"></tbody>
+                    </table>
+                </div>
+
+                <div class="action-bar">
+                    <div class="action-bar-left">
+                        <button onclick="goToStep(2)" class="btn btn-secondary">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                            Back to Configure
+                        </button>
+                        <button onclick="resetAll()" class="btn btn-secondary">
+                            <span class="material-symbols-outlined">refresh</span>
+                            Start Over
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        </div>
+    </div>
+
+    <script>
+        // ========== GLOBAL STATE ==========
+        let mode = 'text';                 // 'text' | 'image'
+        let sourceCanvas = null;           // rasterized input (canvas)
+        let loadedImage = null;            // Image object for image mode
+        let grid = null;                   // { cols, rows, cells:Uint8Array } trimmed binary
+        let parts = { rects: [], wedges: [] };
+        let colorGroups = {};              // sizeKey -> { color, index } (rects), plus 'wedge'
+        let signId = '';
+
+        let currentStep = 1;
+        let maxUnlockedStep = 1;
+
+        let settings = { smooth: false, invert: false };
+        let cfg = { cols: 64, threshold: 0.45, studsPerCell: 0.5 };
+
+        const MAX_SOURCE = 1000;           // cap source canvas longest side
+
+        // ========== SETTINGS MODAL ==========
+        function toggleSettingsModal(show) {
+            const modal = document.getElementById('SettingsModal');
+            if (show) {
+                document.getElementById('setting-smooth').checked = settings.smooth;
+                document.getElementById('setting-invert').checked = settings.invert;
+                modal.classList.add('show');
+            } else {
+                modal.classList.remove('show');
+            }
+        }
+
+        function updateSettings() {
+            settings.smooth = document.getElementById('setting-smooth').checked;
+            settings.invert = document.getElementById('setting-invert').checked;
+
+            if (currentStep === 3 && grid) {
+                generate(true);
+            } else if (currentStep === 2 && sourceCanvas) {
+                sampleGrid();
+                renderConfigPreview();
+            }
+        }
+
+        // ========== TOAST ==========
+        function showToast(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icons = { success: 'check_circle', error: 'error', info: 'info' };
+            toast.innerHTML = `<span class="material-symbols-outlined">${icons[type]}</span><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        function showLoading(show = true) {
+            document.getElementById('loading-overlay').classList.toggle('active', show);
+        }
+
+        // ========== STEP NAVIGATION ==========
+        function updateTimeline() {
+            for (let i = 1; i <= 3; i++) {
+                const stepBtn = document.getElementById(`step-${i}-btn`);
+                const connector = document.getElementById(`connector-${i}`);
+                stepBtn.classList.remove('active', 'completed', 'disabled');
+                if (i < currentStep) {
+                    stepBtn.classList.add('completed');
+                    if (connector) connector.classList.add('completed');
+                } else if (i === currentStep) {
+                    stepBtn.classList.add('active');
+                    if (connector) connector.classList.remove('completed');
+                } else if (i <= maxUnlockedStep) {
+                    if (connector) connector.classList.remove('completed');
+                } else {
+                    stepBtn.classList.add('disabled');
+                    if (connector) connector.classList.remove('completed');
+                }
+            }
+        }
+
+        function goToStep(step) {
+            if (step > maxUnlockedStep) {
+                showToast('Complete the current step first', 'error');
+                return;
+            }
+            // Leaving step 1 -> ensure we have a usable source
+            if (step >= 2 && currentStep < step) {
+                if (!ensureSource()) return;
+            }
+
+            currentStep = step;
+            document.querySelectorAll('.step-content').forEach(s => s.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
+            updateTimeline();
+
+            if (step === 2) {
+                sampleGrid();
+                renderConfigPreview();
+            }
+        }
+
+        function unlockStep(step) {
+            if (step > maxUnlockedStep) {
+                maxUnlockedStep = step;
+                updateTimeline();
+            }
+        }
+
+        // ========== MODE TOGGLE ==========
+        function setMode(m) {
+            mode = m;
+            document.getElementById('mode-text-btn').classList.toggle('active', m === 'text');
+            document.getElementById('mode-image-btn').classList.toggle('active', m === 'image');
+            document.getElementById('text-panel').classList.toggle('active', m === 'text');
+            document.getElementById('image-panel').classList.toggle('active', m === 'image');
+
+            if (m === 'text') {
+                onTextInput();
+            } else {
+                // Only unlocked once an image is loaded
+                if (!loadedImage) {
+                    maxUnlockedStep = 1;
+                    updateTimeline();
+                } else {
+                    unlockStep(2);
+                }
+            }
+        }
+
+        // ========== TEXT INPUT ==========
+        function getDisplayText() {
+            let t = document.getElementById('sign-text').value;
+            if (document.getElementById('opt-upper').checked) t = t.toUpperCase();
+            return t;
+        }
+
+        function getFontStack() {
+            const sel = document.getElementById('font-select');
+            return sel.options[sel.selectedIndex].dataset.stack;
+        }
+
+        function onTextInput() {
+            const text = getDisplayText();
+            const stack = getFontStack();
+            const bold = document.getElementById('opt-bold').checked ? '700' : '400';
+
+            const preview = document.getElementById('font-preview');
+            preview.style.fontFamily = stack;
+            preview.style.fontWeight = bold;
+            preview.textContent = text.trim() ? text : 'Your sign';
+
+            if (mode === 'text') {
+                if (text.trim()) unlockStep(2);
+                else { maxUnlockedStep = 1; updateTimeline(); }
+            }
+        }
+
+        // ========== SOURCE RASTERIZATION ==========
+        function ensureSource() {
+            if (mode === 'text') {
+                const built = rasterizeText();
+                if (!built) {
+                    showToast('Enter some sign text first', 'error');
+                    return false;
+                }
+                sourceCanvas = built;
+                return true;
+            } else {
+                if (!loadedImage) {
+                    showToast('Upload an image first', 'error');
+                    return false;
+                }
+                sourceCanvas = rasterizeImage(loadedImage);
+                return true;
+            }
+        }
+
+        function rasterizeText() {
+            const text = getDisplayText();
+            if (!text.trim()) return null;
+
+            const lines = text.split('\n').map(l => l.replace(/\t/g, '    '));
+            const family = getFontStack();
+            const weight = document.getElementById('opt-bold').checked ? '700' : '400';
+            const fontPx = 200;
+            const fontCss = `${weight} ${fontPx}px ${family}`;
+            const lineGap = fontPx * 1.18;
+            const pad = 60;
+
+            const tmp = document.createElement('canvas');
+            const tctx = tmp.getContext('2d');
+            tctx.font = fontCss;
+
+            let maxW = 1;
+            for (const ln of lines) {
+                const w = tctx.measureText(ln || ' ').width;
+                if (w > maxW) maxW = w;
+            }
+
+            tmp.width = Math.ceil(maxW) + pad * 2;
+            tmp.height = Math.ceil(lineGap * lines.length) + pad * 2;
+
+            const ctx = tmp.getContext('2d');
+            ctx.font = fontCss;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#ffffff';
+            const cx = tmp.width / 2;
+            for (let i = 0; i < lines.length; i++) {
+                const y = pad + lineGap * (i + 0.5);
+                ctx.fillText(lines[i], cx, y);
+            }
+
+            return trimCanvasAlpha(tmp);
+        }
+
+        function rasterizeImage(img) {
+            let w = img.naturalWidth || img.width;
+            let h = img.naturalHeight || img.height;
+            const scale = Math.min(1, MAX_SOURCE / Math.max(w, h));
+            w = Math.max(1, Math.round(w * scale));
+            h = Math.max(1, Math.round(h * scale));
+            const c = document.createElement('canvas');
+            c.width = w; c.height = h;
+            const ctx = c.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            return c;
+        }
+
+        // Crop a canvas to the bounding box of non-transparent pixels
+        function trimCanvasAlpha(canvas) {
+            const ctx = canvas.getContext('2d');
+            const { width, height } = canvas;
+            const data = ctx.getImageData(0, 0, width, height).data;
+            let minX = width, minY = height, maxX = -1, maxY = -1;
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    if (data[(y * width + x) * 4 + 3] > 16) {
+                        if (x < minX) minX = x;
+                        if (x > maxX) maxX = x;
+                        if (y < minY) minY = y;
+                        if (y > maxY) maxY = y;
+                    }
+                }
+            }
+            if (maxX < 0) return null;
+            const cw = maxX - minX + 1;
+            const ch = maxY - minY + 1;
+            const out = document.createElement('canvas');
+            out.width = cw; out.height = ch;
+            out.getContext('2d').drawImage(canvas, minX, minY, cw, ch, 0, 0, cw, ch);
+            return out;
+        }
+
+        // ========== GRID SAMPLING ==========
+        function sampleGrid() {
+            if (!sourceCanvas) return;
+            const cols = cfg.cols;
+            const rows = Math.max(1, Math.round(cols * sourceCanvas.height / sourceCanvas.width));
+
+            const tmp = document.createElement('canvas');
+            tmp.width = cols; tmp.height = rows;
+            const tctx = tmp.getContext('2d');
+            tctx.imageSmoothingEnabled = true;
+            tctx.drawImage(sourceCanvas, 0, 0, cols, rows);
+            const data = tctx.getImageData(0, 0, cols, rows).data;
+
+            const cells = new Uint8Array(cols * rows);
+            for (let i = 0; i < cols * rows; i++) {
+                const o = i * 4;
+                const a = data[o + 3] / 255;
+                let ink;
+                if (mode === 'text') {
+                    ink = a; // white ink on transparent
+                } else {
+                    const lum = (0.299 * data[o] + 0.587 * data[o + 1] + 0.114 * data[o + 2]) / 255;
+                    ink = a * (1 - lum); // dark + opaque => ink
+                }
+                let filled = ink > cfg.threshold ? 1 : 0;
+                if (settings.invert) filled = filled ? 0 : 1;
+                cells[i] = filled;
+            }
+
+            grid = trimGrid(cells, cols, rows);
+        }
+
+        function trimGrid(cells, cols, rows) {
+            let minX = cols, minY = rows, maxX = -1, maxY = -1;
+            for (let y = 0; y < rows; y++) {
+                for (let x = 0; x < cols; x++) {
+                    if (cells[y * cols + x]) {
+                        if (x < minX) minX = x;
+                        if (x > maxX) maxX = x;
+                        if (y < minY) minY = y;
+                        if (y > maxY) maxY = y;
+                    }
+                }
+            }
+            if (maxX < 0) return { cols: 0, rows: 0, cells: new Uint8Array(0) };
+            const cw = maxX - minX + 1;
+            const ch = maxY - minY + 1;
+            const out = new Uint8Array(cw * ch);
+            for (let y = 0; y < ch; y++) {
+                for (let x = 0; x < cw; x++) {
+                    out[y * cw + x] = cells[(y + minY) * cols + (x + minX)];
+                }
+            }
+            return { cols: cw, rows: ch, cells: out };
+        }
+
+        // ========== CONFIG ==========
+        function updateConfig() {
+            cfg.cols = parseInt(document.getElementById('cfg-detail').value) || 64;
+            cfg.threshold = (parseInt(document.getElementById('cfg-threshold').value) || 45) / 100;
+            cfg.studsPerCell = parseFloat(document.getElementById('cfg-studs').value) || 0.5;
+
+            document.getElementById('cfg-detail-val').textContent = `${cfg.cols} wide`;
+            document.getElementById('cfg-threshold-val').textContent = `${Math.round(cfg.threshold * 100)}%`;
+
+            sampleGrid();
+            renderConfigPreview();
+        }
+
+        function renderConfigPreview() {
+            const canvas = document.getElementById('config-canvas');
+            const ctx = canvas.getContext('2d');
+            if (!grid || grid.cols === 0) {
+                canvas.width = 10; canvas.height = 10;
+                ctx.clearRect(0, 0, 10, 10);
+                document.getElementById('config-stats').textContent = 'No shape detected — try lowering the threshold or adding text.';
+                document.getElementById('overall-size').textContent = '—';
+                return;
+            }
+            const { cols, rows, cells } = grid;
+            const maxW = 760, maxH = 320;
+            const cs = Math.max(2, Math.floor(Math.min(maxW / cols, maxH / rows)));
+            canvas.width = cols * cs;
+            canvas.height = rows * cs;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(37, 99, 235, 0.9)';
+            for (let y = 0; y < rows; y++) {
+                for (let x = 0; x < cols; x++) {
+                    if (cells[y * cols + x]) ctx.fillRect(x * cs, y * cs, cs, cs);
+                }
+            }
+            if (cs >= 5) {
+                ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+                ctx.lineWidth = 1;
+                for (let x = 0; x <= cols; x++) { ctx.beginPath(); ctx.moveTo(x * cs, 0); ctx.lineTo(x * cs, canvas.height); ctx.stroke(); }
+                for (let y = 0; y <= rows; y++) { ctx.beginPath(); ctx.moveTo(0, y * cs); ctx.lineTo(canvas.width, y * cs); ctx.stroke(); }
+            }
+
+            let filled = 0;
+            for (let i = 0; i < cells.length; i++) filled += cells[i];
+            const spc = cfg.studsPerCell;
+            document.getElementById('config-stats').innerHTML =
+                `Grid: <strong>${cols} × ${rows}</strong> blocks • <strong>${filled}</strong> filled blocks` +
+                (settings.smooth ? ' • wedge smoothing on' : '');
+            document.getElementById('overall-size').textContent =
+                `${round2(cols * spc)} × ${round2(rows * spc)} studs`;
+        }
+
+        function round2(n) { return Math.round(n * 100) / 100; }
+
+        // ========== DECOMPOSITION ==========
+        function decompose() {
+            const { cols, rows, cells } = grid;
+            const occ = Uint8Array.from(cells);
+            let wedges = [];
+
+            if (settings.smooth) {
+                fillNotches(occ, cols, rows);
+                wedges = detectWedges(occ, cols, rows);
+            }
+
+            const rects = greedyRects(occ, cols, rows);
+            parts = { rects, wedges };
+        }
+
+        // Fill empty cells that have 3+ orthogonal filled neighbours (closes 1-cell gaps)
+        function fillNotches(occ, cols, rows) {
+            for (let pass = 0; pass < 2; pass++) {
+                const snap = Uint8Array.from(occ);
+                let changed = false;
+                for (let y = 0; y < rows; y++) {
+                    for (let x = 0; x < cols; x++) {
+                        const i = y * cols + x;
+                        if (snap[i]) continue;
+                        let n = 0;
+                        if (y > 0 && snap[i - cols]) n++;
+                        if (y < rows - 1 && snap[i + cols]) n++;
+                        if (x > 0 && snap[i - 1]) n++;
+                        if (x < cols - 1 && snap[i + 1]) n++;
+                        if (n >= 3) { occ[i] = 1; changed = true; }
+                    }
+                }
+                if (!changed) break;
+            }
+        }
+
+        // Empty cells with exactly two perpendicular filled neighbours become wedges
+        function detectWedges(occ, cols, rows) {
+            const wedges = [];
+            for (let y = 0; y < rows; y++) {
+                for (let x = 0; x < cols; x++) {
+                    const i = y * cols + x;
+                    if (occ[i]) continue;
+                    const up = y > 0 && occ[i - cols];
+                    const down = y < rows - 1 && occ[i + cols];
+                    const left = x > 0 && occ[i - 1];
+                    const right = x < cols - 1 && occ[i + 1];
+                    const count = (up ? 1 : 0) + (down ? 1 : 0) + (left ? 1 : 0) + (right ? 1 : 0);
+                    if (count !== 2) continue;
+                    if ((left && right) || (up && down)) continue; // not perpendicular
+                    let corner;
+                    if (left && up) corner = 'tl';
+                    else if (right && up) corner = 'tr';
+                    else if (left && down) corner = 'bl';
+                    else corner = 'br';
+                    wedges.push({ x, y, corner });
+                }
+            }
+            return wedges;
+        }
+
+        // Greedy maximal-rectangle covering of all filled cells
+        function greedyRects(occ, cols, rows) {
+            const remaining = Uint8Array.from(occ);
+            const rects = [];
+            let guard = cols * rows + 5;
+            while (guard-- > 0) {
+                const best = largestRect(remaining, cols, rows);
+                if (!best || best.area === 0) break;
+                rects.push({ x: best.x, y: best.y, w: best.w, h: best.h });
+                for (let y = best.y; y < best.y + best.h; y++) {
+                    for (let x = best.x; x < best.x + best.w; x++) {
+                        remaining[y * cols + x] = 0;
+                    }
+                }
+            }
+            return rects;
+        }
+
+        function largestRect(occ, cols, rows) {
+            const heights = new Array(cols).fill(0);
+            let best = { area: 0, x: 0, y: 0, w: 0, h: 0 };
+            for (let y = 0; y < rows; y++) {
+                for (let x = 0; x < cols; x++) {
+                    heights[x] = occ[y * cols + x] ? heights[x] + 1 : 0;
+                }
+                const r = maxHist(heights);
+                if (r.area > best.area) {
+                    best = { area: r.area, x: r.left, y: y - r.height + 1, w: r.width, h: r.height };
+                }
+            }
+            return best;
+        }
+
+        function maxHist(heights) {
+            const stack = [];
+            let best = { area: 0, left: 0, width: 0, height: 0 };
+            const n = heights.length;
+            for (let i = 0; i <= n; i++) {
+                const h = i === n ? 0 : heights[i];
+                let start = i;
+                while (stack.length && stack[stack.length - 1].h > h) {
+                    const top = stack.pop();
+                    const area = top.h * (i - top.start);
+                    if (area > best.area) best = { area, left: top.start, width: i - top.start, height: top.h };
+                    start = top.start;
+                }
+                stack.push({ start, h });
+            }
+            return best;
+        }
+
+        // ========== COLOURS ==========
+        function buildColorGroups() {
+            colorGroups = {};
+            // size groups sorted by area desc for stable, meaningful colours
+            const sizes = {};
+            for (const r of parts.rects) {
+                const k = `${r.w}x${r.h}`;
+                if (!sizes[k]) sizes[k] = { w: r.w, h: r.h, count: 0 };
+                sizes[k].count++;
+            }
+            const ordered = Object.keys(sizes).sort((a, b) =>
+                (sizes[b].w * sizes[b].h) - (sizes[a].w * sizes[a].h));
+            ordered.forEach((k, idx) => {
+                colorGroups[k] = { color: hueColor(idx), count: sizes[k].count, w: sizes[k].w, h: sizes[k].h };
+            });
+            if (parts.wedges.length) {
+                colorGroups['wedge'] = { color: 'hsl(28, 80%, 58%)', count: parts.wedges.length };
+            }
+        }
+
+        function hueColor(i) {
+            const hue = (i * 67) % 360;
+            return `hsl(${hue}, 62%, 60%)`;
+        }
+
+        function rectColor(r) {
+            const g = colorGroups[`${r.w}x${r.h}`];
+            return g ? g.color : 'hsl(210, 60%, 60%)';
+        }
+
+        // ========== GENERATE ==========
+        function generate(keepStep) {
+            if (currentStep < 2 && !ensureSource()) return;
+            sampleGrid();
+            if (!grid || grid.cols === 0) {
+                showToast('No shape detected to slice', 'error');
+                return;
+            }
+
+            showLoading(true);
+            setTimeout(() => {
+                try {
+                    decompose();
+                    buildColorGroups();
+                    if (!signId) {
+                        signId = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+                    }
+
+                    renderStats();
+                    buildPartsTable();
+                    renderChart();
+
+                    unlockStep(3);
+                    if (!keepStep) goToStep(3);
+
+                    showLoading(false);
+                    const total = parts.rects.length + parts.wedges.length;
+                    showToast(`Sliced into ${total} parts`, 'success');
+                } catch (e) {
+                    showLoading(false);
+                    showToast('Error generating chart: ' + e.message, 'error');
+                    console.error(e);
+                }
+            }, 40);
+        }
+
+        function renderStats() {
+            const { cols, rows } = grid;
+            const spc = cfg.studsPerCell;
+            const total = parts.rects.length + parts.wedges.length;
+            const sizeCount = Object.keys(colorGroups).filter(k => k !== 'wedge').length;
+
+            document.getElementById('sign-info').innerHTML =
+                `Grid <strong>${cols}×${rows}</strong> • Scale <strong>${spc}</strong> studs/block • ID <strong>${signId}</strong>`;
+
+            const stats = [
+                { v: total, l: 'Total parts' },
+                { v: parts.rects.length, l: 'Rectangles' },
+                { v: parts.wedges.length, l: 'Wedges' },
+                { v: sizeCount, l: 'Unique sizes' },
+                { v: `${round2(cols * spc)}×${round2(rows * spc)}`, l: 'Size (studs)' }
+            ];
+            document.getElementById('stat-grid').innerHTML = stats.map(s =>
+                `<div class="stat"><div class="v">${s.v}</div><div class="l">${s.l}</div></div>`).join('');
+        }
+
+        function buildPartsTable() {
+            const spc = cfg.studsPerCell;
+            const rows = [];
+            const ordered = Object.keys(colorGroups).filter(k => k !== 'wedge')
+                .sort((a, b) => colorGroups[b].w * colorGroups[b].h - colorGroups[a].w * colorGroups[a].h);
+            for (const k of ordered) {
+                const g = colorGroups[k];
+                rows.push(`<tr>
+                    <td><span class="swatch" style="background:${g.color}"></span>Rectangle</td>
+                    <td>${g.w} × ${g.h}</td>
+                    <td>${round2(g.w * spc)} × ${round2(g.h * spc)}</td>
+                    <td>${g.count}</td>
+                </tr>`);
+            }
+            if (colorGroups['wedge']) {
+                const g = colorGroups['wedge'];
+                rows.push(`<tr>
+                    <td><span class="swatch wedge" style="background:${g.color}"></span>Wedge</td>
+                    <td>1 × 1</td>
+                    <td>${round2(spc)} × ${round2(spc)}</td>
+                    <td>${g.count}</td>
+                </tr>`);
+            }
+            document.getElementById('parts-tbody').innerHTML = rows.join('');
+        }
+
+        // ========== CHART RENDER ==========
+        function chartCellSize() {
+            const { cols, rows } = grid;
+            const maxW = 1100, maxH = 900;
+            return Math.max(4, Math.floor(Math.min(maxW / cols, maxH / rows)));
+        }
+
+        function renderChart() {
+            if (!grid || grid.cols === 0) return;
+            const { cols, rows, cells } = grid;
+            const cs = chartCellSize();
+            const canvas = document.getElementById('chart-canvas');
+            canvas.width = cols * cs;
+            canvas.height = rows * cs;
+            const ctx = canvas.getContext('2d');
+
+            const showGrid = document.getElementById('vt-grid').checked;
+            const showColor = document.getElementById('vt-color').checked;
+            const showGhost = document.getElementById('vt-ghost').checked;
+            const showLabels = document.getElementById('vt-labels').checked;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Silhouette ghost
+            if (showGhost) {
+                ctx.fillStyle = 'rgba(0,0,0,0.10)';
+                for (let y = 0; y < rows; y++)
+                    for (let x = 0; x < cols; x++)
+                        if (cells[y * cols + x]) ctx.fillRect(x * cs, y * cs, cs, cs);
+            }
+
+            // Rectangles
+            parts.rects.forEach((r, idx) => {
+                ctx.fillStyle = showColor ? rectColor(r) : 'rgba(37,99,235,0.65)';
+                ctx.fillRect(r.x * cs, r.y * cs, r.w * cs, r.h * cs);
+                ctx.strokeStyle = 'rgba(0,0,0,0.55)';
+                ctx.lineWidth = 1.5;
+                ctx.strokeRect(r.x * cs + 0.75, r.y * cs + 0.75, r.w * cs - 1.5, r.h * cs - 1.5);
+
+                if (showLabels && r.w * cs >= 26 && r.h * cs >= 18) {
+                    ctx.fillStyle = 'rgba(0,0,0,0.75)';
+                    ctx.font = `${Math.max(9, Math.min(cs, 14))}px Roboto, sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(`${r.w}×${r.h}`, r.x * cs + r.w * cs / 2, r.y * cs + r.h * cs / 2);
+                }
+            });
+
+            // Wedges
+            if (parts.wedges.length) {
+                const wColor = showColor ? (colorGroups['wedge'] ? colorGroups['wedge'].color : 'hsl(28,80%,58%)') : 'rgba(37,99,235,0.65)';
+                parts.wedges.forEach(w => {
+                    const x0 = w.x * cs, y0 = w.y * cs, x1 = x0 + cs, y1 = y0 + cs;
+                    ctx.beginPath();
+                    if (w.corner === 'tl') { ctx.moveTo(x0, y0); ctx.lineTo(x1, y0); ctx.lineTo(x0, y1); }
+                    else if (w.corner === 'tr') { ctx.moveTo(x1, y0); ctx.lineTo(x0, y0); ctx.lineTo(x1, y1); }
+                    else if (w.corner === 'bl') { ctx.moveTo(x0, y1); ctx.lineTo(x0, y0); ctx.lineTo(x1, y1); }
+                    else { ctx.moveTo(x1, y1); ctx.lineTo(x1, y0); ctx.lineTo(x0, y1); }
+                    ctx.closePath();
+                    ctx.fillStyle = wColor;
+                    ctx.fill();
+                    ctx.strokeStyle = 'rgba(0,0,0,0.55)';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                });
+            }
+
+            // Grid lines
+            if (showGrid) {
+                ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+                ctx.lineWidth = 1;
+                for (let x = 0; x <= cols; x++) { ctx.beginPath(); ctx.moveTo(x * cs, 0); ctx.lineTo(x * cs, canvas.height); ctx.stroke(); }
+                for (let y = 0; y <= rows; y++) { ctx.beginPath(); ctx.moveTo(0, y * cs); ctx.lineTo(canvas.width, y * cs); ctx.stroke(); }
+            }
+        }
+
+        // ========== IMAGE UPLOAD ==========
+        function loadImage(src) {
+            showLoading(true);
+            const img = new Image();
+            img.onload = () => {
+                loadedImage = img;
+                document.getElementById('original-preview').src = src;
+                document.getElementById('original-dimensions').textContent = `${img.naturalWidth} × ${img.naturalHeight}`;
+                document.getElementById('image-preview-section').style.display = 'block';
+                unlockStep(2);
+                showLoading(false);
+                showToast('Image loaded', 'success');
+            };
+            img.onerror = () => { showLoading(false); showToast('Failed to load image', 'error'); };
+            img.src = src;
+        }
+
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) loadImage(URL.createObjectURL(e.target.files[0]));
+        });
+
+        const uploadArea = document.getElementById('upload-area');
+        uploadArea.addEventListener('click', () => document.getElementById('file-input').click());
+        uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) loadImage(URL.createObjectURL(file));
+        });
+
+        document.addEventListener('paste', (e) => {
+            if (mode !== 'image') return;
+            const items = e.clipboardData.items;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    loadImage(URL.createObjectURL(items[i].getAsFile()));
+                    return;
+                }
+            }
+        });
+
+        // ========== EXPORTS ==========
+        function downloadChartImage() {
+            const canvas = document.getElementById('chart-canvas');
+            const link = document.createElement('a');
+            link.download = `sign_${signId}_chart.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            showToast('Chart downloaded', 'success');
+        }
+
+        async function copyChartImage() {
+            try {
+                const canvas = document.getElementById('chart-canvas');
+                const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+                await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                showToast('Chart copied to clipboard', 'success');
+            } catch (e) {
+                showToast('Copy failed: ' + e.message, 'error');
+            }
+        }
+
+        function downloadPartsList() {
+            const { cols, rows } = grid;
+            const spc = cfg.studsPerCell;
+            const total = parts.rects.length + parts.wedges.length;
+            const lines = [];
+            lines.push('BS.EC Sign Generator — Parts List');
+            lines.push('==================================');
+            lines.push(`Sign ID:        ${signId}`);
+            lines.push(`Grid:           ${cols} x ${rows} blocks`);
+            lines.push(`Scale:          ${spc} studs per block`);
+            lines.push(`Overall size:   ${round2(cols * spc)} x ${round2(rows * spc)} studs`);
+            lines.push(`Total parts:    ${total}  (${parts.rects.length} rectangles, ${parts.wedges.length} wedges)`);
+            lines.push('');
+            lines.push('PARTS BY SIZE');
+            lines.push('-------------');
+            const ordered = Object.keys(colorGroups).filter(k => k !== 'wedge')
+                .sort((a, b) => colorGroups[b].w * colorGroups[b].h - colorGroups[a].w * colorGroups[a].h);
+            for (const k of ordered) {
+                const g = colorGroups[k];
+                lines.push(`  ${String(g.count).padStart(4)} x  rectangle ${g.w}x${g.h} blocks  (${round2(g.w * spc)} x ${round2(g.h * spc)} studs)`);
+            }
+            if (colorGroups['wedge']) {
+                lines.push(`  ${String(colorGroups['wedge'].count).padStart(4)} x  wedge 1x1 blocks  (${round2(spc)} x ${round2(spc)} studs)`);
+            }
+            lines.push('');
+            lines.push('PLACEMENT (top-left block col,row -> width x height)');
+            lines.push('----------------------------------------------------');
+            parts.rects.forEach((r, i) => {
+                lines.push(`  R${String(i + 1).padStart(3, '0')}  (${r.x},${r.y})  ${r.w}x${r.h}`);
+            });
+            parts.wedges.forEach((w, i) => {
+                lines.push(`  W${String(i + 1).padStart(3, '0')}  (${w.x},${w.y})  wedge-${w.corner}`);
+            });
+
+            const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.download = `sign_${signId}_parts.txt`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+            showToast('Parts list downloaded', 'success');
+        }
+
+        // ========== CUSTOM FONTS ==========
+        const FONTS_KEY = 'bsecsign_fonts';
+        let fontMethod = 'file';
+        let pendingFontFile = null;   // { dataURL, name }
+
+        function getCustomFonts() {
+            try { return JSON.parse(localStorage.getItem(FONTS_KEY) || '[]'); }
+            catch (e) { return []; }
+        }
+        function setCustomFonts(arr) { localStorage.setItem(FONTS_KEY, JSON.stringify(arr)); }
+
+        function toggleFontModal(show) {
+            document.getElementById('FontModal').classList.toggle('show', show);
+        }
+
+        function openFontModal() {
+            pendingFontFile = null;
+            document.getElementById('font-file-name').textContent = 'Click or drop a font file here';
+            document.getElementById('font-file-input').value = '';
+            document.getElementById('font-url').value = '';
+            document.getElementById('font-code').value = '';
+            document.getElementById('font-name').value = '';
+            setFontMethod('file');
+            renderCustomFontList();
+            toggleFontModal(true);
+        }
+
+        function setFontMethod(m) {
+            fontMethod = m;
+            document.getElementById('fm-file-btn').classList.toggle('active', m === 'file');
+            document.getElementById('fm-url-btn').classList.toggle('active', m === 'url');
+            document.getElementById('fm-code-btn').classList.toggle('active', m === 'code');
+            document.getElementById('fm-file').style.display = m === 'file' ? 'block' : 'none';
+            document.getElementById('fm-url').style.display = m === 'url' ? 'block' : 'none';
+            document.getElementById('fm-code').style.display = m === 'code' ? 'block' : 'none';
+        }
+
+        function sanitizeFamily(name) {
+            return String(name || '').replace(/["']/g, '').trim();
+        }
+
+        function extractGoogleFamily(url) {
+            const m = url.match(/[?&]family=([^&:]+)/i);
+            return m ? decodeURIComponent(m[1]).replace(/\+/g, ' ') : '';
+        }
+
+        // Turn the active modal panel into a storable font record (may throw)
+        function buildFontRecord() {
+            let name = sanitizeFamily(document.getElementById('font-name').value);
+            let kind, src, family = name;
+
+            if (fontMethod === 'file') {
+                if (!pendingFontFile) throw new Error('Choose a font file first');
+                kind = 'fontface';
+                src = pendingFontFile.dataURL;
+                if (!family) family = sanitizeFamily(pendingFontFile.name.replace(/\.[^.]+$/, ''));
+            } else if (fontMethod === 'url') {
+                const u = document.getElementById('font-url').value.trim();
+                if (!u) throw new Error('Enter a font URL');
+                if (/\.(ttf|otf|woff2?|eot)(\?|#|$)/i.test(u)) {
+                    kind = 'fontface'; src = u;
+                    if (!family) throw new Error('Enter a name for this font');
+                } else {
+                    kind = 'link'; src = u;
+                    if (!family) family = sanitizeFamily(extractGoogleFamily(u));
+                    if (!family) throw new Error('Enter the font name');
+                }
+            } else { // code / paste
+                const t = document.getElementById('font-code').value.trim();
+                if (!t) throw new Error('Paste a link, @font-face, or font name');
+                const linkHref = (t.match(/<link[^>]+href=["']([^"']+)["']/i) || [])[1];
+                const importUrl = (t.match(/@import\s+(?:url\()?\s*["']?([^"')\s]+)["']?\s*\)?/i) || [])[1];
+                if (/@font-face/i.test(t)) {
+                    kind = 'style'; src = t;
+                    if (!family) {
+                        const m = t.match(/font-family\s*:\s*["']?([^;"'}]+)["']?/i);
+                        family = m ? sanitizeFamily(m[1]) : '';
+                    }
+                    if (!family) throw new Error('Enter the font name');
+                } else if (linkHref) {
+                    kind = 'link'; src = linkHref;
+                    if (!family) family = sanitizeFamily(extractGoogleFamily(linkHref));
+                    if (!family) throw new Error('Enter the font name');
+                } else if (importUrl) {
+                    kind = 'link'; src = importUrl;
+                    if (!family) family = sanitizeFamily(extractGoogleFamily(importUrl));
+                    if (!family) throw new Error('Enter the font name');
+                } else {
+                    // Treat the pasted text as a Google Fonts family name
+                    family = family || sanitizeFamily(t);
+                    kind = 'link';
+                    src = 'https://fonts.googleapis.com/css2?family=' +
+                        encodeURIComponent(family).replace(/%20/g, '+') + ':wght@400;700&display=swap';
+                }
+            }
+
+            if (!family) throw new Error('Enter the font name');
+            return { kind, src, family };
+        }
+
+        function ensureFontOption(rec) {
+            let group = document.getElementById('custom-fonts-group');
+            const sel = document.getElementById('font-select');
+            if (!group) {
+                group = document.createElement('optgroup');
+                group.id = 'custom-fonts-group';
+                group.label = 'Custom Fonts';
+                sel.appendChild(group);
+            }
+            if ([...group.children].some(o => o.value === rec.family)) return;
+            const opt = document.createElement('option');
+            opt.value = rec.family;
+            opt.dataset.stack = `'${rec.family}', sans-serif`;
+            opt.dataset.custom = rec.id;
+            opt.textContent = rec.family + ' (custom)';
+            group.appendChild(opt);
+        }
+
+        function registerCustomFont(rec) {
+            if (rec.kind === 'fontface') {
+                try {
+                    const face = new FontFace(rec.family, `url(${rec.src})`);
+                    face.load().then(ff => document.fonts.add(ff)).catch(() => {});
+                } catch (e) { /* invalid source */ }
+            } else if (rec.kind === 'link') {
+                if (!document.querySelector(`link[data-cf="${rec.id}"]`)) {
+                    const l = document.createElement('link');
+                    l.rel = 'stylesheet';
+                    l.href = rec.src;
+                    l.dataset.cf = rec.id;
+                    document.head.appendChild(l);
+                }
+            } else if (rec.kind === 'style') {
+                if (!document.querySelector(`style[data-cf="${rec.id}"]`)) {
+                    const st = document.createElement('style');
+                    st.dataset.cf = rec.id;
+                    st.textContent = rec.src;
+                    document.head.appendChild(st);
+                }
+            }
+            ensureFontOption(rec);
+        }
+
+        async function confirmAddFont() {
+            let rec;
+            try { rec = buildFontRecord(); }
+            catch (e) { showToast(e.message, 'error'); return; }
+
+            rec.id = 'cf' + Date.now().toString(36) + Math.floor(Math.random() * 1000);
+            registerCustomFont(rec);
+            try { await document.fonts.load(`24px "${rec.family}"`); } catch (e) {}
+
+            const fonts = getCustomFonts();
+            fonts.unshift(rec);
+            try { setCustomFonts(fonts); }
+            catch (e) { showToast('Font added for now, but storage is full so it will not persist after reload', 'info'); }
+
+            renderCustomFontList();
+            selectFont(rec.family);
+            if (mode === 'text') onTextInput();
+            toggleFontModal(false);
+            showToast(`Added font “${rec.family}”`, 'success');
+        }
+
+        function removeCustomFont(id) {
+            const fonts = getCustomFonts();
+            const rec = fonts.find(f => f.id === id);
+            setCustomFonts(fonts.filter(f => f.id !== id));
+            // Remove injected nodes + dropdown option
+            document.querySelectorAll(`link[data-cf="${id}"],style[data-cf="${id}"]`).forEach(n => n.remove());
+            if (rec) {
+                const group = document.getElementById('custom-fonts-group');
+                if (group) {
+                    [...group.children].forEach(o => { if (o.dataset.custom === id) o.remove(); });
+                    if (!group.children.length) group.remove();
+                }
+                const sel = document.getElementById('font-select');
+                if (sel.value === rec.family) { sel.selectedIndex = 0; if (mode === 'text') onTextInput(); }
+            }
+            renderCustomFontList();
+            showToast('Custom font removed', 'info');
+        }
+
+        function renderCustomFontList() {
+            const fonts = getCustomFonts();
+            const el = document.getElementById('custom-font-list');
+            if (!fonts.length) { el.innerHTML = ''; return; }
+            el.innerHTML = '<label>Your custom fonts</label>' + fonts.map(f => `
+                <div class="setting-row">
+                    <div style="font-family:'${escapeHtml(f.family)}', sans-serif;font-size:17px;color:rgba(0,0,0,0.8);">${escapeHtml(f.family)}</div>
+                    <button class="btn btn-secondary btn-icon" onclick="removeCustomFont('${f.id}')" title="Remove font">
+                        <span class="material-symbols-outlined">delete</span>
+                    </button>
+                </div>`).join('');
+        }
+
+        function initCustomFonts() {
+            const fonts = getCustomFonts();
+            fonts.slice().reverse().forEach(registerCustomFont); // keep stored order in dropdown
+            if (fonts.length) {
+                Promise.all(fonts.map(f => document.fonts.load(`24px "${f.family}"`).catch(() => {})))
+                    .then(() => { if (mode === 'text') onTextInput(); });
+            }
+        }
+
+        // Font file picker + drag/drop
+        function readFontFile(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                pendingFontFile = { dataURL: reader.result, name: file.name };
+                document.getElementById('font-file-name').textContent = file.name;
+                const nf = document.getElementById('font-name');
+                if (!nf.value.trim()) nf.value = file.name.replace(/\.[^.]+$/, '');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        document.getElementById('font-file-input').addEventListener('change', e => readFontFile(e.target.files[0]));
+        (function () {
+            const drop = document.getElementById('font-drop');
+            drop.addEventListener('click', () => document.getElementById('font-file-input').click());
+            drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('dragover'); });
+            drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
+            drop.addEventListener('drop', e => {
+                e.preventDefault();
+                drop.classList.remove('dragover');
+                readFontFile(e.dataTransfer.files[0]);
+            });
+        })();
+
+        // ========== SAVED SIGNS ==========
+        const SAVES_KEY = 'bsecsign_saves';
+
+        function getSaves() {
+            try { return JSON.parse(localStorage.getItem(SAVES_KEY) || '[]'); }
+            catch (e) { return []; }
+        }
+        function setSaves(arr) { localStorage.setItem(SAVES_KEY, JSON.stringify(arr)); }
+
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, c =>
+                ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        function renderSaves() {
+            const saves = getSaves();
+            const container = document.getElementById('saves-container');
+            document.getElementById('saves-count').textContent = saves.length ? `${saves.length} saved` : '';
+            if (!saves.length) {
+                container.innerHTML = '<div class="saves-empty">No saved signs yet.<br>Generate a chart and click &ldquo;Save Sign&rdquo; to keep it here.</div>';
+                return;
+            }
+            container.innerHTML = '<div class="saves-grid">' + saves.map(s => `
+                <div class="save-card">
+                    <img class="save-thumb" src="${s.thumb}" alt="${escapeHtml(s.name)} preview">
+                    <div class="save-body">
+                        <div class="save-name" title="${escapeHtml(s.name)}">${escapeHtml(s.name)}</div>
+                        <div class="save-meta">${s.stats.parts} parts &bull; ${s.stats.cols}&times;${s.stats.rows} &bull; ${s.mode === 'text' ? 'text' : 'image'}</div>
+                        <div class="save-actions">
+                            <button class="btn btn-primary" onclick="loadSign('${s.id}')">
+                                <span class="material-symbols-outlined">open_in_new</span>Load
+                            </button>
+                            <button class="btn btn-secondary del" onclick="deleteSign('${s.id}')" title="Delete">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>`).join('') + '</div>';
+        }
+
+        function toggleSaveModal(show) {
+            document.getElementById('SaveModal').classList.toggle('show', show);
+        }
+
+        function openSaveModal() {
+            if (!grid || grid.cols === 0) { showToast('Generate a chart first', 'error'); return; }
+            let def = mode === 'text'
+                ? (document.getElementById('sign-text').value.split('\n')[0].trim() || ('Sign ' + signId))
+                : ('Sign ' + signId);
+            const nameInput = document.getElementById('save-name');
+            nameInput.value = def;
+            toggleSaveModal(true);
+            setTimeout(() => { nameInput.focus(); nameInput.select(); }, 60);
+        }
+
+        // Downscale a canvas to a storable thumbnail / source data URL
+        function canvasToDataURL(src, maxSide, type, quality) {
+            const sc = Math.min(1, maxSide / Math.max(src.width, src.height));
+            const c = document.createElement('canvas');
+            c.width = Math.max(1, Math.round(src.width * sc));
+            c.height = Math.max(1, Math.round(src.height * sc));
+            c.getContext('2d').drawImage(src, 0, 0, c.width, c.height);
+            return c.toDataURL(type || 'image/png', quality);
+        }
+
+        function confirmSaveSign() {
+            if (!grid || grid.cols === 0) { showToast('Generate a chart first', 'error'); return; }
+            let name = document.getElementById('save-name').value.trim();
+            if (!name) name = 'Sign ' + signId;
+
+            const rec = {
+                id: 's' + Date.now().toString(36) + Math.floor(Math.random() * 1000),
+                name: name,
+                createdAt: Date.now(),
+                mode: mode,
+                cfg: { ...cfg },
+                settings: { ...settings },
+                thumb: canvasToDataURL(document.getElementById('chart-canvas'), 240, 'image/png'),
+                stats: {
+                    parts: parts.rects.length + parts.wedges.length,
+                    rects: parts.rects.length,
+                    wedges: parts.wedges.length,
+                    cols: grid.cols,
+                    rows: grid.rows
+                }
+            };
+
+            if (mode === 'text') {
+                rec.text = document.getElementById('sign-text').value;
+                rec.font = document.getElementById('font-select').value;
+                rec.upper = document.getElementById('opt-upper').checked;
+                rec.bold = document.getElementById('opt-bold').checked;
+            } else {
+                // PNG preserves transparency so the silhouette re-samples correctly
+                rec.imageData = canvasToDataURL(sourceCanvas || rasterizeImage(loadedImage), 520, 'image/png');
+            }
+
+            const saves = getSaves();
+            saves.unshift(rec);
+            try {
+                setSaves(saves);
+            } catch (e) {
+                showToast('Storage full — could not save sign', 'error');
+                return;
+            }
+            renderSaves();
+            toggleSaveModal(false);
+            showToast('Sign saved', 'success');
+        }
+
+        function deleteSign(id) {
+            if (!confirm('Delete this saved sign? This cannot be undone.')) return;
+            setSaves(getSaves().filter(s => s.id !== id));
+            renderSaves();
+            showToast('Sign deleted', 'info');
+        }
+
+        function selectFont(font) {
+            const sel = document.getElementById('font-select');
+            for (const o of sel.options) { if (o.value === font) { sel.value = font; return; } }
+        }
+
+        function applySavedConfig(rec) {
+            settings.smooth = !!rec.settings.smooth;
+            settings.invert = !!rec.settings.invert;
+            cfg.cols = rec.cfg.cols;
+            cfg.threshold = rec.cfg.threshold;
+            cfg.studsPerCell = rec.cfg.studsPerCell;
+            document.getElementById('cfg-detail').value = cfg.cols;
+            document.getElementById('cfg-threshold').value = Math.round(cfg.threshold * 100);
+            document.getElementById('cfg-studs').value = cfg.studsPerCell;
+            updateConfigLabels();
+        }
+
+        function loadSign(id) {
+            const rec = getSaves().find(s => s.id === id);
+            if (!rec) { showToast('Saved sign not found', 'error'); return; }
+
+            showLoading(true);
+            applySavedConfig(rec);
+
+            if (rec.mode === 'text') {
+                setMode('text');
+                document.getElementById('sign-text').value = rec.text || '';
+                document.getElementById('opt-upper').checked = !!rec.upper;
+                document.getElementById('opt-bold').checked = !!rec.bold;
+                selectFont(rec.font);
+                onTextInput();
+                signId = rec.id.replace(/\D/g, '').slice(-6) || signId;
+                showLoading(false);
+                generate();
+            } else {
+                const img = new Image();
+                img.onload = () => {
+                    loadedImage = img;
+                    setMode('image');
+                    document.getElementById('original-preview').src = rec.imageData;
+                    document.getElementById('original-dimensions').textContent = `${img.naturalWidth} × ${img.naturalHeight}`;
+                    document.getElementById('image-preview-section').style.display = 'block';
+                    unlockStep(2);
+                    signId = rec.id.replace(/\D/g, '').slice(-6) || signId;
+                    showLoading(false);
+                    generate();
+                };
+                img.onerror = () => { showLoading(false); showToast('Failed to load saved image', 'error'); };
+                img.src = rec.imageData;
+            }
+        }
+
+        // ========== RESET ==========
+        function resetAll() {
+            sourceCanvas = null;
+            loadedImage = null;
+            grid = null;
+            parts = { rects: [], wedges: [] };
+            signId = '';
+            currentStep = 1;
+            maxUnlockedStep = 1;
+
+            document.getElementById('image-preview-section').style.display = 'none';
+            document.getElementById('file-input').value = '';
+            document.getElementById('parts-tbody').innerHTML = '';
+            document.getElementById('stat-grid').innerHTML = '';
+
+            goToStep(1);
+            onTextInput();
+            showToast('Reset complete', 'info');
+        }
+
+        // ========== RESIZE ==========
+        let resizeTimer = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                if (currentStep === 2) renderConfigPreview();
+                else if (currentStep === 3) renderChart();
+            }, 150);
+        });
+
+        // ========== INIT ==========
+        window.onload = async () => {
+            updateTimeline();
+            updateConfigLabels();
+            renderSaves();
+            initCustomFonts();
+            // Warm up fonts so the first preview/raster is accurate
+            try { await document.fonts.ready; } catch (e) {}
+            onTextInput();
+            console.log('%cBS.EC Sign Generator ready.', 'color:#666;font-size:12px');
+        };
+
+        function updateConfigLabels() {
+            document.getElementById('cfg-detail-val').textContent = `${cfg.cols} wide`;
+            document.getElementById('cfg-threshold-val').textContent = `${Math.round(cfg.threshold * 100)}%`;
+        }
+    </script>
+</body>
+</html>
