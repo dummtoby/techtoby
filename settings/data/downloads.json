@@ -1,11 +1,23 @@
 [
     {
+        "id": "techtoby-os",
+        "name": "Techtoby OS",
+        "description": "The desktop version of Techtoby Corp.",
+        "author": "@dummtoby",
+        "difficulty": "easy",
+        "screenshots": [],
+        "github": "https://github.com/dummtoby/techtoby"
+    },
+    {
         "id": "digiteklab",
         "name": "DigiTek Lab",
         "description": "A tool to allow the easy creation of cinematics.",
         "author": "@dummtoby",
         "difficulty": "medium",
-        "screenshots": [],
-        "link": ""
+        "screenshots": [
+            "https://cdn.shawnyxx.dev/techtoby/digitek-lab/corporate/screenshots/digitek-lab-screenshot-1.png",
+            "https://cdn.shawnyxx.dev/techtoby/digitek-lab/corporate/screenshots/digitek-lab-screenshot-2.png"
+        ],
+        "github": "https://github.com/dummtoby/digitek-lab"
     }
 ]

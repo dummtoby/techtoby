@@ -696,6 +696,10 @@
                 <span class="material-symbols-outlined" style="font-size: 18px;">update</span>
                 Updates
             </div>
+            <div class="SidebarTab" data-page="apps" onclick="switchPage('apps')">
+                <span class="material-symbols-outlined" style="font-size: 18px;">apps</span>
+                Apps &amp; Tools
+            </div>
             <div class="SidebarTab" data-page="desktop" onclick="switchPage('desktop')">
                 <span class="material-symbols-outlined" style="font-size: 18px;">desktop_windows</span>
                 Desktop App
@@ -809,6 +813,19 @@
                         <span class="material-symbols-outlined">expand_more</span>
                         Load More
                     </button>
+                </div>
+            </div>
+
+            <!-- Apps & Tools Page -->
+            <div class="page" id="page-apps">
+                <div class="ContentTitle">Apps &amp; Tools</div>
+                <div class="ContentDesc">Download Techtoby apps and tools. Each download links to the latest GitHub release.</div>
+
+                <div id="appsContainer" style="display:flex;flex-direction:column;gap:16px;">
+                    <div class="EmptyState" id="appsLoading">
+                        <span class="material-symbols-outlined">hourglass_top</span>
+                        <div>Loading apps...</div>
+                    </div>
                 </div>
             </div>
 
@@ -958,6 +975,7 @@
             });
             if (pageId === 'data') updateDataSizeInfo();
             if (pageId === 'updates' && !commitsLoaded) fetchCommits();
+            if (pageId === 'apps' && !appsLoaded) loadApps();
             if (pageId === 'desktop') loadDesktopRelease();
             if (pageId === 'advanced') initAdvancedPage();
         }
@@ -1523,6 +1541,116 @@
 
             card.innerHTML = html;
             return card;
+        }
+
+        // ===== APPS & TOOLS =====
+        let appsLoaded = false;
+
+        async function loadApps() {
+            appsLoaded = true;
+            const container = document.getElementById('appsContainer');
+            let tools;
+            try {
+                const resp = await fetch('data/downloads.json', { cache: 'no-store' });
+                if (!resp.ok) throw new Error('fetch failed');
+                tools = await resp.json();
+            } catch (e) {
+                container.innerHTML = `<div class="EmptyState"><span class="material-symbols-outlined">error_outline</span><div>Couldn't load the apps list.</div></div>`;
+                return;
+            }
+            if (!Array.isArray(tools) || !tools.length) {
+                container.innerHTML = `<div class="EmptyState"><span class="material-symbols-outlined">apps</span><div>No apps available yet.</div></div>`;
+                return;
+            }
+            container.innerHTML = '';
+            tools.forEach(tool => {
+                const card = document.createElement('div');
+                card.style.cssText = 'background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.4);border-radius:16px;overflow:hidden;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);';
+                card.innerHTML = renderAppCard(tool);
+                container.appendChild(card);
+                initCarousel(card, tool);
+                resolveDownload(card, tool);
+            });
+        }
+
+        function difficultyBadge(d) {
+            if (!d) return '';
+            const map = {
+                easy:   ['rgba(34,197,94,0.15)', 'rgba(34,197,94,0.4)', 'rgba(20,120,50,0.95)'],
+                medium: ['rgba(234,179,8,0.15)', 'rgba(234,179,8,0.4)', 'rgba(150,100,0,0.95)'],
+                hard:   ['rgba(239,68,68,0.15)', 'rgba(239,68,68,0.4)', 'rgba(190,40,40,0.95)'],
+            };
+            const c = map[String(d).toLowerCase()] || ['rgba(99,102,241,0.15)', 'rgba(99,102,241,0.4)', 'rgba(99,102,241,0.9)'];
+            return `<span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;padding:2px 8px;border-radius:6px;background:${c[0]};border:1px solid ${c[1]};color:${c[2]};">${escapeHtml(d)}</span>`;
+        }
+
+        function renderAppCard(tool) {
+            return `
+                <div class="appShots" style="position:relative;height:200px;background:rgba(0,0,0,0.05);display:flex;align-items:center;justify-content:center;overflow:hidden;"></div>
+                <div style="padding:18px 20px;display:flex;flex-direction:column;gap:10px;">
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <div style="font-size:18px;font-weight:700;color:rgba(0,0,0,0.85);">${escapeHtml(tool.name || 'Untitled')}</div>
+                        ${difficultyBadge(tool.difficulty)}
+                        ${tool.author ? `<span style="margin-left:auto;font-size:12px;color:rgba(0,0,0,0.45);">${escapeHtml(tool.author)}</span>` : ''}
+                    </div>
+                    <div style="font-size:13px;color:rgba(0,0,0,0.6);line-height:1.6;">${escapeHtml(tool.description || '')}</div>
+                    <div class="appDownload" style="margin-top:4px;">
+                        <button class="GTextBtn" disabled style="opacity:0.6;"><span class="material-symbols-outlined">hourglass_top</span>Checking latest release…</button>
+                    </div>
+                </div>`;
+        }
+
+        function initCarousel(card, tool) {
+            const wrap = card.querySelector('.appShots');
+            const shots = Array.isArray(tool.screenshots) ? tool.screenshots : [];
+            if (!shots.length) {
+                wrap.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:8px;color:rgba(0,0,0,0.3);">
+                    <span class="material-symbols-outlined" style="font-size:36px;">image_not_supported</span>
+                    <span style="font-size:13px;font-weight:500;">No screenshots available</span>
+                </div>`;
+                return;
+            }
+            let idx = 0;
+            const navBtn = (side) => `<button class="appNav-${side}" style="position:absolute;${side}:8px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;border:none;background:rgba(0,0,0,0.4);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);z-index:2;"><span class="material-symbols-outlined">${side === 'left' ? 'chevron_left' : 'chevron_right'}</span></button>`;
+            wrap.innerHTML =
+                shots.map((s, i) => `<img class="appShot" src="${escapeHtml(s)}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:${i === 0 ? 1 : 0};transition:opacity 0.3s ease;">`).join('') +
+                (shots.length > 1 ? navBtn('left') + navBtn('right') : '') +
+                `<div class="appCounter" style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;font-family:monospace;color:#fff;background:rgba(0,0,0,0.45);padding:2px 8px;border-radius:10px;z-index:2;">1 / ${shots.length}</div>`;
+            const imgs = wrap.querySelectorAll('.appShot');
+            const counter = wrap.querySelector('.appCounter');
+            const show = () => { imgs.forEach((im, i) => im.style.opacity = i === idx ? '1' : '0'); if (counter) counter.textContent = (idx + 1) + ' / ' + shots.length; };
+            const prev = wrap.querySelector('.appNav-left');
+            const next = wrap.querySelector('.appNav-right');
+            if (prev) prev.onclick = () => { idx = (idx - 1 + shots.length) % shots.length; show(); };
+            if (next) next.onclick = () => { idx = (idx + 1) % shots.length; show(); };
+        }
+
+        // Resolve the download link from the tool's github repo's latest release.
+        async function resolveDownload(card, tool) {
+            const slot = card.querySelector('.appDownload');
+            const gh = (tool.github || '').trim();
+            const m = gh.match(/github\.com\/([^/]+)\/([^/]+?)(?:\.git)?\/?$/i);
+            if (!m) { slot.innerHTML = downloadFallback(gh || '#', 'Open on GitHub'); return; }
+            const owner = m[1], repo = m[2];
+            try {
+                const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases/latest`);
+                if (r.status === 404) { slot.innerHTML = downloadFallback(`https://github.com/${owner}/${repo}/releases`, 'No release yet — View GitHub'); return; }
+                if (!r.ok) throw new Error('release fetch failed');
+                const rel = await r.json();
+                const url = (rel.assets && rel.assets.length && rel.assets[0].browser_download_url) || rel.html_url || gh;
+                const ver = rel.tag_name || rel.name || '';
+                slot.innerHTML = `<a href="${escapeHtml(url)}" target="_blank" rel="noopener" class="GTextBtn primary" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+                    <span class="material-symbols-outlined">download</span>Download${ver ? ' ' + escapeHtml(ver) : ''}
+                </a>`;
+            } catch (e) {
+                slot.innerHTML = downloadFallback(gh || '#', 'Open on GitHub');
+            }
+        }
+
+        function downloadFallback(url, label) {
+            return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener" class="GTextBtn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+                <span class="material-symbols-outlined">open_in_new</span>${escapeHtml(label)}
+            </a>`;
         }
 
         // ===== DESKTOP APP =====
