@@ -19,5 +19,17 @@
             "https://cdn.shawnyxx.dev/techtoby/digitek-lab/corporate/screenshots/digitek-lab-screenshot-2.png"
         ],
         "github": "https://github.com/dummtoby/digitek-lab"
+    },
+    {
+        "id": "oculum-islim-recorder",
+        "name": "Oculum iSlim Recorder",
+        "description": "A tool to record the screen.",
+        "author": "@dummtoby",
+        "difficulty": "easy",
+        "screenshots": [
+            "https://cdn.shawnyxx.dev/fileshare/oculum-islim-screen-recorder-001.png",
+            "https://cdn.shawnyxx.dev/fileshare/oculum-islim-screen-recorder-002.png"
+        ],
+        "github": "https://github.com/dummtoby/oculum-islim-recorder"
     }
 ]
